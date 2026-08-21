@@ -88,6 +88,12 @@ def test_cli_parses_required_commands() -> None:
         ["run-uncertainty-adjudication", "--stockfish", "stockfish"]
     )
     assert adjudication.command == "run-uncertainty-adjudication"
+    temporal_audit = build_parser().parse_args(["audit-temporal-allocation-source"])
+    assert temporal_audit.command == "audit-temporal-allocation-source"
+    temporal = build_parser().parse_args(
+        ["run-temporal-allocation-adjudication", "--stockfish", "stockfish"]
+    )
+    assert temporal.command == "run-temporal-allocation-adjudication"
 
 
 def test_cli_help(capsys) -> None:

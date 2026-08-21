@@ -40,6 +40,10 @@ from .robustness import run_depth_robustness
 from .search_frontier import run_search_frontier
 from .selection import run_nested_selection
 from .stability import run_stability
+from .temporal_allocation import (
+    audit_temporal_allocation_source,
+    run_temporal_allocation_adjudication,
+)
 from .uci_confirmation import run_forcing_3_confirmation
 from .uci_match import run_uci_pilot
 from .uncertainty_adjudication import (
@@ -221,6 +225,15 @@ def build_parser() -> argparse.ArgumentParser:
         help="Run the frozen 640k independent conservative-union audit",
     )
     adjudication.add_argument("--stockfish", required=True)
+    subparsers.add_parser(
+        "audit-temporal-allocation-source",
+        help="Audit the frozen Experiment 020 temporal union without new outcomes",
+    )
+    temporal = subparsers.add_parser(
+        "run-temporal-allocation-adjudication",
+        help="Run the frozen 2.56M independent temporal-union audit",
+    )
+    temporal.add_argument("--stockfish", required=True)
     return parser
 
 
@@ -591,6 +604,25 @@ def main(argv: list[str] | None = None) -> int:
                     "contexts": result["source_audit"]["contexts"],
                     "legal_branches": result["source_audit"]["legal_branches"],
                     "frozen_union_branches": result["source_audit"][
+                        "retained_branches"
+                    ],
+                    "oracle": result["oracle"],
+                    "decision": result["measurement"]["decision"],
+                }
+            )
+        elif args.command == "audit-temporal-allocation-source":
+            _print(audit_temporal_allocation_source(config))
+        elif args.command == "run-temporal-allocation-adjudication":
+            result, artifact = run_temporal_allocation_adjudication(
+                args.stockfish, config
+            )
+            _print(
+                {
+                    "experiment_id": result["experiment_id"],
+                    "artifact": str(artifact),
+                    "contexts": result["source_audit"]["contexts"],
+                    "legal_branches": result["source_audit"]["legal_branches"],
+                    "frozen_temporal_union_branches": result["source_audit"][
                         "retained_branches"
                     ],
                     "oracle": result["oracle"],

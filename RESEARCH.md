@@ -904,7 +904,8 @@ uncertainty.
 The uncertainty is nevertheless structured. Between 40,000 and 160,000 nodes,
 343 opponent replies are stable-important at 25 cp, 4,082 are stable-
 unimportant, and 155 are ambiguous, a 3.38% ambiguity rate. A conservative
-union retains 13.59% of replies on average. Thirty-one contexts change their
+union retains pooled `rho = 10.87%` of parent replies, or 13.59% when context
+fractions are equally weighted. Thirty-one contexts change their
 top reply; 17 changes are mutually within 25 cp and 25 within 100 cp, but the
 maximum reciprocal regret is 1,049 cp. Thus ambiguity includes both near ties
 and rare material search discoveries.
@@ -956,8 +957,9 @@ license training.
 
 Decision-level performance is substantially stronger. All 24 roots retain an
 audit-co-best move, producing zero pruning loss. At opponent parents, 133 of
-134 contexts retain a move within 25 cp. While retaining 13.59% of replies on
-average, the union has 0.47 cp mean loss, zero median loss, one 31-cp miss, and
+134 contexts retain a move within 25 cp. It retains 498 of 4,580 parent
+branches, pooled `rho = 10.87%`; the equally weighted mean-context fraction is
+13.59%. The union has 0.47 cp mean loss, zero median loss, one 31-cp miss, and
 no loss over 100 or 300 cp. The sole unsafe context is preserved under key
 `parent:6116f207af30ada6658fc7c13d679690732de0981eabac4a1498cfa8b93470fd`:
 the audit selects `c7d7`, while the best retained reply `c7b7` is 31 cp worse.
@@ -970,14 +972,15 @@ recovery and decision-sufficient branch recovery are different targets. Deep
 search can place many moves inside a 25-cp band; omitting some of them often
 has no effect when an equally good retained move remains. This is evidence for
 compression under a finite Stockfish audit, not a learned branch law and not
-proof of chess truth.
+proof of chess truth. It is also not a deployable selector, recursive-tree
+experiment, or measurement of final root-decision preservation.
 
 ### Next experiment
 
 Do not train yet and do not add a handcrafted exception for the missed move.
-Preregister a counterexample-focused Experiment 020 using the one 31-cp miss
-and SHA-frozen stable controls. Use deeper or cross-oracle adjudication to test
-whether the miss persists, keep complete-set recall as a separate strong
-criterion, and prospectively test whether compact uncertainty information can
-preserve a decision-sufficient branch set. Only a new frozen pass may reopen
-compact selector training.
+Preregister Experiment 020 as a population-level test of whether value
+trajectory across computation budgets identifies branches deserving further
+work. Freeze the generic 10k/40k/160k temporal union across all contexts and
+audit every legal move at 2.56M nodes. Make decision sufficiency primary and
+complete-set recall diagnostic. Only a new frozen pass may reopen compact
+selector training.

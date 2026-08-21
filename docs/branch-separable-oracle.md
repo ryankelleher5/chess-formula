@@ -77,10 +77,10 @@ picture than a forced binary label:
 
 At the 25-cp branch label, 343 parent moves are stable-important, 4,082 are
 stable-unimportant, and 155 are ambiguous. The ambiguity rate is only 3.38%.
-A conservative union that treats ambiguity as important retains 13.59% of
-legal opponent replies on average. At roots, 35 moves are stable-important,
-622 stable-unimportant, and 22 ambiguous; the conservative union retains
-26.07% on average.
+A conservative union that treats ambiguity as important retains pooled
+`rho = 10.87%` of legal opponent replies, or 13.59% when context fractions are
+equally weighted. At roots, pooled retention is 8.39% and the mean-context
+fraction is 26.07%.
 
 This is promising but not an advancement result. The audit endpoint is still a
 finite selective search, and the conservative union is defined using outcomes

@@ -19,10 +19,10 @@ The frozen gate **fails**. The union does not literally contain every audit
 top move or every move within 25 cp of the audit best. It therefore does not
 license branch-label training.
 
-| Context | Mean retained | Top recall | Within-25 recall | Decision preserved within 25 cp | Maximum loss | Losses >100 / >300 cp |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Root (24) | 26.07% | 95.83% | 83.67% | 100.00% | 0 cp | 0 / 0 |
-| Opponent parent (134) | 13.59% | 90.30% | 78.40% | 99.25% | 31 cp | 0 / 0 |
+| Context | Pooled retained | Mean-context retained | Top recall | Within-25 recall | Decision preserved within 25 cp | Maximum loss | Losses >100 / >300 cp |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Root (24) | 8.39% | 26.07% | 95.83% | 83.67% | 100.00% | 0 cp | 0 / 0 |
+| Opponent parent (134) | 10.87% | 13.59% | 90.30% | 78.40% | 99.25% | 31 cp | 0 / 0 |
 
 At roots, the selector misses one exact top move and eight of 49 moves in the
 full within-25-cp sets, but every context retains an audit-co-best move: mean,
@@ -37,8 +37,9 @@ loss is 31 cp. There are no losses over 100 or 300 cp.
 The sole decision-level false negative is
 `parent:6116f207af30ada6658fc7c13d679690732de0981eabac4a1498cfa8b93470fd`.
 The 640,000-node audit prefers `c7d7`; the best frozen-union reply is `c7b7`,
-31 cp worse. This counterexample is preserved unchanged for the next
-experiment.
+31 cp worse. Pooled parent retention is `498 / 4,580 = 10.87%`; the equally
+weighted mean of the 134 context fractions is 13.59%. This counterexample and
+both retention estimands are preserved unchanged for the next experiment.
 
 ## Interpretation
 
@@ -60,7 +61,9 @@ consequences. The 40k-only parent selector has three losses over 25 cp, one
 over 100 cp, and a maximum loss of 114 cp. The 160k-only selector has two
 losses over 25 cp, one over 100 cp, and a maximum loss of 136 cp. Their union
 reduces this to one 31-cp miss while remaining below the frozen 20% mean parent
-branch budget.
+branch budget. It is an expensive oracle-built set, not a deployable selector,
+recursive tree reduction, or evidence that 99.25% of final root decisions are
+preserved.
 
 ## Decision and next experiment
 
@@ -68,11 +71,10 @@ branch budget.
 - Do not redefine Experiment 019's gate after observing the result.
 - Preserve exact-set recall and decision sufficiency as separate scientific
   outcomes.
-- Preregister Experiment 020 around the 31-cp counterexample and frozen stable
-  controls. Test whether the miss persists under a deeper or cross-oracle
-  audit and whether a compact, prospectively defined uncertainty signal can
-  recover decision-sufficient branches without manually adding the missed
-  move or a chess-specific category.
+- Preregister Experiment 020 as a population-level test of a general temporal
+  computation-allocation signal. Use the 10k/40k/160k within-25-cp union over
+  every frozen context, never a special case for the observed move. Test it
+  against a new 2.56M-node-per-move audit.
 - Only after that prospective gate should compact selector training be
   reconsidered.
 

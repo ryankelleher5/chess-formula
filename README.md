@@ -284,8 +284,9 @@ Experiment 018 then removes shared-budget competition entirely: each of 5,259
 legal branches receives its own constrained Stockfish search at four budgets
 up to 160,000 nodes per move. The 40,000-node tier still agrees with the audit
 on only 76.87% of opponent top replies, so no reference advances. However,
-25-cp labels agree on 96.62% of parent branches; only 3.38% are ambiguous, and
-a conservative union retains 13.59% of replies on average. This motivates a
+25-cp labels agree on 96.62% of parent branches; only 3.38% are ambiguous. A
+conservative union retains pooled `rho = 10.87%` of parent replies, or 13.59%
+when context-level fractions are equally weighted. This motivates a
 new deeper adjudication of uncertainty-aware labels—not retrospective training
 on the favorable metric. See
 [docs/branch-separable-oracle.md](docs/branch-separable-oracle.md).
@@ -293,12 +294,23 @@ on the favorable metric. See
 Experiment 019 audits that unchanged 40k/160k conservative union with a new
 independent 640,000-node search of every legal development branch. The strict
 complete-recall gate fails, so no training is licensed. However, while
-retaining only 13.59% of opponent replies on average, the union preserves a
-reply within 25 cp in 133 of 134 contexts; its sole decision-level miss costs
-31 cp and none exceeds 100 cp. This separates the harder demand to retain every
-near-best move from the practical demand to retain enough branches for a safe
-decision. See
+retaining pooled `rho = 498 / 4,580 = 10.87%` of opponent replies (13.59% when
+context fractions are equally weighted), the union preserves a reply within
+25 cp in 133 of 134 contexts; its sole local decision-level miss costs 31 cp
+and none exceeds 100 cp. This expensive oracle-built set is not yet a
+deployable selector, recursive tree reduction, or measurement of final root
+decisions. It separates the harder demand to retain every near-best move from
+the practical demand to retain enough branches for a safe local decision. See
 [docs/uncertainty-adjudication.md](docs/uncertainty-adjudication.md).
+
+Experiment 020 prospectively tests the general computation-allocation clue:
+retain a branch for further work if it was within 25 cp at any independent
+10k, 40k, or 160k checkpoint. The frozen temporal union retains pooled
+`rho = 11.66%` of parent branches (14.39% mean-context fraction) and will be
+audited across all 5,259 branches at 2.56M nodes per move. Decision sufficiency
+is the primary gate; exact top and complete near-best-set recall are
+diagnostics. See
+[docs/temporal-allocation-preregistration.md](docs/temporal-allocation-preregistration.md).
 
 ## Scientific controls
 
