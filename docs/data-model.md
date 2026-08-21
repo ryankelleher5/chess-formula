@@ -13,3 +13,18 @@ The position hash covers the first five FEN fields: placement, side to move, cas
 
 Raw game files and derived databases are separate and ignored by Git. Ingestion is idempotent by stable game ID. Stockfish analysis is resumable: an existing `(position_hash, engine_key)` row is never recomputed unless `--force` is explicit.
 
+## Prospective branch-law records
+
+The six records above describe the implemented baseline database. Branch-Law
+Discovery will add a versioned derived dataset whose observation is a legal
+transition plus search context, not only a position. Before implementation, its
+schema must preserve source/successor rule states, legal move, source occurrence,
+root candidate, path, node role, remaining depth, retained-branch budget, oracle
+rank/evaluation/regret, counterfactual and refutation labels, oracle fingerprint,
+representation version, and label-definition version.
+
+Ordinary branch records inherit game-grouped splits and overlap audits. Exact
+records use canonical symmetry classes or connected state components. Existing
+confirmation games and exact confirmation components cannot be assigned to
+development after inspection. The authoritative prospective schema and metrics
+are in [`branch-law-discovery.md`](branch-law-discovery.md).

@@ -1,6 +1,113 @@
 # Research Roadmap
 
-The working cadence is **hypothesis → experiment → measurement → conclusion → next experiment**. Each phase has a question and an exit condition; later phases should not be started merely because they are technically appealing.
+The working cadence remains **hypothesis → frozen experiment → measurement →
+conclusion → next experiment**. The project now organizes future work around
+three mutually informing research programs rather than treating engine
+development as a single linear ladder. The chronological evidence remains in
+[`RESEARCH.md`](RESEARCH.md); completed experiments and their contemporaneous
+conclusions are never rewritten.
+
+## Preserved foundation
+
+Experiments 001–014, all frozen benchmarks and datasets, the reproducibility
+infrastructure, Git history, and generated artifacts remain valid. The accepted
+evaluation law remains `material + space + tempo`, and Forcing-3 remains the
+accepted policy until an independently frozen experiment replaces it.
+
+The central object is now
+
+```text
+A(P) = Search using branch law B and evaluation law E
+```
+
+The scientific target is not merely a better engine. It is the smallest
+description of `E`, `B`, and the resulting examined tree that preserves strong
+or perfect chess decisions.
+
+## Program A — Evaluation Compression
+
+**Question:** how much chess judgment can be represented statically?
+
+This program contains the existing handcrafted formulas and their transfer
+tests, primitive occupancy representations, tiny learned evaluators, latent
+bottlenecks, symbolic evaluation laws, disagreement mining, and adversarial
+evaluation counterexamples. Every candidate is measured by predictive or move
+quality together with parameters, source/serialized size, operations, memory,
+and latency.
+
+## Program B — Branch/Search Compression
+
+**Question:** how little of the game tree must actually be examined?
+
+This program contains the accepted forcing search, formal branch-importance
+labels, context-aware `(position, legal move)` datasets, equal-budget baselines,
+compact learned selectors, recursive selection, symbolic branch laws, and
+catastrophic-omission mining. It does not automatically promote conventional
+engine mechanisms merely because they increase Elo.
+
+The north-star is
+
+```text
+rho_95 = minimum fraction of legal branches required to preserve at least
+         95% of root decisions within 25 cp of the full reference
+```
+
+Reports must also show the complete retained-branch fraction versus decision-
+quality curve, catastrophic omission rates, refutation recall, and total
+selector-plus-search complexity. See the dedicated
+[`Branch-Law Discovery specification`](docs/branch-law-discovery.md).
+
+## Program C — Exact Chess Compression
+
+**Question:** how compactly can mathematically perfect behavior be represented
+in solved domains?
+
+This program starts with complete KRK and KQK enumeration to validate legality,
+symmetry, and tablebase machinery, then moves promptly to the richer KPK domain,
+followed by four- and five-piece domains. It measures exact WDL preservation,
+distance-aware move optimality, exact branch necessity, description length, and
+transfer as domain size grows. Its branch north-star is `rho_perfect`, the
+minimum retained fraction that preserves tablebase-perfect play on every
+confirmation state.
+
+## Shared controls and convergence
+
+- Split ordinary data by complete source game and audit rule-state, sequence,
+  and valid-symmetry overlap.
+- Split exact domains by canonical symmetry class or connected component, not
+  random individual positions.
+- Keep selection and confirmation domains separate until hypotheses, models,
+  and advancement gates are committed.
+- Treat larger neural models as diagnostic instruments rather than final laws;
+  attempt to compress any successful predictor.
+- Count both evaluation and branch-selector description and inference cost.
+- Prefer experiments that reveal structure over engineering improvements with
+  no generalizable explanatory value.
+- Preserve negative results and mine catastrophic false negatives as discovery
+  material.
+
+The programs may converge if the same compact quantity predicts evaluation,
+branch necessity, and exact play across different representations and oracles.
+
+## Immediate execution order
+
+1. Freeze the branch-label taxonomy, context-aware dataset schema, oracle
+   limits, split rules, metrics, and advancement rule.
+2. Validate exact enumeration and labels in KRK/KQK, then KPK.
+3. Build an ordinary-position development branch dataset without touching any
+   confirmation set.
+4. Establish random, forcing, capture, Locked-3, oracle, and all-legal baselines
+   at equal retained-branch budgets.
+5. Produce the first `retained fraction -> decision preservation` curve and
+   measure the forcing baseline's `rho_95`.
+6. Train only compact initial selectors, select at most one under the frozen
+   rule, and confirm it on untouched grouped data.
+7. Test recursive selection only after branch prediction itself passes.
+
+## Historical phase map — preserved
+
+The original phase map is retained below as project lineage. It no longer sets
+future priority where it conflicts with the three-program structure.
 
 ## Phase 0 — Trustworthy infrastructure
 
@@ -82,9 +189,9 @@ Measure parameters, expression/source/executable size, operations, memory, laten
 
 Only after the preceding evidence ask whether near-perfect chess may have a compact algorithm. Distinguish four plausible findings: broadly compressible chess; a steep complexity wall near optimality; compact principles plus rare search-heavy exceptions; or no meaningful compression. None constitutes a solution without proof.
 
-## Immediate milestone
+## Completed evidence and active gate
 
-Phases 0–4 now support the first small-PGN linear experiment. Phase 5 has begun with a 30-repeat game-grouped comparison of 2-, 6-, and 17-parameter formulas. The compact-5 formula is the current Pareto candidate on synthetic data.
+The summaries below preserve the sequence that motivated the research fork.
 
 **Completed milestone — independent human-domain validation:** `human-transfer-v1` deterministically selected 60 rating-filtered games from the CC0 Lichess January 2013 archive and evaluated 1,091 unique balanced-side positions over 30 game-grouped resamples. Full-16 improved mean MAE by 9.42 cp and correlation by 0.0501 over compact-5 while reducing catastrophic errors from 3.58% to 2.47%. The synthetic compact-5 Pareto conclusion did not transfer. Provenance, source/license/checksums, integrity audits, phase strata, and a forcing-position proxy are recorded without changing `coefficient-stability-v1`.
 
@@ -108,4 +215,4 @@ Phases 0–4 now support the first small-PGN linear experiment. Phase 5 has begu
 
 **Completed milestone — fixed-budget search-efficiency curve:** on 240 deterministic development positions, the confirmed Forcing-3 anchor has the lowest mean depth-12 regret: 105.05 cp at 1,360.9 mean states. Halving its cap saves only 11.4% of states and raises regret by 14.66 cp; Forcing-3-128 retains 76.02% of the anchor's gain, below the frozen 80% gate, despite scoring 51.25% [47.5%, 56.25%] in 40 direct games. Four forcing plies use 3,353.7 states and worsen regret to 123.09 cp. Across 160 development games there are zero faults. No cheaper policy advances, and Forcing-3 remains accepted.
 
-**Active milestone — exact three-piece endgame laboratory:** freeze a complete, symmetry-audited census of legal king-and-rook-versus-king and king-and-queen-versus-king states with exact WDL and distance-aware optimal moves. Measure static Locked-3, accepted Forcing-3, and progressively compact exact-rule candidates by perfect WDL classification, optimal-move coverage, description length, states, and latency. Split by canonical symmetry or connected state component—not random positions—to prevent reflected or one-move-adjacent leakage. Preregister the state generator, legality filters, tablebase provenance, canonicalization, metrics, and advancement rule before inspecting candidate results. The goal is to learn how compactly perfect behavior can be represented in a solved domain, not to tune another approximate Stockfish imitation.
+**Active milestone — branch-importance definitions and measurement foundation:** implement no learned selector until the context-aware label taxonomy, branch dataset schema, oracle limits, split/overlap controls, equal-budget baselines, `rho_95`, catastrophic-omission metrics, and frozen advancement rule are versioned. Validate the machinery on complete KRK/KQK states and add KPK as the first discriminating exact three-piece domain. Then construct the ordinary-position development dataset, establish the forcing baseline's branch-retention curve, and ask whether compact information predicts candidate viability and opponent refutations substantially better at equal branch budgets. Confirmation games and exact confirmation components remain untouched until at most one candidate and its gate are committed.

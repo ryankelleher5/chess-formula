@@ -15,9 +15,45 @@ small PGN → sampled positions → Stockfish labels → 16 readable features
 
 The linear evaluator is emitted as an explicit equation. Every experiment records its configuration, seed, engine identity and limits, environment, runtime, metrics, plots, and Git revision where available.
 
+## Current direction — Branch-Law Discovery
+
+The first 14 experiments found that a tiny `material + space + tempo` evaluator
+becomes substantially stronger under selective search, but that simply adding
+more of the same forcing depth is not monotonically useful. The project now asks:
+
+> Is most of the chess game tree irrelevant, and can a compact law identify the
+> small fraction that must be examined?
+
+Future research is organized into three programs:
+
+- **Evaluation Compression:** how small can the static evaluation law be?
+- **Branch/Search Compression:** how little of the game tree must be examined?
+- **Exact Chess Compression:** how compactly can perfect behavior be represented
+  in solved domains?
+
+The branch/search program studies a context-aware selector `B` together with the
+accepted evaluation law `E`:
+
+```text
+A(P) = Search using branch law B and evaluation law E
+```
+
+Its north-star, `rho_95`, is the minimum fraction of legal branches needed to
+preserve at least 95% of root decisions within 25 cp of a full reference. The
+complete branch-retention curve, catastrophic omissions, refutation recall, and
+total description and inference cost remain mandatory guardrails. See the
+[`Branch-Law Discovery specification`](docs/branch-law-discovery.md) and the
+three-program [`ROADMAP.md`](ROADMAP.md).
+
 ## What this project is not
 
 The project is not currently trying to solve chess, train AlphaZero, beat unrestricted Stockfish, ingest every public game, or brute-force the game tree. Predicting a Stockfish evaluation is not the same as predicting its move, and neither alone establishes objective playing strength. A compact predictive model is interesting evidence, not a mathematical law or proof.
+
+It is also not an incremental Stockfish reimplementation. Sophisticated search
+enhancements, large transposition systems, conventional move-ordering machinery,
+large evaluators, opening books, or ordinary-play tablebase lookup are not added
+merely because they improve Elo. A frozen experiment may use a mechanism to
+isolate a scientific question, but description complexity is part of the result.
 
 ## Quick start
 
@@ -207,9 +243,10 @@ replacement. Across 240 deterministic positions, Forcing-3 has 105.05 cp mean
 depth-12 regret at 1,360.9 mean states. Halving its per-root cap saves only
 11.4% of states and raises regret by 14.66 cp, failing the frozen quality gates
 despite a 51.25% direct score. A four-ply forcing point uses 2.46 times the
-anchor's states and also performs worse. Forcing-3 therefore remains accepted;
-the negative result redirects the next milestone to exact three-piece
-endgames. See [docs/fixed-budget-curve.md](docs/fixed-budget-curve.md).
+anchor's states and also performs worse. Forcing-3 therefore remains accepted.
+This non-monotonic curve motivates Branch-Law Discovery; exact three-piece
+domains now provide its first ground-truth calibration environment. See
+[docs/fixed-budget-curve.md](docs/fixed-budget-curve.md).
 
 ## Scientific controls
 
@@ -226,7 +263,14 @@ See [docs/evaluation-convention.md](docs/evaluation-convention.md) and [docs/dat
 
 ## What success could look like
 
-Scientifically interesting outcomes include a tiny evaluator with unexpected playing strength, low-dimensional latent structure, symbolic formulas that generalize, a favorable strength-per-compute frontier, compact invariants across position families, or strong evidence that chess judgment does **not** compress well. Negative results matter because the central object is a measured complexity-versus-strength curve—not a predetermined conclusion.
+Scientifically interesting outcomes include a tiny evaluator with unexpected
+playing strength, a compact branch law with a materially lower `rho_95`, dramatic
+tree reduction without decision collapse, a symbolic selector approaching a
+larger diagnostic model, exact-domain transfer, low-dimensional latent structure,
+or strong evidence that evaluation or branch necessity does **not** compress
+well. Negative results matter because the central object is a measured
+description-and-tree-complexity versus decision-quality frontier—not a
+predetermined conclusion.
 
 ## Repository map
 

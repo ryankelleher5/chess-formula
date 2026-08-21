@@ -538,3 +538,89 @@ The primary compression candidate fails three position gates even though it pass
 ### Next experiment
 
 Move to an exact three-piece endgame laboratory, beginning with king-and-rook versus king and king-and-queen versus king. Freeze a complete legal-state census, symmetry canonicalization, exact tablebase provenance, component-level splits, and perfect-WDL/optimal-move/description-length metrics before evaluating compact candidates. Use the solved domain to distinguish exact rule compression from finite-depth oracle imitation.
+
+## 2026-08-21 — Research direction decision: Branch-Law Discovery
+
+This is a prospective change in research priority, not an experiment and not a
+reinterpretation of prior evidence. Experiments 001–014, their protocols and
+conclusions, all frozen datasets and benchmarks, and the accepted Locked-3
+formula and Forcing-3 policy remain unchanged.
+
+### Motivation
+
+Selective search produced much larger gains than adding static handcrafted
+terms, but Experiment 014 showed that more forcing-only computation is not a
+monotonic solution. Forcing-4-256 used 2.46 times the accepted policy's mean
+states while increasing mean regret by 18.04 cp. Halving the Forcing-3 cap saved
+only 11.4% of states and failed three position-quality gates. This points toward
+the structure of branch selection rather than routine depth expansion.
+
+The loss audit supplies a related clue but requires precise interpretation. The
+policy already enumerated every legal root move. Stockfish's quiet preferred
+replacement in 29 of 31 losses therefore indicates misranking caused by
+incomplete continuation/refutation search, not omission of quiet roots. Branch
+importance is expected to depend on node role, root candidate, path, depth, and
+budget rather than only `(position, move)`.
+
+### Adopted question
+
+The central new question is whether a compact branch law can identify which
+legal continuations cannot safely be ignored. The target is
+
+```text
+A(P) = Search using branch law B and evaluation law E
+```
+
+where the description and computation of both `E` and `B` count. Candidate
+desirability, regret-bounded viability, root-decision consequence, opponent
+refutation necessity, and value of information will be computed as distinct
+label families before any shared target is chosen.
+
+### Success metric
+
+For retained branch fraction `rho`, define `DPR_25(rho)` as the fraction of root
+decisions whose pruning-induced oracle loss is at most 25 cp relative to the
+same frozen search with all legal branches. The north-star is `rho_95`, the
+smallest nested budget reaching 95% preservation at that and every larger
+budget. The first branch-law milestone succeeds only if an untouched,
+game-grouped confirmation shows at least a 25% reduction in `rho_95` versus the
+forcing baseline, at least 10% lower mean root regret at the forcing-equivalent
+budget with a grouped interval excluding zero, 100-cp catastrophic omissions
+noninferior within a one-percentage-point margin, a resolved improvement in
+refutation recall, and no increase in total selector-plus-search computation.
+Description size and inference cost remain part of candidate selection.
+
+For exact domains, `rho_perfect` is the minimum retained fraction preserving
+tablebase WDL on every confirmation state; distance-aware optimality is a
+secondary stricter criterion.
+
+### Program structure
+
+Future work is organized around three programs:
+
+1. **Evaluation Compression:** compact static judgment, primitive
+   representations, latent structure, and symbolic evaluation laws.
+2. **Branch/Search Compression:** branch labels and datasets, equal-budget
+   baselines, compact and symbolic selectors, recursive selection, and
+   catastrophic-omission mining.
+3. **Exact Chess Compression:** exact evaluation and branch necessity in three-,
+   four-, and five-piece solved domains, including transfer as domain size grows.
+
+The exact-endgame milestone remains active as Program C and becomes the first
+ground-truth calibration environment for the branch-label machinery. KRK and
+KQK validate legality, canonicalization, and tablebase handling; KPK follows
+promptly as the richer three-piece test.
+
+### Immediate gate
+
+Before training any branch selector, freeze the label taxonomy, context-aware
+dataset schema, oracle limits, overlap controls, equal-budget baselines,
+counterfactual procedures, `rho_95` calculation, safety metrics, and advancement
+rule. Then build the development dataset and establish the random, forcing,
+capture, Locked-3, oracle, and all-legal branch-budget curves. At most one compact
+candidate may advance to an untouched confirmation. Recursive search follows
+only after branch prediction itself passes.
+
+The complete specification is recorded in
+[`docs/branch-law-discovery.md`](docs/branch-law-discovery.md), and the roadmap
+now represents the three programs without deleting the historical phase map.
