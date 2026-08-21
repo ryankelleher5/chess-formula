@@ -39,3 +39,11 @@ positions, and latency for every candidate regardless of the primary result.
 
 This gate validates position-value prediction only. Move-selection work remains
 separate because stand-pat does not always return a legal root move.
+
+## Outcome
+
+The frozen gate passed on 2,177 non-overlapping April positions. Searched
+Locked-3 improved forcing-stratum MAE over static Locked-3 by 24.53 cp, with a
+95% paired game-bootstrap interval of [18.60, 30.26] cp. See
+[April deeper-oracle robustness](april-depth-robustness.md) for provenance,
+complete metrics, computation cost, and limitations.

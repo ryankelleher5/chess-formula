@@ -257,3 +257,40 @@ Candidate A failed its primary decision rule despite the apparently coherent Feb
 ### Next experiment
 
 Freeze Searched Locked-3 and test whether its gain survives a deeper Stockfish oracle on an untouched April human corpus. Keep the formula, forcing-move definition, two-ply depth, and 128-child cap unchanged. Add explicit move-choice evaluation only after depth robustness: the current stand-pat mechanism predicts position value but does not always select a legal root move.
+
+## 2026-08-20 — Experiment 008: April deeper-oracle robustness
+
+### Hypothesis
+
+The March-confirmed Searched Locked-3 forcing-stratum advantage remains negative with a 95% paired source-game-bootstrap interval excluding zero on an untouched April human corpus labeled by a deeper Stockfish oracle.
+
+### Method
+
+Commit the complete executable protocol at `13ae92e` before April data access. Stream and verify the official CC0 April 2013 Lichess archive (157,871 games; 23,299,559 bytes; SHA-256 `11c795d3c81c49fa97cd958b0984c044410c78ad90f454ed08abb57ab7d00d52`). From 10,174 eligible games, select a seed-20260826 reservoir sample of 120 games. The selected ratings span 1800–2388 and the PGN SHA-256 is `280c81787826e2827f84b444ef180d7528ec762f0eafacdada2d1426e34ca133`.
+
+Sample 2,228 unique positions, balanced 1,102/1,126 by side to move, and label with Stockfish 18 at depth 12, MultiPV 1, one thread, and 16 MB hash. Exclude all 51 hashes previously observed in January, February, or March, leaving 2,177 April positions across all 120 games. Fit Material-only, Locked-3, and Full-16 only on the deduplicated 2,170-position January/February depth-8 development union. Apply the exact March two-ply/128-child Searched Locked-3 algorithm and use 1,000 paired source-game bootstrap samples.
+
+### Result
+
+| Candidate | Params | Overall MAE | Forcing MAE | Correlation | Sign | ≥500 cp |
+|---|---:|---:|---:|---:|---:|---:|
+| Material-only | 2 | 154.66 | 185.79 | 0.4392 | 69.55% | 4.27% |
+| Locked-3 | 4 | 150.52 | 177.04 | 0.5128 | 69.50% | 3.40% |
+| Full-16 | 17 | 145.74 | 173.67 | 0.5299 | 70.46% | 3.35% |
+| Searched Locked-3 | 4 + search | **134.89** | **152.34** | **0.6364** | **71.15%** | **2.02%** |
+
+The preregistered gate passes. Searched Locked-3 minus static Locked-3 forcing MAE is −24.53 cp with a 95% interval of [−30.26, −18.60]. Its overall improvement over Locked-3 is 15.50 cp [11.72, 19.09], and its overall improvement over Full-16 is 10.77 cp [4.49, 16.33]. Search expands 5.30 children per root on average (p95 19, maximum 46), never reaches the cap, and takes 2.19 ms/position in the current Python implementation.
+
+### Interpretation
+
+The deeper target raises absolute error for every formula, as expected, but the relative search gain remains large and statistically resolved. Within the tested domain and depth change, the March result is not a shallow-oracle artifact. A small selective forcing computation again provides more predictive value than thirteen additional static features, while using the compact formula rather than Stockfish at its leaves.
+
+This remains evidence about position-value approximation. Because stand-pat can be preferred at the root, Searched Locked-3 is not yet a move predictor and has no measured playing strength.
+
+### What failed
+
+The first post-label validation command stopped before computing any metrics because the prior-position hash query attempted to iterate a DuckDB connection directly. Commit `f4819e3` changed the query to consume `fetchall()` and added a two-database regression test. The failure exposed no April metrics, changed no analysis choice, and the complete frozen protocol then ran successfully. The child cap again was not reached, and the Python timing remains descriptive rather than an optimized engine comparison.
+
+### Next experiment
+
+Freeze the accepted evaluator and build a deterministic legal-root-move wrapper. Preregister root enumeration, fixed computation budget, tie-breaking, oracle depth, top-1/top-k agreement, centipawn regret, legal coverage, and latency before accessing an untouched May human corpus. Use April only for implementation development; do not use it for the final move-policy claim.

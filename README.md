@@ -138,6 +138,15 @@ correlation, beating static Locked-3 (132.45/0.5933) and static Full-16
 forcing-stratum improvement is −26.65 cp with a 95% interval of [−33.45, −20.11].
 See [docs/march-validation.md](docs/march-validation.md).
 
+The frozen searched formula also passes the deeper-oracle robustness gate on
+2,177 non-overlapping positions from 120 untouched April games labeled at
+Stockfish depth 12. It achieves 134.89 cp MAE and 0.6364 correlation, versus
+150.52/0.5128 for static Locked-3 and 145.74/0.5299 for Full-16. Its
+forcing-stratum improvement over static Locked-3 is 24.53 cp with a 95% paired
+game-bootstrap interval of [18.60, 30.26] cp. The result remains position-value
+prediction, not move prediction. See
+[docs/april-depth-robustness.md](docs/april-depth-robustness.md).
+
 ## Scientific controls
 
 - A SHA-256-derived seed-stable split assigns whole games to train, validation, or test.
