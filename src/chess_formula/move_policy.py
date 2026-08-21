@@ -552,7 +552,13 @@ def run_move_policy_validation(
     position_records = []
     for label, choices in policies.items():
         chosen_scores = np.clip(
-            _forced_scores(confirmation_connection, confirmation_key, digests, choices),
+            _forced_scores(
+                confirmation_connection,
+                confirmation_key,
+                digests,
+                choices,
+                roots,
+            ),
             -clip,
             clip,
         )

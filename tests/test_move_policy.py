@@ -10,6 +10,8 @@ from chess_formula.config import load_config
 from chess_formula.database import connect_database
 from chess_formula.ingest import ingest_pgn
 from chess_formula.move_policy import (
+    PolicyChoice,
+    _forced_scores,
     choose_legal_move,
     label_forced_policy_moves,
     move_quality_metrics,
@@ -61,6 +63,32 @@ def test_terminal_position_cannot_choose_move() -> None:
     board = chess.Board("7k/6Q1/6K1/8/8/8/8/8 b - - 0 1")
     with pytest.raises(ValueError, match="terminal"):
         choose_legal_move(board, lambda _: 0.0, terminal_cp=2000)
+
+
+def test_forced_scores_reuse_root_best_and_read_alternative_cache(tmp_path) -> None:
+    connection = connect_database(tmp_path / "moves.duckdb")
+    connection.execute(
+        "INSERT INTO move_analysis "
+        "(position_hash, engine_key, move, eval_cp, elapsed_ms) VALUES (?, ?, ?, ?, ?)",
+        ["second", "engine", "b2b3", -25, 1.0],
+    )
+    roots = {
+        "first": (100, "a2a3", "[]"),
+        "second": (50, "a2a3", "[]"),
+    }
+    choices = [
+        PolicyChoice("a2a3", 0.0, 1, 0),
+        PolicyChoice("b2b3", 0.0, 1, 0),
+    ]
+    scores = _forced_scores(
+        connection,
+        "engine",
+        ["first", "second"],
+        choices,
+        roots,
+    )
+    connection.close()
+    assert scores.tolist() == [100.0, -25.0]
 
 
 def test_move_quality_uses_side_to_move_and_clamps_oracle_inversions() -> None:
