@@ -20,6 +20,7 @@ from .oracle import label_positions
 from .robustness import run_depth_robustness
 from .selection import run_nested_selection
 from .stability import run_stability
+from .uci_match import run_uci_pilot
 
 
 def _database(args: argparse.Namespace, config: dict) -> str:
@@ -120,6 +121,11 @@ def build_parser() -> argparse.ArgumentParser:
     moves.add_argument("--stockfish", required=True)
     moves.add_argument("--development-database", action="append")
     moves.add_argument("--prior-database", action="append")
+    pilot = subparsers.add_parser(
+        "run-uci-pilot",
+        help="Run the frozen color-balanced UCI playing-strength pilot",
+    )
+    pilot.add_argument("--stockfish", required=True)
     return parser
 
 
@@ -324,6 +330,19 @@ def main(argv: list[str] | None = None) -> int:
                         label: model["metrics"] for label, model in result["models"].items()
                     },
                     "paired_regret_deltas": result["paired_regret_deltas"],
+                    "decision": result["decision"],
+                }
+            )
+        elif args.command == "run-uci-pilot":
+            if "uci_pilot" not in config:
+                raise ValueError("The active configuration has no uci_pilot section")
+            result, artifact = run_uci_pilot(args.stockfish, config)
+            _print(
+                {
+                    "experiment_id": result["experiment_id"],
+                    "artifact": str(artifact),
+                    "games": result["games"],
+                    "matches": result["matches"],
                     "decision": result["decision"],
                 }
             )
