@@ -203,12 +203,14 @@ factor, but reports must show the complete branch-retention curve rather than
 only the scalar. Requiring the threshold to hold at all larger budgets prevents
 a single non-monotonic point from defining success.
 
-The current project has no measured **ordinary-position** `rho_95`; Experiment
-014 measured move regret against expanded states, not systematic retained-
-branch fractions. Experiment 015 established the exact development analogue in
-KQvK, KRvK, and KPvK and showed that WDL preservation alone saturates too
-easily to replace the ordinary pruning-induced-loss target. The first ordinary
-branch-budget experiment must still establish the forcing baseline.
+Experiment 016 measures the first ordinary-position development `rho_95` while
+holding all legal root candidates fixed and varying opponent replies. Under its
+frozen 20,000-node all-legal MultiPV reference, random, forcing, all-captures,
+and Locked-3 require the all-legal endpoint to reach 95%; the nondeployable
+oracle ordering reaches it at 3.07% retained replies. These are development
+measurements, not confirmation estimates. The preregistered 4×-node audit finds
+only 55.97% opponent top-reply agreement, so oracle convergence must be resolved
+before these labels can support model training or candidate selection.
 
 ## Safety and complexity guardrails
 

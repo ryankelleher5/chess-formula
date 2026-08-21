@@ -9,7 +9,7 @@ conclusions are never rewritten.
 
 ## Preserved foundation
 
-Experiments 001–015, all frozen benchmarks and datasets, the reproducibility
+Experiments 001–016, all frozen benchmarks and datasets, the reproducibility
 infrastructure, Git history, and generated artifacts remain valid. The accepted
 evaluation law remains `material + space + tempo`, and Forcing-3 remains the
 accepted policy until an independently frozen experiment replaces it.
@@ -97,18 +97,22 @@ branch necessity, and exact play across different representations and oracles.
 2. **Completed in Experiment 015:** validate complete exact enumeration and
    development labels in KQvK, KRvK, and KPvK without probing exact selection
    or confirmation outcomes.
-3. **Current:** freeze and build an ordinary-position development branch
-   dataset with counterfactual candidate and opponent-refutation contexts;
-   touch no confirmation set.
-4. Establish random, forcing, capture, Locked-3, oracle, and all-legal ordinary
-   baselines at equal retained-branch budgets. Exact development baselines are
-   complete.
-5. Produce the first ordinary `retained fraction -> decision preservation`
-   curve and measure the forcing baseline's `rho_95`. Experiment 015 has
-   produced the exact development analogue and exposed WDL's coarse saturation.
-6. Train only compact initial selectors, select at most one under the frozen
-   rule, and confirm it on untouched grouped data.
-7. Test recursive selection only after branch prediction itself passes.
+3. **Completed in Experiment 016:** build the ordinary-position development
+   dataset with candidate and opponent-refutation counterfactuals while probing
+   no selection or confirmation outcome.
+4. **Completed in Experiment 016:** establish random, forcing, capture,
+   Locked-3, oracle, and all-legal opponent-reply baselines at equal budgets.
+5. **Completed in Experiment 016:** measure the first ordinary development
+   `rho_95` curve. All deployable baselines require the all-legal endpoint under
+   the frozen reference; the oracle requires 3.07%.
+6. **Current:** stabilize the branch oracle. Preregister a convergence curve
+   over increasing total-node and per-reply budgets and require prospective
+   rank/threshold-label stability before treating the records as training
+   targets.
+7. Train only compact initial selectors after the oracle-stability gate, select
+   at most one under a separately frozen rule, and confirm it on untouched
+   grouped data.
+8. Test recursive selection only after branch prediction itself passes.
 
 ## Historical phase map — preserved
 
@@ -223,4 +227,6 @@ The summaries below preserve the sequence that motivated the research fork.
 
 **Completed milestone — exact branch-law measurement foundation:** Experiment 015 labels 15,000 deterministic development states and 155,576 legal branches across KQvK, KRvK, and KPvK with zero WDL/DTZ recurrence failures and zero selection or confirmation probes. At one retained move, Locked-3 preserves exact WDL in 97.60%, 96.16%, and 88.36%, beating forcing in all three domains. Random already reaches 94.12%, 92.87%, and 83.35%, showing that WDL alone saturates because many legal moves are outcome-equivalent. The natural forcing category preserves WDL in only 59.72%, 55.00%, and 11.72%; equal-budget fill supplies much of its apparent performance. This is a validated measurement baseline, not a learned law or confirmation claim.
 
-**Active milestone — ordinary context-aware branch dataset:** freeze candidate-viability, pruning-induced-loss, and opponent-refutation counterfactual procedures against the same all-legal reference search. Build development records grouped by complete source game, establish the ordinary forcing baseline's `rho_95`, catastrophic-omission rate, and refutation recall, and only then train compact selectors. Exact selection/confirmation partitions and ordinary confirmation games remain untouched until at most one candidate and its advancement gate are committed.
+**Completed milestone — ordinary context-aware branch foundation:** Experiment 016 emits 240 root records and 224,662 context-aware branch records while retaining every legal root candidate and varying only opponent replies. At the 3.07% budget-one point, Locked-3 reaches 57.92% `DPR_25`, 47.26% candidate-refutation recall, and 77.14 cp mean pruning loss; forcing reaches 44.58%, 25.60%, and 138.73 cp. No deployable ordering reaches 95% decision preservation at a partial tested budget. The 4×-node audit finds only 55.97% opponent top-reply agreement and a 55.05% within-25-cp set Jaccard, so no model is trained or advanced.
+
+**Active milestone — branch-oracle convergence:** determine whether the ordinary reply ranks and threshold labels stabilize under increased total-node or per-reply computation. Freeze the budgets, samples, stability gates, and cost rule before further analysis. Do not train a selector on the 20,000-node labels, change the forcing vocabulary, or expose any confirmation outcome while the measurement target remains this unstable.

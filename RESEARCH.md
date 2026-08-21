@@ -699,3 +699,86 @@ omissions, and total selector-plus-search cost. Establish random, forcing,
 all-capture, and Locked-3 ordinary branch-budget curves before training any
 compact selector. Keep every confirmation set and the exact selection and
 confirmation partitions untouched.
+
+## 2026-08-21 — Experiment 016: ordinary context-aware branch foundation
+
+### Hypothesis
+
+With every legal root candidate retained, opponent-reply importance can be
+measured separately from root breadth, and compact outcome-blind orderings will
+preserve root decisions and refutations better than random selection at equal
+reply budgets.
+
+### Method
+
+Commit the complete source identities, counterfactuals, oracle limits, schemas,
+baselines, budgets, and integrity gates at `05bc169` before any new branch-oracle
+query. Reuse only the 240 positions already frozen as development in Experiment
+014, grouped across 80 source games and 40 opening/opponent pairs. Make those
+games permanently ineligible for a future Branch-Law confirmation claim.
+
+Analyze all legal moves at each source root and at all 6,683 nonterminal
+opponent-parent contexts using Stockfish 18, 20,000 nodes, all-legal MultiPV,
+one thread, 16 MB hash, and a new-game boundary per context. The all-reply
+reference keeps all 6,689 root candidates and gives each the opponent-optimal
+reply score. An independent source-root analysis grades the absolute regret of
+full and pruned decisions.
+
+Compare random, forcing, all-captures, Locked-3, and oracle reply orderings at
+budgets 1, 2, 3, 4, 5, 8, 16, and all. Label each reply by opponent regret,
+single-reply candidate-value consequence, and root-decision consequence. Repeat
+24 roots and 134 parent contexts at 80,000 nodes as a frozen stability audit.
+
+### Result
+
+The run emits 240 unique root records, 6,689 root-candidate records, and 217,973
+opponent-reply records. All 224,662 branch identities are unique and
+development-only. Cache replay performs zero new analyses. Every all-legal
+endpoint reproduces the reference choice with zero pruning loss, and the oracle
+ordering reproduces it at budget one. No model is trained; selection and
+confirmation probe counts are zero.
+
+| Ordering | Budget-1 `DPR_25` | Candidate-refutation recall | Mean pruning loss | >100 cp omission | `rho_95` |
+|---|---:|---:|---:|---:|---:|
+| random | 34.94% | 6.01% | 220.90 cp | 47.69% | 100.00% |
+| forcing | 44.58% | 25.60% | 138.73 cp | 32.50% | 100.00% |
+| all captures | 46.25% | 26.20% | 132.47 cp | 30.83% | 100.00% |
+| **Locked-3** | **57.92%** | **47.26%** | **77.14 cp** | **20.83%** | 100.00% |
+| oracle | 100.00% | 100.00% | 0.00 cp | 0.00% | 3.07% |
+
+At budget 16, or 45.93% of replies, Locked-3 reaches 93.33% `DPR_25`
+versus 88.75% for forcing. The dataset contains 4,008 >25 cp candidate
+refutations, 209 >25 cp root-critical replies, and 41 forced sole replies. The
+all-reply child reference itself averages 54.38 cp direct-oracle regret, which
+is why pruning-induced loss is reported separately from absolute regret.
+
+### Interpretation
+
+There is real compact branch-ordering signal. At the same one-reply budget,
+Locked-3 recalls 1.85 times as many candidate refutations as forcing and lowers
+mean pruning loss by 44%. This repeats the exact-domain finding that static,
+often quiet state information contains useful branch structure missing from the
+forcing vocabulary.
+
+No deployable baseline reaches partial-tree `rho_95`, so this is not a compact
+branch law. The large oracle/deployable gap says better ordering could matter;
+it does not establish that the ordering is compressible.
+
+### What failed
+
+The binding failure is label stability. Comparing the 20,000-node labels with
+the preregistered 80,000-node audit gives only 79.17% top-move agreement at 24
+roots and 55.97% top-reply agreement at 134 opponent parents. The corresponding
+within-25-cp set Jaccards are 69.32% and 55.05%, and parent common-move scores
+differ by 69.68 cp on average. A total-node MultiPV budget shared over an average
+32.62 replies appears too noisy for hard rank and threshold targets. That causal
+explanation remains a hypothesis, not a result of this experiment.
+
+### Next experiment
+
+Do not train the planned compact selector yet. Preregister an oracle-convergence
+calibration on the frozen development contexts, comparing increased total-node
+and per-legal-reply budgets with prospective top-set, regret-label, and cost
+gates. Select the cheapest sufficiently stable reference before rebuilding
+labels or defining model classes. Keep all selection and confirmation outcomes
+sealed.

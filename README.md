@@ -17,7 +17,7 @@ The linear evaluator is emitted as an explicit equation. Every experiment record
 
 ## Current direction — Branch-Law Discovery
 
-The first 15 experiments found that a tiny `material + space + tempo` evaluator
+The first 16 experiments found that a tiny `material + space + tempo` evaluator
 becomes substantially stronger under selective search, but that simply adding
 more of the same forcing depth is not monotonically useful. The project now asks:
 
@@ -258,6 +258,17 @@ hard exact endpoint but is not sufficient alone for branch-law discovery;
 distance-aware and ordinary pruning-induced-loss metrics remain necessary. No
 model was trained, and selection and confirmation outcomes remain sealed. See
 [docs/branch-law-foundation.md](docs/branch-law-foundation.md).
+
+The first ordinary context-aware curve then holds every legal root candidate
+fixed and varies only opponent-reply visibility across 240 development
+positions. At one reply per context—3.07% of the reply tree—Locked-3 preserves
+57.92% of root decisions within 25 cp, versus 44.58% for forcing and 34.94%
+for random. It recalls 47.26% of >25 cp candidate refutations versus forcing's
+25.60%. This is genuine branch-ordering signal, but no deployable baseline
+reaches `rho_95` before all replies. A four-times-node audit also finds only
+55.97% top-reply agreement at opponent nodes, so model training is paused until
+the oracle labels are stabilized. See
+[docs/ordinary-branch-foundation.md](docs/ordinary-branch-foundation.md).
 
 ## Scientific controls
 
