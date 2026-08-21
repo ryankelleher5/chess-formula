@@ -74,6 +74,12 @@ def test_cli_parses_required_commands() -> None:
         ["run-oracle-convergence", "--stockfish", "stockfish"]
     )
     assert convergence.command == "run-oracle-convergence"
+    separable_audit = build_parser().parse_args(["audit-branch-separable-source"])
+    assert separable_audit.command == "audit-branch-separable-source"
+    separable = build_parser().parse_args(
+        ["run-branch-separable-oracle", "--stockfish", "stockfish"]
+    )
+    assert separable.command == "run-branch-separable-oracle"
 
 
 def test_cli_help(capsys) -> None:

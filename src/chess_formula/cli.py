@@ -12,6 +12,10 @@ from .branch_law import (
     prepare_branch_tablebases,
     run_branch_law_foundation,
 )
+from .branch_separable_oracle import (
+    audit_branch_separable_source,
+    run_branch_separable_oracle,
+)
 from .budget_curve import run_fixed_budget_curve
 from .config import load_config
 from .confirmation import run_transfer_confirmation
@@ -195,6 +199,15 @@ def build_parser() -> argparse.ArgumentParser:
         help="Run the frozen ordinary branch-oracle convergence calibration",
     )
     convergence.add_argument("--stockfish", required=True)
+    subparsers.add_parser(
+        "audit-branch-separable-source",
+        help="Audit Experiment 018 contexts and legal moves without probing outcomes",
+    )
+    separable = subparsers.add_parser(
+        "run-branch-separable-oracle",
+        help="Run the frozen independent per-legal-move oracle calibration",
+    )
+    separable.add_argument("--stockfish", required=True)
     return parser
 
 
@@ -536,6 +549,22 @@ def main(argv: list[str] | None = None) -> int:
                     "oracle": result["oracle"],
                     "decision": result["convergence"]["decision"],
                     "cross_cost_rule": result["convergence"]["cross_cost_rule"],
+                }
+            )
+        elif args.command == "audit-branch-separable-source":
+            _print(audit_branch_separable_source(config))
+        elif args.command == "run-branch-separable-oracle":
+            result, artifact = run_branch_separable_oracle(args.stockfish, config)
+            _print(
+                {
+                    "experiment_id": result["experiment_id"],
+                    "artifact": str(artifact),
+                    "contexts": result["source_audit"]["contexts"],
+                    "legal_branches_per_tier": result["source_audit"][
+                        "legal_branches"
+                    ],
+                    "oracle": result["oracle"],
+                    "decision": result["measurement"]["decision"],
                 }
             )
     except (FileNotFoundError, RuntimeError, ValueError) as exc:

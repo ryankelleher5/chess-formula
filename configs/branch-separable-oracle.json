@@ -1,0 +1,66 @@
+{
+  "seed": 20260905,
+  "benchmark_version": "branch-separable-oracle-v1",
+  "branch_separable_oracle": {
+    "experiment_name": "branch-separable-oracle",
+    "protocol_version": "branch-separable-oracle-v1",
+    "source_protocol_config": "configs/oracle-convergence.json",
+    "source_protocol_config_bytes": 3280,
+    "source_protocol_config_sha256": "1aeb5b8f4754430d12ca7378a29012e77b8a7e02909a1b29c6b389e9f51cbbdd",
+    "expected_contexts": 158,
+    "expected_root_contexts": 24,
+    "expected_parent_contexts": 134,
+    "expected_legal_branches": 5259,
+    "branch_key_digest": "eeaa73bb90123222ce4b3cff9f2c85f07e2900320f2ea866b1d62d09e9cdbb30",
+    "prior_shared_cache": "data/processed/oracle_convergence_cache.ndjson",
+    "prior_shared_cache_bytes": 4867906,
+    "prior_shared_cache_sha256": "d1667f9cecca41d624a6d47f6ec012e9f298864c57847408f2aa81c6c1a977ee",
+    "prior_shared_cache_metadata": "data/processed/oracle_convergence_cache_metadata.json",
+    "prior_shared_cache_metadata_bytes": 1787,
+    "prior_shared_cache_metadata_sha256": "c48ab73ccc42b06440943de35b60811eeb7f682c26b7e33af35a53372fdcad66",
+    "prior_shared_key": "3404043c970cc2400fee",
+    "external_shared_tiers": ["per-reply-40000", "total-1280000"],
+    "oracle_cache": "data/processed/branch_separable_oracle_cache.ndjson",
+    "oracle_cache_metadata": "data/processed/branch_separable_oracle_cache_metadata.json",
+    "oracle": {
+      "engine": "Stockfish 18",
+      "analysis": "one constrained root move per independent call",
+      "mate_score_cp": 100000,
+      "score_clip_cp": 2000,
+      "threads": 1,
+      "hash_mb": 16,
+      "new_game_per_branch": true
+    },
+    "nodes_per_move": [2500, 10000, 40000, 160000],
+    "regret_thresholds_cp": [10, 25, 50, 100],
+    "stability_gate": {
+      "minimum_top_move_agreement": 0.85,
+      "minimum_top3_set_jaccard": 0.80,
+      "minimum_near25_set_jaccard": 0.75,
+      "minimum_threshold_label_agreement": 0.90,
+      "required_label_thresholds_cp": [25, 50, 100],
+      "maximum_median_regret_difference_cp": 25
+    },
+    "external_comparisons": [
+      {
+        "label": "Matched 40000 nominal nodes per move: independent constrained search versus shared all-legal MultiPV",
+        "independent_tier": "per-move-40000",
+        "shared_tier": "per-reply-40000",
+        "matched_nominal_nodes_per_move": true
+      },
+      {
+        "label": "Deep independent audit versus deepest fixed-total MultiPV",
+        "independent_tier": "per-move-160000",
+        "shared_tier": "total-1280000",
+        "matched_nominal_nodes_per_move": false
+      }
+    ],
+    "selection_rule": "The 160000-node-per-move endpoint is audit-only. A lower tier is eligible only if it passes every frozen root and parent gate against both its next tier and the audit endpoint. Select the eligible tier with the lowest nodes per move; ties are lexical.",
+    "ambiguity_rule": "At each regret threshold, stable-important means positive at both compared tiers, stable-unimportant means negative at both, and ambiguous means the labels disagree. A conservative-important set is their union and is reported, not promoted automatically.",
+    "development_only": true,
+    "train_models": false,
+    "selection_outcomes_probed": 0,
+    "confirmation_outcomes_probed": 0,
+    "results_directory": "results"
+  }
+}

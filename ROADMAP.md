@@ -108,8 +108,9 @@ branch necessity, and exact play across different representations and oracles.
 6. **Completed in Experiment 017:** calibrate the branch oracle on 158 frozen
    development contexts across four fixed-total and four per-legal-reply
    budgets. The stability gate fails; no training reference is selected.
-7. **Current:** preregister branch-separable oracle calibration. Give each legal
-   move its own constrained-root compute budget, then test convergence of exact
+7. **Current — Experiment 018 protocol frozen:** give each of the 5,259 legal
+   development branches its own constrained-root compute budget at 2,500,
+   10,000, 40,000, and 160,000 nodes. The maximum is audit-only. Test exact
    replies, near-best sets, and conservative ambiguity labels without exposing
    any selection or confirmation outcome.
 8. Train only compact initial selectors after the oracle-stability gate, select
