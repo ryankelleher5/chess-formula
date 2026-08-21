@@ -1,0 +1,39 @@
+{
+  "seed": 20260821,
+  "database": "data/processed/stability.duckdb",
+  "sampling": {
+    "every_n_plies": 3,
+    "min_ply": 4,
+    "max_positions_per_game": 20
+  },
+  "labeling": {
+    "limit_type": "depth",
+    "limit_value": 8,
+    "multipv": 1,
+    "mate_score_cp": 100000,
+    "threads": 1,
+    "hash_mb": 16
+  },
+  "corpus": {
+    "games": 36,
+    "max_plies": 72,
+    "opening_random_plies": 6,
+    "engine_nodes_per_move": 100
+  },
+  "stability": {
+    "repeats": 30,
+    "test_fraction": 0.25,
+    "feature_sets": {
+      "material-only": ["material"],
+      "compact-5": [
+        "material",
+        "mobility",
+        "king_safety",
+        "threat_pressure",
+        "game_phase"
+      ],
+      "full-16": "all"
+    }
+  },
+  "benchmark_version": "coefficient-stability-v1"
+}

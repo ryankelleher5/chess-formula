@@ -84,5 +84,5 @@ Only after the preceding evidence ask whether near-perfect chess may have a comp
 
 ## Immediate milestone
 
-Only Phases 0–4 are partially implemented now, narrowly enough to run the first small-PGN linear experiment. The next phase must be chosen from measured failures rather than roadmap order.
+Phases 0–4 now support the first small-PGN linear experiment. Phase 5 has begun with a 30-repeat game-grouped comparison of 2-, 6-, and 17-parameter formulas. The compact-5 formula is the current Pareto candidate on synthetic data; the next decision gate is independent-domain validation, not additional feature growth.
 

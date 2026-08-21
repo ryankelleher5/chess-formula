@@ -10,6 +10,12 @@ def test_cli_parses_required_commands() -> None:
     assert args.command == "ingest"
     assert args.pgn == "sample.pgn"
 
+    stability = build_parser().parse_args(["stability", "baseline-linear"])
+    assert stability.command == "stability"
+
+    corpus = build_parser().parse_args(["generate-corpus", "--output", "generated.pgn"])
+    assert corpus.output == "generated.pgn"
+
 
 def test_cli_help(capsys) -> None:
     with pytest.raises(SystemExit) as exc:

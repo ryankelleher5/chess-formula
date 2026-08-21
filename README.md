@@ -60,9 +60,35 @@ The pipeline-validation run `2026-08-21_baseline_linear_001` used 101 unique pos
 
 These figures validate the apparatus, not the hypothesis. The dataset is too small, several learned coefficient signs are implausible, and both catastrophic errors come from related forcing positions in one test game. [RESEARCH.md](RESEARCH.md) records the interpretation and next experiment without treating this run as playing-strength evidence.
 
+## Coefficient-stability experiment
+
+The second experiment expands to a reproducibly generated, untracked 36-game legal corpus and performs 30 game-grouped resamples over 691 balanced-side positions. It compares material-only (2 parameters), compact-5 (6), and full-16 (17) formulas:
+
+| Formula | Mean MAE | Mean correlation | Sign accuracy | ≥500 cp errors |
+|---|---:|---:|---:|---:|
+| Material-only | 183.84 cp | 0.6112 | 74.03% | 2.78% |
+| Compact-5 | **179.61 cp** | 0.6482 | 78.12% | 3.33% |
+| Full-16 | 182.46 cp | **0.6526** | **78.55%** | 4.00% |
+
+The full model's tiny correlation gain does not compensate for its description cost or worse MAE/catastrophic-error rate. The compact formula is the current Pareto candidate, while material alone remains a strong control.
+
+Run the experiment from scratch:
+
+```bash
+chess-formula --config configs/stability.json generate-corpus \
+  --output data/raw/stability-synthetic.pgn \
+  --stockfish "$(command -v stockfish)"
+chess-formula --config configs/stability.json ingest data/raw/stability-synthetic.pgn
+chess-formula --config configs/stability.json label --stockfish "$(command -v stockfish)"
+chess-formula --config configs/stability.json stability baseline-linear
+```
+
+The generated PGN, DuckDB database, and report remain ignored. See [docs/synthetic-corpus.md](docs/synthetic-corpus.md) for the sampling domain and limitations.
+
 ## Scientific controls
 
 - A SHA-256-derived seed-stable split assigns whole games to train, validation, or test.
+- Stability resampling treats games, never individual positions, as the independent grouping unit.
 - A deduplicated position is assigned to exactly one split, preventing repeated openings from crossing split boundaries.
 - The fixed benchmark is versioned at `benchmarks/baseline-v1.json`.
 - Stockfish labels are keyed by exact engine identity and analysis configuration, cached, and resumable.

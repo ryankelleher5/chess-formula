@@ -50,6 +50,7 @@ def test_pgn_parsing_position_extraction_and_idempotence(tmp_path) -> None:
     assert first["new_games"] == 1
     assert first["extracted_positions"] > 0
     assert first["parse_errors"] == 0
+    assert first["white_to_move_positions"] > 0
     assert second["new_games"] == 0
     connection = duckdb.connect(str(database), read_only=True)
     assert connection.execute("SELECT count(*) FROM games").fetchone()[0] == 1
@@ -63,3 +64,13 @@ def test_pgn_parsing_position_extraction_and_idempotence(tmp_path) -> None:
     ).fetchone()
     assert len(fen.split()) == 6
     assert len(played_move) in (4, 5)
+
+
+def test_odd_sampling_interval_includes_both_sides_to_move(tmp_path) -> None:
+    pgn = tmp_path / "both-sides.pgn"
+    pgn.write_text(MINI_PGN, encoding="utf-8")
+    config = load_config()
+    config["sampling"] = {"every_n_plies": 1, "min_ply": 2, "max_positions_per_game": 6}
+    stats = ingest_pgn(pgn, tmp_path / "both-sides.duckdb", config)
+    assert stats["white_to_move_positions"] == 3
+    assert stats["black_to_move_positions"] == 3

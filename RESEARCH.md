@@ -40,3 +40,37 @@ An initial dry run exposed an illegal continuation in one synthetic sample game 
 ### Next experiment
 
 Before adding features or symbolic machinery, expand to a still-small but diverse corpus (at least dozens of games) and measure **coefficient stability under repeated game-grouped resampling**. Compare material-only, a small stable subset, and the current 16-feature ridge model; report game-clustered uncertainty intervals and how often coefficient signs change. This directly tests whether the apparent linear signal is reproducible or a split artifact. Preserve `baseline-v1`; create a new benchmark version for the expanded corpus. If forcing-position errors persist across independent games, the following experiment should compare the unchanged formula against the same formula plus a strictly budgeted forcing-line search.
+
+## 2026-08-20 — Experiment 002: coefficient stability and first complexity comparison
+
+### Hypothesis
+
+The predictive gain of the 16-feature formula over material alone is stable across source-game splits and large enough to justify its additional description complexity.
+
+### Method
+
+Generate 36 deterministic legal games from six guided-random opening plies followed by Stockfish 18 self-play constrained to 100 nodes/move. Sample every third ply after ply four, capped at 20 positions/game. This yielded 691 unique positions balanced between White and Black to move (347/344). Label with Stockfish 18 at depth 8, MultiPV 1, one thread, and 16 MB hash. Across 30 deterministic resamples, hold out 25% of whole games and fit identical ridge models for material-only, compact-5 (`material`, `mobility`, `king_safety`, `threat_pressure`, `game_phase`), and full-16 features. Clip labels to ±2,000 cp.
+
+### Result
+
+| Formula | Parameters | Mean MAE ± sd | Mean correlation ± sd | Sign accuracy | ≥500 cp error |
+|---|---:|---:|---:|---:|---:|
+| Material-only | 2 | 183.84 ± 25.67 cp | 0.6112 ± 0.1717 | 74.03% | 2.78% |
+| Compact-5 | 6 | **179.61 ± 26.39 cp** | 0.6482 ± 0.1220 | 78.12% | 3.33% |
+| Full-16 | 17 | 182.46 ± 24.37 cp | **0.6526 ± 0.1110** | **78.55%** | 4.00% |
+
+In the full model, material, mobility, center control, king safety, passed pawns, isolated pawns, tempo, and game phase retained the same sign in at least 96.7% of resamples. Development, connected pawns, bishop pair, piece activity, and several other terms crossed zero frequently. The full model's stable passed-pawn coefficient was unexpectedly negative (median -59.35 cp/unit), which may reflect conditional correlation, feature definition, or the synthetic domain rather than a chess principle.
+
+### Interpretation
+
+The hypothesis was not supported in its strong form. Moving from material-only to five features yields a modest average gain: 4.23 cp MAE and 0.037 correlation. Expanding from five to all 16 features makes MAE 2.85 cp worse, increases catastrophic errors, and buys only 0.0044 correlation. These differences are much smaller than between-split variation. The compact-5 model is therefore the current Pareto candidate; the full formula is not justified by this experiment.
+
+Material alone is an unusually strong baseline in this synthetic domain and has the lowest catastrophic-error rate. That is scientifically important but not yet evidence that real chess judgment is nearly reducible to material: the self-play construction and shallow oracle may heavily favor positions where material tracks evaluation.
+
+### What failed
+
+The first attempted run sampled every fourth ply from an even starting ply, selecting only White-to-move positions and forcing the tempo coefficient to zero. That run was invalidated and deleted. The frozen stability benchmark now samples every third ply; ingestion and reports record side-to-move counts, and a regression test ensures odd-cadence sampling covers both sides. A PGN exporter instance also retained prior output when reused, duplicating games triangularly; a deterministic parse test caught this before corpus acceptance.
+
+### Next experiment
+
+Validate the material-only and compact-5 frontier on an **independent, non-synthetic, license-verified human-game corpus** with the same game-grouped resampling and a new frozen benchmark version. Stratify errors by tactical/quiet character and game phase. This is more valuable than adding another feature now: it tests whether the compact result transfers outside the distribution that created it. If it transfers, compare compact-5 with and without a strictly fixed forcing-line search budget.

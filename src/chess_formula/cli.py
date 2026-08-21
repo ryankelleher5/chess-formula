@@ -8,9 +8,11 @@ from pathlib import Path
 
 from .benchmark import benchmark_linear
 from .config import load_config
+from .corpus import generate_corpus
 from .ingest import ingest_pgn
 from .model import train_linear
 from .oracle import label_positions
+from .stability import run_stability
 
 
 def _database(args: argparse.Namespace, config: dict) -> str:
@@ -56,6 +58,20 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--pgn", required=True)
     run.add_argument("--stockfish", required=True)
     run.add_argument("--model-path", default="models/baseline-linear.json")
+
+    corpus = subparsers.add_parser(
+        "generate-corpus", help="Generate a deterministic legal stability corpus"
+    )
+    corpus.add_argument("--output", required=True, help="Generated PGN path")
+    corpus.add_argument("--stockfish", help="Optional Stockfish path for constrained self-play")
+    corpus.add_argument("--games", type=int, help="Override configured game count")
+    corpus.add_argument("--max-plies", type=int, help="Override configured maximum plies")
+
+    stability = subparsers.add_parser(
+        "stability", help="Run repeated game-grouped coefficient stability analysis"
+    )
+    stability.add_argument("model", choices=["baseline-linear"])
+    stability.add_argument("--engine-key")
     return parser
 
 
@@ -97,6 +113,33 @@ def main(argv: list[str] | None = None) -> int:
                     "benchmark": metrics,
                     "artifact": str(artifact),
                     "formula": model.formula(),
+                }
+            )
+        elif args.command == "generate-corpus":
+            corpus = config.get("corpus", {})
+            _print(
+                generate_corpus(
+                    args.output,
+                    games=args.games or int(corpus.get("games", 36)),
+                    max_plies=args.max_plies or int(corpus.get("max_plies", 72)),
+                    seed=int(config["seed"]),
+                    opening_random_plies=int(corpus.get("opening_random_plies", 6)),
+                    stockfish_path=args.stockfish,
+                    engine_nodes_per_move=int(corpus.get("engine_nodes_per_move", 100)),
+                )
+            )
+        elif args.command == "stability":
+            result, artifact = run_stability(database, config, engine_key=args.engine_key)
+            compact = {
+                label: summary["metrics"] for label, summary in result["feature_sets"].items()
+            }
+            _print(
+                {
+                    "experiment_id": result["experiment_id"],
+                    "artifact": str(artifact),
+                    "games": result["games"],
+                    "positions": result["positions"],
+                    "feature_sets": compact,
                 }
             )
     except (FileNotFoundError, RuntimeError, ValueError) as exc:
