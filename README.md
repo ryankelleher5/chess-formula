@@ -202,6 +202,15 @@ zero faults. The gain costs 4.99 times the baseline state count and 4.82 times
 its Python latency, so Forcing-3 is stronger but substantially less efficient.
 See [docs/forcing-3-confirmation.md](docs/forcing-3-confirmation.md).
 
+The subsequent fixed-budget development curve does not find a cheaper
+replacement. Across 240 deterministic positions, Forcing-3 has 105.05 cp mean
+depth-12 regret at 1,360.9 mean states. Halving its per-root cap saves only
+11.4% of states and raises regret by 14.66 cp, failing the frozen quality gates
+despite a 51.25% direct score. A four-ply forcing point uses 2.46 times the
+anchor's states and also performs worse. Forcing-3 therefore remains accepted;
+the negative result redirects the next milestone to exact three-piece
+endgames. See [docs/fixed-budget-curve.md](docs/fixed-budget-curve.md).
+
 ## Scientific controls
 
 - A SHA-256-derived seed-stable split assigns whole games to train, validation, or test.

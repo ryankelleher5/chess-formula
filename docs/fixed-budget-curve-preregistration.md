@@ -53,3 +53,14 @@ Select at most one eligible policy by lowest mean states, then lower regret,
 then lexical label. Forcing-4 is a saturation probe and cannot advance because
 it is more expensive. If nothing qualifies, keep Forcing-3. Any selected policy
 must be frozen before a completely new opening-suite confirmation.
+
+## Outcome
+
+The completed run selected no cheaper policy and retained Forcing-3. On 240
+development positions, Forcing-3-128 used 1,206.2 mean states versus 1,360.9 for
+the anchor, but retained only 76.02% of the anchor's regret gain, increased mean
+regret by 14.66 cp, and had a 31.56 cp bootstrap upper bound. It scored 51.25%
+[47.50%, 56.25%] head-to-head, so the position-quality gates—not game score—
+prevented advancement. Forcing-4-256 used 3,353.7 mean states and had 18.04 cp
+higher regret than the anchor. All 160 games were protocol-clean. See
+[`fixed-budget-curve.md`](fixed-budget-curve.md) for the full result.

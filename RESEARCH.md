@@ -494,3 +494,47 @@ No scored protocol failure occurred. Two games against Stockfish reached the 160
 ### Next experiment
 
 Build a fixed-budget search-efficiency curve around the confirmed policy. Hold the formula fixed and preregister forcing-search depth/cap combinations spanning approximately 100, 300, 1,000, and 3,000 mean states per decision. Use the completed games only for development, then freeze a new opening suite for any playing-strength claim. Determine whether most of the third-ply gain survives at materially lower computation.
+
+## 2026-08-21 — Experiment 014: fixed-budget search-efficiency curve
+
+### Hypothesis
+
+Most of the confirmed Forcing-3 move-quality gain can be retained at materially lower computation by reducing its per-root cap, while a deeper forcing point reveals whether quality continues to improve above the accepted policy.
+
+### Method
+
+Commit the complete development protocol at `605b78c` before exposing move-quality or game results. Hold the accepted `material + space + tempo` formula, legal-root enumeration, forcing vocabulary, ordering, stand-pat semantics, and lexical ties fixed. Compare Forcing-1-64, Searched-3, Forcing-3-128, the confirmed Forcing-3/256 anchor, and Forcing-4-256.
+
+Select three SHA-ranked candidate turns from each of the 80 completed confirmation games, then deduplicate to 240 rule states. Label every root and distinct selected move with Stockfish 18 at depth 12. Measure regret and computation, grouping 5,000 bootstrap samples by opponent/opening color pair. Separately play each non-anchor point for 40 games against Forcing-3 on the completed 20-opening suite, reversing colors and using 10,000 opening-pair bootstrap samples. This completed-suite reuse is development only.
+
+A cheaper point advances only if it retains at least 80% of the anchor's regret gain over Forcing-1-64, has at most +10 cp mean and +15 cp bootstrap-upper regret versus the anchor, scores at least 47.5% head-to-head with a lower bound of at least 40%, and remains fault-free. Select at most one by lowest mean states. The more expensive four-ply point cannot advance.
+
+### Result
+
+| Policy | Mean states | Mean regret | Score vs Forcing-3 [95%] |
+|---|---:|---:|---:|
+| Forcing-1-64 | 106.5 | 166.18 cp | 35.00% [28.75%, 41.25%] |
+| Searched-3 | 372.2 | 144.02 cp | 35.00% [27.50%, 41.25%] |
+| Forcing-3-128 | 1,206.2 | 119.70 cp | 51.25% [47.50%, 56.25%] |
+| **Forcing-3** | **1,360.9** | **105.05 cp** | anchor |
+| Forcing-4-256 | 3,353.7 | 123.09 cp | 46.25% [41.25%, 51.25%] |
+
+Forcing-3-128 is game-competitive but not eligible. It retains 76.02% of the anchor's regret gain, raises mean regret by 14.66 cp, and has a 31.56 cp grouped-bootstrap upper bound; the frozen limits are 80%, 10 cp, and 15 cp. It saves only 11.4% of mean states and 10.5% of measured position latency. Forcing-4-256 uses 2.46 times the anchor's mean states and 2.42 times its latency while increasing mean regret by 18.04 cp.
+
+All 160 games complete with zero illegal moves, engine errors, timeouts, and opponent forfeits. All PGNs parse and match the JSON result and ply records. The oracle creates 240 root and 330 forced-move labels at the frozen settings. The complete run takes 3,619.24 seconds.
+
+### Interpretation
+
+No cheaper policy passes all gates, so Forcing-3 remains the accepted compact policy. Direct game score alone would have promoted the half-cap variant, but the prospective position criteria reject that noisy shortcut. The small state saving does not justify its larger and uncertain regret increase.
+
+More forcing-only depth is not monotonically useful. The four-ply point spends far more work and is worse on both mean regret and direct score. This suggests a selective-horizon effect: extending the same narrow move vocabulary can expose a new frontier without resolving the quiet positions beyond it. The result argues against treating raw depth or state count as a sufficient complexity-to-strength law.
+
+This is negative development evidence, not a new strength estimate. The accepted Forcing-3 confirmation remains unchanged, as does the four-parameter formula.
+
+### What failed
+
+The primary compression candidate fails three position gates even though it passes both game gates. Searched-3 and Forcing-1-64 are clearly cheaper but score only 35% and retain too little regret gain. The saturation point fails to improve quality. Ninety-six of 240 positions bind at least one Forcing-3-128 root budget, compared with 33 for the anchor and 146 for Forcing-4, so every deep result remains conditional on tactical ordering and per-root truncation.
+
+### Next experiment
+
+Move to an exact three-piece endgame laboratory, beginning with king-and-rook versus king and king-and-queen versus king. Freeze a complete legal-state census, symmetry canonicalization, exact tablebase provenance, component-level splits, and perfect-WDL/optimal-move/description-length metrics before evaluating compact candidates. Use the solved domain to distinguish exact rule compression from finite-depth oracle imitation.
