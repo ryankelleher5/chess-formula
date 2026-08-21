@@ -782,3 +782,76 @@ and per-legal-reply budgets with prospective top-set, regret-label, and cost
 gates. Select the cheapest sufficiently stable reference before rebuilding
 labels or defining model classes. Keep all selection and confirmation outcomes
 sealed.
+
+## 2026-08-21 — Experiment 017: ordinary branch-oracle convergence
+
+### Hypothesis
+
+Ordinary root and opponent-reply ranks and regret-threshold labels will reach a
+reproducible plateau as Stockfish computation increases, permitting selection
+of the cheapest stable development training reference.
+
+### Method
+
+Commit the complete sample, two compute curves, stability metrics, multi-part
+gate, cost rule, and selection rule at `b5295e5` before any new Experiment 017
+query. Reuse exactly the 24 root and 134 opponent-parent SHA-selected
+development contexts from Experiment 016 and its frozen 20,000- and
+80,000-node records.
+
+Run Stockfish 18 with all-legal MultiPV, one thread, 16 MB hash, and a new-game
+boundary per context. Compare fixed total budgets of 20,000, 80,000, 320,000,
+and 1,280,000 nodes with per-legal-reply rates of 625, 2,500, 10,000, and
+40,000 nodes. Require top-move, top-3, within-25-cp-set, threshold-label, and
+median-regret stability for both root and parent contexts, plus agreement
+between the two deepest cost-rule endpoints.
+
+### Result
+
+The run completes 1,264 analyses: 948 new and 316 exactly reused from
+Experiment 016. Selection and confirmation probe counts and model count remain
+zero.
+
+Both cost curves improve with computation but fail to plateau. Against their
+family maxima, the 320,000-total-node and 10,000-node-per-reply tiers preserve
+the opponent top reply in only 70.90% and 74.63% of contexts; their within-25-cp
+set Jaccards are 73.12% and 73.81%.
+
+At the two deepest endpoints, mean context costs are comparable: 1,280,000
+fixed nodes versus 1,331,392 nodes under the per-reply rule. Root top-move
+agreement is 87.50% and opponent top-reply agreement is 83.58%. The latter is
+the sole failure against the cross-rule gate's 85% boundary. Root and parent
+within-25-cp set Jaccards are 95.14% and 89.66%; 25-cp per-move label agreements
+are 99.41% and 98.80%; median regret differences are 0 and 1 cp.
+
+### Interpretation
+
+The hypothesis is rejected under the frozen budget range. No reference tier is
+selected, and training remains blocked. Aggregate regret-threshold labels at
+the deepest endpoints are much more stable than exact top replies, but the
+gate cannot be changed after observing that result.
+
+An explicitly exploratory disagreement audit finds that the deepest cost rules
+choose different opponent replies in 22 contexts. Ten are mutually within 25
+cp and 18 within 100 cp, but the largest reciprocal regret is 720 cp. The
+instability is therefore partly near-tie behavior and partly material search
+disagreement.
+
+### What failed
+
+Increasing shared all-legal MultiPV computation by another factor of four did
+not make the reply rankings sufficiently reproducible. A shared total search
+budget—even when scaled by legal-move count—still lets Stockfish distribute
+effort unevenly across its MultiPV lines. The experiment cannot tell whether
+the remaining disagreement is caused by insufficient horizon, internal
+allocation, or both.
+
+### Next experiment
+
+Do not train a compact branch selector yet. Preregister a branch-separable
+oracle calibration in which each legal move receives an independent
+constrained-root node budget. Compare increasing per-move budgets and preserve
+exact top replies, near-best sets, and conservative ambiguity labels as
+separate outcomes. This should distinguish branch-value convergence from
+shared MultiPV allocation effects while keeping every selection and
+confirmation outcome sealed.

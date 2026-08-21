@@ -105,16 +105,17 @@ branch necessity, and exact play across different representations and oracles.
 5. **Completed in Experiment 016:** measure the first ordinary development
    `rho_95` curve. All deployable baselines require the all-legal endpoint under
    the frozen reference; the oracle requires 3.07%.
-6. **Current — Experiment 017 protocol frozen:** calibrate the branch oracle on
-   the 158 preregistered development contexts across four fixed-total and four
-   per-legal-reply budgets. Require the prospective rank, threshold-label, and
-   cross-cost-rule stability gates in
-   [`the preregistration`](docs/oracle-convergence-preregistration.md) before
-   treating any records as training targets.
-7. Train only compact initial selectors after the oracle-stability gate, select
+6. **Completed in Experiment 017:** calibrate the branch oracle on 158 frozen
+   development contexts across four fixed-total and four per-legal-reply
+   budgets. The stability gate fails; no training reference is selected.
+7. **Current:** preregister branch-separable oracle calibration. Give each legal
+   move its own constrained-root compute budget, then test convergence of exact
+   replies, near-best sets, and conservative ambiguity labels without exposing
+   any selection or confirmation outcome.
+8. Train only compact initial selectors after the oracle-stability gate, select
    at most one under a separately frozen rule, and confirm it on untouched
    grouped data.
-8. Test recursive selection only after branch prediction itself passes.
+9. Test recursive selection only after branch prediction itself passes.
 
 ## Historical phase map — preserved
 
@@ -231,4 +232,4 @@ The summaries below preserve the sequence that motivated the research fork.
 
 **Completed milestone — ordinary context-aware branch foundation:** Experiment 016 emits 240 root records and 224,662 context-aware branch records while retaining every legal root candidate and varying only opponent replies. At the 3.07% budget-one point, Locked-3 reaches 57.92% `DPR_25`, 47.26% candidate-refutation recall, and 77.14 cp mean pruning loss; forcing reaches 44.58%, 25.60%, and 138.73 cp. No deployable ordering reaches 95% decision preservation at a partial tested budget. The 4×-node audit finds only 55.97% opponent top-reply agreement and a 55.05% within-25-cp set Jaccard, so no model is trained or advanced.
 
-**Active milestone — branch-oracle convergence:** Experiment 017 freezes the existing 24 root and 134 opponent-parent development contexts, fixed-total budgets from 20,000 to 1,280,000 nodes, per-legal-reply budgets from 625 to 40,000 nodes, a multi-criterion stability gate, and a cross-cost-rule check. Do not train a selector, change the forcing vocabulary, or expose any selection or confirmation outcome unless the preregistered gate passes.
+**Completed milestone — branch-oracle convergence:** Experiment 017 runs 1,264 analyses on the frozen 24 root and 134 opponent-parent development contexts. At comparable deepest mean cost, fixed-total and per-legal-reply allocation agree on 87.50% of root moves but only 83.58% of opponent top replies, missing the frozen 85% cross-rule gate; all other cross-rule criteria pass. The penultimate-to-maximum opponent top-reply agreements are only 70.90% and 74.63%, so neither curve has plateaued. No reference is selected and no model is trained. The next calibration isolates every legal move under its own compute budget.

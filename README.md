@@ -270,6 +270,16 @@ reaches `rho_95` before all replies. A four-times-node audit also finds only
 the oracle labels are stabilized. See
 [docs/ordinary-branch-foundation.md](docs/ordinary-branch-foundation.md).
 
+The follow-up oracle-convergence calibration then repeats the same 158 frozen
+development contexts across four fixed-total and four per-legal-reply compute
+tiers. More computation improves stability, but the curves do not plateau:
+the penultimate-to-maximum opponent top-reply agreements are only 70.90% and
+74.63%. Even the two deepest, similarly priced allocation rules agree on only
+83.58% of opponent top replies, below the prospective 85% gate. No training
+reference is selected and no selector is trained. The next calibration will
+give each legal move an independent constrained-root compute budget. See
+[docs/oracle-convergence.md](docs/oracle-convergence.md).
+
 ## Scientific controls
 
 - A SHA-256-derived seed-stable split assigns whole games to train, validation, or test.
