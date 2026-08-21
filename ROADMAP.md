@@ -105,10 +105,12 @@ branch necessity, and exact play across different representations and oracles.
 5. **Completed in Experiment 016:** measure the first ordinary development
    `rho_95` curve. All deployable baselines require the all-legal endpoint under
    the frozen reference; the oracle requires 3.07%.
-6. **Current:** stabilize the branch oracle. Preregister a convergence curve
-   over increasing total-node and per-reply budgets and require prospective
-   rank/threshold-label stability before treating the records as training
-   targets.
+6. **Current — Experiment 017 protocol frozen:** calibrate the branch oracle on
+   the 158 preregistered development contexts across four fixed-total and four
+   per-legal-reply budgets. Require the prospective rank, threshold-label, and
+   cross-cost-rule stability gates in
+   [`the preregistration`](docs/oracle-convergence-preregistration.md) before
+   treating any records as training targets.
 7. Train only compact initial selectors after the oracle-stability gate, select
    at most one under a separately frozen rule, and confirm it on untouched
    grouped data.
@@ -229,4 +231,4 @@ The summaries below preserve the sequence that motivated the research fork.
 
 **Completed milestone — ordinary context-aware branch foundation:** Experiment 016 emits 240 root records and 224,662 context-aware branch records while retaining every legal root candidate and varying only opponent replies. At the 3.07% budget-one point, Locked-3 reaches 57.92% `DPR_25`, 47.26% candidate-refutation recall, and 77.14 cp mean pruning loss; forcing reaches 44.58%, 25.60%, and 138.73 cp. No deployable ordering reaches 95% decision preservation at a partial tested budget. The 4×-node audit finds only 55.97% opponent top-reply agreement and a 55.05% within-25-cp set Jaccard, so no model is trained or advanced.
 
-**Active milestone — branch-oracle convergence:** determine whether the ordinary reply ranks and threshold labels stabilize under increased total-node or per-reply computation. Freeze the budgets, samples, stability gates, and cost rule before further analysis. Do not train a selector on the 20,000-node labels, change the forcing vocabulary, or expose any confirmation outcome while the measurement target remains this unstable.
+**Active milestone — branch-oracle convergence:** Experiment 017 freezes the existing 24 root and 134 opponent-parent development contexts, fixed-total budgets from 20,000 to 1,280,000 nodes, per-legal-reply budgets from 625 to 40,000 nodes, a multi-criterion stability gate, and a cross-cost-rule check. Do not train a selector, change the forcing vocabulary, or expose any selection or confirmation outcome unless the preregistered gate passes.

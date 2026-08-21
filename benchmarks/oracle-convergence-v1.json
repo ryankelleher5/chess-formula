@@ -1,0 +1,28 @@
+{
+  "name": "ordinary-oracle-convergence-v1",
+  "question": "Do ordinary all-legal MultiPV root and opponent-reply labels stabilize as Stockfish computation increases, and is fixed-total or per-legal-reply budgeting more efficient?",
+  "status": "frozen before new Experiment 017 oracle probing",
+  "source": "The 24 root and 134 opponent-parent SHA-selected development contexts frozen before Experiment 016",
+  "oracle": "Stockfish 18, one thread, 16 MB hash, all-legal MultiPV, new-game boundary per context",
+  "budget_families": {
+    "fixed_total_nodes": [20000, 80000, 320000, 1280000],
+    "nodes_per_legal_reply": [625, 2500, 10000, 40000]
+  },
+  "measurements": [
+    "top-move agreement",
+    "top-3 and top-5 set Jaccard",
+    "rank Spearman correlation",
+    "common-move score difference",
+    "mover-oriented regret difference",
+    "within-10/25/50/100-cp set Jaccard",
+    "10/25/50/100-cp threshold-label agreement"
+  ],
+  "prospective_gate": "For both root and parent contexts: top move >=85%, top-3 Jaccard >=80%, within-25-cp Jaccard >=75%, 25/50/100-cp label agreement >=90%, and median regret difference <=25 cp",
+  "cross_rule_gate": "The deepest fixed-total and per-reply endpoints must pass the same gate before any tier is eligible",
+  "selection": "Choose the eligible tier with the lowest mean requested nodes after it passes against its next level and family maximum",
+  "development_guardrail": "A passing tier is only a finite-budget development training target, not perfect chess truth",
+  "model_training": false,
+  "selection_locked": true,
+  "confirmation_locked": true,
+  "frozen": true
+}

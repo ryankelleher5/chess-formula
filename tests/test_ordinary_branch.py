@@ -164,7 +164,9 @@ def test_oracle_curve_preserves_all_reply_choice_at_budget_one() -> None:
 def test_ordinary_branch_json_contracts_parse() -> None:
     for path in (
         Path("configs/ordinary-branch-foundation.json"),
+        Path("configs/oracle-convergence.json"),
         Path("benchmarks/ordinary-branch-foundation-v1.json"),
+        Path("benchmarks/oracle-convergence-v1.json"),
         Path("schemas/ordinary-root-record-v1.json"),
         Path("schemas/ordinary-branch-record-v1.json"),
     ):

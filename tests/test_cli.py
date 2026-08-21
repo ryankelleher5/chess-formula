@@ -68,6 +68,12 @@ def test_cli_parses_required_commands() -> None:
         ["run-ordinary-branch-foundation", "--stockfish", "stockfish"]
     )
     assert ordinary.command == "run-ordinary-branch-foundation"
+    convergence_audit = build_parser().parse_args(["audit-oracle-convergence-source"])
+    assert convergence_audit.command == "audit-oracle-convergence-source"
+    convergence = build_parser().parse_args(
+        ["run-oracle-convergence", "--stockfish", "stockfish"]
+    )
+    assert convergence.command == "run-oracle-convergence"
 
 
 def test_cli_help(capsys) -> None:

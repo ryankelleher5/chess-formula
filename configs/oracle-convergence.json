@@ -1,0 +1,76 @@
+{
+  "seed": 20260904,
+  "benchmark_version": "ordinary-oracle-convergence-v1",
+  "oracle_convergence": {
+    "experiment_name": "oracle-convergence",
+    "protocol_version": "ordinary-oracle-convergence-v1",
+    "source_protocol_config": "configs/ordinary-branch-foundation.json",
+    "source_protocol_config_bytes": 3279,
+    "source_protocol_config_sha256": "cd9553a534b052737c2ee128d766de8ee64d28232f863f30989414b7ede7bad0",
+    "expected_contexts": 158,
+    "expected_root_contexts": 24,
+    "expected_parent_contexts": 134,
+    "context_key_digest": "304a7a77870afc9e31b095ad53604aea50e378616fd4946a15c2f0cb55a4f0bb",
+    "prior_oracle_cache": "data/processed/ordinary_branch_foundation_cache.ndjson",
+    "prior_oracle_cache_bytes": 25026142,
+    "prior_oracle_cache_sha256": "ab5c58fa3db75924b228a301a129d8feccb1346fc0f966b86fdf2de5f1b14cd6",
+    "prior_oracle_cache_metadata": "data/processed/ordinary_branch_foundation_cache_metadata.json",
+    "prior_oracle_cache_metadata_bytes": 535,
+    "prior_oracle_cache_metadata_sha256": "b9f5d63182fbd2ec10410e36a1ca0e722d6a1369f37b5d9883e2e67461ff3c35",
+    "prior_oracle_key": "a8fa5945837679976a48",
+    "oracle_cache": "data/processed/oracle_convergence_cache.ndjson",
+    "oracle_cache_metadata": "data/processed/oracle_convergence_cache_metadata.json",
+    "oracle": {
+      "engine": "Stockfish 18",
+      "multipv": "all-legal",
+      "mate_score_cp": 100000,
+      "score_clip_cp": 2000,
+      "threads": 1,
+      "hash_mb": 16,
+      "new_game_per_context": true
+    },
+    "budget_families": [
+      {
+        "id": "total",
+        "label": "Fixed total nodes",
+        "cost_rule": "fixed-total-nodes",
+        "levels": [
+          {"id": "total-20000", "value": 20000, "reuse_prefix": "base"},
+          {"id": "total-80000", "value": 80000, "reuse_prefix": "stability"},
+          {"id": "total-320000", "value": 320000},
+          {"id": "total-1280000", "value": 1280000}
+        ]
+      },
+      {
+        "id": "per-reply",
+        "label": "Nodes per legal reply",
+        "cost_rule": "nodes-per-legal-reply",
+        "levels": [
+          {"id": "per-reply-625", "value": 625},
+          {"id": "per-reply-2500", "value": 2500},
+          {"id": "per-reply-10000", "value": 10000},
+          {"id": "per-reply-40000", "value": 40000}
+        ]
+      }
+    ],
+    "regret_thresholds_cp": [10, 25, 50, 100],
+    "stability_gate": {
+      "minimum_top_move_agreement": 0.85,
+      "minimum_top3_set_jaccard": 0.80,
+      "minimum_near25_set_jaccard": 0.75,
+      "minimum_threshold_label_agreement": 0.90,
+      "required_label_thresholds_cp": [25, 50, 100],
+      "maximum_median_regret_difference_cp": 25
+    },
+    "cross_cost_rule_comparison": {
+      "left_tier": "total-1280000",
+      "right_tier": "per-reply-40000"
+    },
+    "selection_rule": "A tier is eligible only when it passes every root and parent stability gate against both its next level and its family maximum, and the two deepest cost-rule endpoints pass the same cross-rule gate. Select the eligible tier with the lowest mean requested nodes; ties are lexical.",
+    "development_only": true,
+    "train_models": false,
+    "selection_outcomes_probed": 0,
+    "confirmation_outcomes_probed": 0,
+    "results_directory": "results"
+  }
+}

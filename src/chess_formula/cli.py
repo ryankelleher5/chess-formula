@@ -24,6 +24,10 @@ from .march import run_march_validation
 from .model import train_linear
 from .move_policy import run_move_policy_validation
 from .oracle import label_positions
+from .oracle_convergence import (
+    audit_oracle_convergence_source,
+    run_oracle_convergence,
+)
 from .ordinary_branch import (
     audit_ordinary_branch_source,
     run_ordinary_branch_foundation,
@@ -182,6 +186,15 @@ def build_parser() -> argparse.ArgumentParser:
         help="Run the frozen development-only ordinary opponent-reply foundation",
     )
     ordinary.add_argument("--stockfish", required=True)
+    subparsers.add_parser(
+        "audit-oracle-convergence-source",
+        help="Audit the frozen Experiment 017 development contexts without probing outcomes",
+    )
+    convergence = subparsers.add_parser(
+        "run-oracle-convergence",
+        help="Run the frozen ordinary branch-oracle convergence calibration",
+    )
+    convergence.add_argument("--stockfish", required=True)
     return parser
 
 
@@ -509,6 +522,20 @@ def main(argv: list[str] | None = None) -> int:
                         "confirmation_outcomes_probed"
                     ],
                     "curves": result["curves"],
+                }
+            )
+        elif args.command == "audit-oracle-convergence-source":
+            _print(audit_oracle_convergence_source(config))
+        elif args.command == "run-oracle-convergence":
+            result, artifact = run_oracle_convergence(args.stockfish, config)
+            _print(
+                {
+                    "experiment_id": result["experiment_id"],
+                    "artifact": str(artifact),
+                    "contexts": result["source_audit"]["contexts"],
+                    "oracle": result["oracle"],
+                    "decision": result["convergence"]["decision"],
+                    "cross_cost_rule": result["convergence"]["cross_cost_rule"],
                 }
             )
     except (FileNotFoundError, RuntimeError, ValueError) as exc:
