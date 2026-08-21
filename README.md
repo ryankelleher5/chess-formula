@@ -54,6 +54,12 @@ All evaluation values obey one invariant:
 
 Mate scores are converted to finite centipawn values for storage. Training and baseline metrics clip extreme labels to the configured range (±2000 cp by default), while raw engine values are retained in DuckDB.
 
+## First verified experiment
+
+The pipeline-validation run `2026-08-21_baseline_linear_001` used 101 unique positions from six games (55/18/28 train/validation/test) and Stockfish 18 at depth 10, MultiPV 3, one thread, and 16 MB hash. The 17-parameter evaluator achieved 192.08 cp MAE, 0.4271 correlation, 64.29% sign accuracy, and a 7.14% ≥500 cp error rate on 28 held-out positions.
+
+These figures validate the apparatus, not the hypothesis. The dataset is too small, several learned coefficient signs are implausible, and both catastrophic errors come from related forcing positions in one test game. [RESEARCH.md](RESEARCH.md) records the interpretation and next experiment without treating this run as playing-strength evidence.
+
 ## Scientific controls
 
 - A SHA-256-derived seed-stable split assigns whole games to train, validation, or test.
@@ -88,4 +94,3 @@ The long-term sequence and decision gates are in [ROADMAP.md](ROADMAP.md). Chron
 ## License
 
 Source code is released under the MIT License. The included miniature PGN is synthetic/local sample data supplied solely to exercise the pipeline.
-

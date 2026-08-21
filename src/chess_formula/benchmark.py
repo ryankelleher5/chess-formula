@@ -13,7 +13,7 @@ from matplotlib import pyplot as plt  # noqa: E402
 from .config import write_json
 from .database import connect_database
 from .features import feature_matrix
-from .model import LinearModel
+from .model import LinearModel, _git_commit
 
 
 def calculate_metrics(target: np.ndarray, predicted: np.ndarray) -> dict[str, float | int]:
@@ -77,7 +77,7 @@ def _dataset_summary(connection, engine_key: str) -> dict:
     ).fetchone()
     engine = connection.execute(
         "SELECT engine_version, limit_type, limit_value, multipv, parameters_json "
-        "WHERE engine_key = ? LIMIT 1",
+        "FROM engine_analysis WHERE engine_key = ? LIMIT 1",
         [engine_key],
     ).fetchone()
     return {
@@ -119,6 +119,7 @@ preserve a measurable portion of shallow Stockfish judgment on unseen games.
 ## Reproducibility
 
 - Benchmark: `baseline-v1` (frozen)
+- Benchmark Git revision: {metrics["benchmark_git_commit"]}
 - Evaluation convention: positive means advantage for White
 - Training target and benchmark labels are clipped to ±{model.target_clip_cp} cp;
   raw oracle statistics remain recorded below
@@ -205,6 +206,7 @@ def benchmark_linear(
             "parameter_count": len(model.coefficients) + 1,
             "approximate_operations_per_evaluation": 2 * len(model.coefficients) + 1,
             "benchmark_version": config["benchmark_version"],
+            "benchmark_git_commit": _git_commit(),
             "target_clip_cp": clip,
         }
     )

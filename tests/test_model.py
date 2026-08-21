@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import numpy as np
 
-from chess_formula.benchmark import calculate_metrics
+from chess_formula.benchmark import _dataset_summary, calculate_metrics
+from chess_formula.database import connect_database
 from chess_formula.model import LinearModel
 
 
@@ -29,3 +30,11 @@ def test_benchmark_metrics() -> None:
     assert metrics["evaluation_mae_cp"] == 100.0 / 3.0
     assert metrics["sign_accuracy"] == 1.0
     assert metrics["catastrophic_error_rate_500cp"] == 0.0
+
+
+def test_dataset_summary_handles_database_without_labels(tmp_path) -> None:
+    connection = connect_database(tmp_path / "empty.duckdb")
+    summary = _dataset_summary(connection, "missing-engine")
+    assert summary["games"] == 0
+    assert summary["stockfish"]["labels"] == 0
+    assert summary["stockfish"]["parameters"] is None
