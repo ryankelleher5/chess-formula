@@ -9,7 +9,7 @@ conclusions are never rewritten.
 
 ## Preserved foundation
 
-Experiments 001–014, all frozen benchmarks and datasets, the reproducibility
+Experiments 001–015, all frozen benchmarks and datasets, the reproducibility
 infrastructure, Git history, and generated artifacts remain valid. The accepted
 evaluation law remains `material + space + tempo`, and Forcing-3 remains the
 accepted policy until an independently frozen experiment replaces it.
@@ -91,15 +91,21 @@ branch necessity, and exact play across different representations and oracles.
 
 ## Immediate execution order
 
-1. Freeze the branch-label taxonomy, context-aware dataset schema, oracle
-   limits, split rules, metrics, and advancement rule.
-2. Validate exact enumeration and labels in KRK/KQK, then KPK.
-3. Build an ordinary-position development branch dataset without touching any
-   confirmation set.
-4. Establish random, forcing, capture, Locked-3, oracle, and all-legal baselines
-   at equal retained-branch budgets.
-5. Produce the first `retained fraction -> decision preservation` curve and
-   measure the forcing baseline's `rho_95`.
+1. **Completed in Experiment 015:** freeze the branch-label taxonomy,
+   context-aware dataset schema, exact oracle limits, symmetry-class split
+   rules, exact metrics, and advancement boundaries.
+2. **Completed in Experiment 015:** validate complete exact enumeration and
+   development labels in KQvK, KRvK, and KPvK without probing exact selection
+   or confirmation outcomes.
+3. **Current:** freeze and build an ordinary-position development branch
+   dataset with counterfactual candidate and opponent-refutation contexts;
+   touch no confirmation set.
+4. Establish random, forcing, capture, Locked-3, oracle, and all-legal ordinary
+   baselines at equal retained-branch budgets. Exact development baselines are
+   complete.
+5. Produce the first ordinary `retained fraction -> decision preservation`
+   curve and measure the forcing baseline's `rho_95`. Experiment 015 has
+   produced the exact development analogue and exposed WDL's coarse saturation.
 6. Train only compact initial selectors, select at most one under the frozen
    rule, and confirm it on untouched grouped data.
 7. Test recursive selection only after branch prediction itself passes.
@@ -215,4 +221,6 @@ The summaries below preserve the sequence that motivated the research fork.
 
 **Completed milestone — fixed-budget search-efficiency curve:** on 240 deterministic development positions, the confirmed Forcing-3 anchor has the lowest mean depth-12 regret: 105.05 cp at 1,360.9 mean states. Halving its cap saves only 11.4% of states and raises regret by 14.66 cp; Forcing-3-128 retains 76.02% of the anchor's gain, below the frozen 80% gate, despite scoring 51.25% [47.5%, 56.25%] in 40 direct games. Four forcing plies use 3,353.7 states and worsen regret to 123.09 cp. Across 160 development games there are zero faults. No cheaper policy advances, and Forcing-3 remains accepted.
 
-**Active milestone — branch-importance definitions and measurement foundation:** implement no learned selector until the context-aware label taxonomy, branch dataset schema, oracle limits, split/overlap controls, equal-budget baselines, `rho_95`, catastrophic-omission metrics, and frozen advancement rule are versioned. Validate the machinery on complete KRK/KQK states and add KPK as the first discriminating exact three-piece domain. Then construct the ordinary-position development dataset, establish the forcing baseline's branch-retention curve, and ask whether compact information predicts candidate viability and opponent refutations substantially better at equal branch budgets. Confirmation games and exact confirmation components remain untouched until at most one candidate and its gate are committed.
+**Completed milestone — exact branch-law measurement foundation:** Experiment 015 labels 15,000 deterministic development states and 155,576 legal branches across KQvK, KRvK, and KPvK with zero WDL/DTZ recurrence failures and zero selection or confirmation probes. At one retained move, Locked-3 preserves exact WDL in 97.60%, 96.16%, and 88.36%, beating forcing in all three domains. Random already reaches 94.12%, 92.87%, and 83.35%, showing that WDL alone saturates because many legal moves are outcome-equivalent. The natural forcing category preserves WDL in only 59.72%, 55.00%, and 11.72%; equal-budget fill supplies much of its apparent performance. This is a validated measurement baseline, not a learned law or confirmation claim.
+
+**Active milestone — ordinary context-aware branch dataset:** freeze candidate-viability, pruning-induced-loss, and opponent-refutation counterfactual procedures against the same all-legal reference search. Build development records grouped by complete source game, establish the ordinary forcing baseline's `rho_95`, catastrophic-omission rate, and refutation recall, and only then train compact selectors. Exact selection/confirmation partitions and ordinary confirmation games remain untouched until at most one candidate and its advancement gate are committed.

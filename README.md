@@ -17,7 +17,7 @@ The linear evaluator is emitted as an explicit equation. Every experiment record
 
 ## Current direction — Branch-Law Discovery
 
-The first 14 experiments found that a tiny `material + space + tempo` evaluator
+The first 15 experiments found that a tiny `material + space + tempo` evaluator
 becomes substantially stronger under selective search, but that simply adding
 more of the same forcing depth is not monotonically useful. The project now asks:
 
@@ -247,6 +247,17 @@ anchor's states and also performs worse. Forcing-3 therefore remains accepted.
 This non-monotonic curve motivates Branch-Law Discovery; exact three-piece
 domains now provide its first ground-truth calibration environment. See
 [docs/fixed-budget-curve.md](docs/fixed-budget-curve.md).
+
+The first exact branch-budget foundation now labels 15,000 deterministic
+development states and all 155,576 legal branches in KQvK, KRvK, and KPvK.
+At a one-move budget, Locked-3 preserves exact WDL in 97.60%, 96.16%, and
+88.36% of the three domains, respectively, beating the forcing ordering in all
+three. However, random retention is already 94.12%, 92.87%, and 83.35% because
+many states have multiple WDL-equivalent moves. WDL is therefore retained as a
+hard exact endpoint but is not sufficient alone for branch-law discovery;
+distance-aware and ordinary pruning-induced-loss metrics remain necessary. No
+model was trained, and selection and confirmation outcomes remain sealed. See
+[docs/branch-law-foundation.md](docs/branch-law-foundation.md).
 
 ## Scientific controls
 

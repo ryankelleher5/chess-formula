@@ -624,3 +624,78 @@ only after branch prediction itself passes.
 The complete specification is recorded in
 [`docs/branch-law-discovery.md`](docs/branch-law-discovery.md), and the roadmap
 now represents the three programs without deleting the historical phase map.
+
+## 2026-08-21 — Experiment 015: exact branch-law measurement foundation
+
+### Hypothesis
+
+Exact branch necessity and retained-fraction curves can be measured
+reproducibly in solved three-piece domains without conflating pruning loss with
+an evaluator's error, while keeping all exact selection and confirmation
+outcomes sealed.
+
+### Method
+
+Commit the complete protocol, schemas, legal-state census, symmetry rules,
+sample digests, tablebase file hashes, baseline orderings, budgets, and integrity
+gates at `771610b` before probing any Syzygy outcome. Enumerate legal KQvK and
+KRvK under all eight board symmetries and direction-preserving KPvK under file
+reflection. Assign whole canonical classes by seeded SHA-256 to 60%
+development, 20% selection, and 20% confirmation.
+
+Label only the 5,000 lowest SHA-ranked nonterminal development states in each
+domain. Probe WDL50 and DTZ50 for every legal successor. Compare deterministic
+random, forcing, all-capture, Locked-3, and nondeployable oracle orderings at
+nested budgets 1, 2, 3, 4, 5, 8, 16, and all legal moves. Primary exact quality
+is retaining at least one WDL-optimal move; DTZ-optimal retention is secondary.
+
+### Result
+
+The run emits 15,000 unique canonical development states and 155,576 unique
+state/move records. All census counts and sample digests reproduce, all one-ply
+WDL recurrences pass, DTZ recurrence mismatches are zero, and both selection
+and confirmation outcome-probe counts are zero.
+
+| Domain | Mean legal | Budget-1 forcing WDL | Budget-1 Locked-3 WDL | Budget-1 random WDL | Forcing / Locked-3 `rho_95_wdl` |
+|---|---:|---:|---:|---:|---:|
+| KQvK | 13.03 | 93.76% | **97.60%** | 94.12% | 15.09% / **7.68%** |
+| KRvK | 11.27 | 89.52% | **96.16%** | 92.87% | 17.59% / **8.87%** |
+| KPvK | 6.81 | 77.08% | **88.36%** | 83.35% | 70.52% / **57.55%** |
+
+At budget one, Locked-3 also has the highest deployable DTZ-optimal retention:
+42.66% in KQvK, 34.46% in KRvK, and 69.56% in KPvK. The oracle preserves both
+WDL and DTZ at budget one in every state, and every all-legal endpoint preserves
+WDL.
+
+### Interpretation
+
+The measurement foundation works, and quiet static state information orders
+exact branches more effectively than the forcing vocabulary at equal budget in
+all three domains. This is not a learned branch law and cannot advance a
+selector because all outcomes are development-only.
+
+WDL preservation is also demonstrably coarse. Random budget-one retention is
+already 83% to 94% because many sampled positions have multiple outcome-
+equivalent legal moves. The natural forcing category retains only 6.95% to
+26.41% of branches and preserves WDL in 11.72% to 59.72% of positions; lexical
+budget fill explains much of its equal-budget score. Exact WDL remains a hard
+safety endpoint, but branch discovery must retain distance-aware labels and the
+ordinary pruning-induced-loss, catastrophic-omission, and refutation metrics.
+
+### What failed
+
+No protocol or recurrence gate failed. The scientific limitation is metric
+saturation: perfect WDL preservation on a development sample does not imply
+retention of the most informative or fastest-progress branch. The exact sample
+also contains only three-piece domains and cannot establish transfer to
+ordinary chess or larger solved domains.
+
+### Next experiment
+
+Freeze the ordinary-position, context-aware branch dataset and counterfactual
+labeling procedure. Measure pruning-induced loss relative to the same all-legal
+reference, candidate viability, opponent-refutation necessity, catastrophic
+omissions, and total selector-plus-search cost. Establish random, forcing,
+all-capture, and Locked-3 ordinary branch-budget curves before training any
+compact selector. Keep every confirmation set and the exact selection and
+confirmation partitions untouched.

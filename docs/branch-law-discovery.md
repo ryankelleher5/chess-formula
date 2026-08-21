@@ -203,9 +203,12 @@ factor, but reports must show the complete branch-retention curve rather than
 only the scalar. Requiring the threshold to hold at all larger budgets prevents
 a single non-monotonic point from defining success.
 
-The current project has no measured `rho_95`; Experiment 014 measured move
-regret against expanded states, not systematic retained-branch fractions. The
-first branch-budget experiment establishes the forcing baseline.
+The current project has no measured **ordinary-position** `rho_95`; Experiment
+014 measured move regret against expanded states, not systematic retained-
+branch fractions. Experiment 015 established the exact development analogue in
+KQvK, KRvK, and KPvK and showed that WDL preservation alone saturates too
+easily to replace the ordinary pruning-induced-loss target. The first ordinary
+branch-budget experiment must still establish the forcing baseline.
 
 ## Safety and complexity guardrails
 
