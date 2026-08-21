@@ -855,3 +855,74 @@ exact top replies, near-best sets, and conservative ambiguity labels as
 separate outcomes. This should distinguish branch-value convergence from
 shared MultiPV allocation effects while keeping every selection and
 confirmation outcome sealed.
+
+## 2026-08-21 — Experiment 018: branch-separable oracle calibration
+
+### Hypothesis
+
+Ordinary branch ranks and regret-threshold labels will stabilize when every
+legal move receives an independent constrained-root computation budget,
+removing shared MultiPV allocation as a source of disagreement.
+
+### Method
+
+Commit the complete protocol, 158-context and 5,259-branch identities, record
+schema, per-move budgets, ambiguity accounting, stability gate, and selection
+rule at `d552404` before any new Experiment 018 query. Analyze every legal move
+independently with Stockfish 18, one thread, 16 MB hash, a new-game boundary per
+branch, and exactly 2,500, 10,000, 40,000, or 160,000 nodes. Make the maximum
+tier audit-only. A cheaper tier must pass against both its next tier and the
+audit maximum.
+
+### Result
+
+The run completes all 21,036 independent branch analyses with no malformed or
+missing records. All contexts are development-only; model, selection-probe, and
+confirmation-probe counts remain zero.
+
+Against the 160,000-node audit, opponent top-reply agreement rises from 61.19%
+at 2,500 nodes to 69.40% at 10,000 and 76.87% at 40,000. At 40,000 nodes,
+top-3 Jaccard is 69.48%, within-25-cp set Jaccard is 77.69%, 25-cp label
+agreement is 96.62%, and median branch-regret difference is 22 cp. It fails the
+85% top-reply and 80% top-3 gates. Roots pass those criteria but fail the frozen
+100-cp label gate at 88.66%. No tier is eligible.
+
+The matched allocation diagnostic compares independent 40,000-node-per-move
+search with Experiment 017's shared MultiPV tier at the same nominal rate. They
+agree on only 76.12% of opponent top replies, 68.73% of top-3 sets, and 75.66%
+of within-25-cp sets. Their 25-cp per-move labels agree at 96.11%. Compute
+allocation materially changes the oracle output but does not identify which
+output is closer to chess truth.
+
+### Interpretation
+
+The hypothesis is rejected under the frozen compute range. Independent
+allocation does not stabilize exact branch rankings enough for training.
+Finite horizon within each forced branch remains a binding source of oracle
+uncertainty.
+
+The uncertainty is nevertheless structured. Between 40,000 and 160,000 nodes,
+343 opponent replies are stable-important at 25 cp, 4,082 are stable-
+unimportant, and 155 are ambiguous, a 3.38% ambiguity rate. A conservative
+union retains 13.59% of replies on average. Thirty-one contexts change their
+top reply; 17 changes are mutually within 25 cp and 25 within 100 cp, but the
+maximum reciprocal regret is 1,049 cp. Thus ambiguity includes both near ties
+and rare material search discoveries.
+
+### What failed
+
+Equalizing computation among sibling branches removes one confound but not the
+deeper one: Stockfish still performs finite selective search inside each forced
+branch. The exact top reply and top-three set continue changing well beyond the
+tested lower budgets. The audit endpoint cannot validate itself, and the gate
+cannot be relaxed after observing more favorable threshold-label agreement.
+
+### Next experiment
+
+Do not train a branch selector yet. Preregister an uncertainty-aware
+adjudication using every development context with a 40k-to-160k top-reply
+change or 25-cp ambiguity plus SHA-selected stable controls. Analyze all legal
+moves at a new deeper independent budget. Test prospectively whether the
+already frozen conservative union retains the new top reply and near-best set,
+its catastrophic false-negative rate, and its branch fraction. Only a pass may
+license uncertainty-aware labels for a later training experiment.

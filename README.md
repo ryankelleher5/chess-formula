@@ -280,6 +280,16 @@ reference is selected and no selector is trained. The next calibration will
 give each legal move an independent constrained-root compute budget. See
 [docs/oracle-convergence.md](docs/oracle-convergence.md).
 
+Experiment 018 then removes shared-budget competition entirely: each of 5,259
+legal branches receives its own constrained Stockfish search at four budgets
+up to 160,000 nodes per move. The 40,000-node tier still agrees with the audit
+on only 76.87% of opponent top replies, so no reference advances. However,
+25-cp labels agree on 96.62% of parent branches; only 3.38% are ambiguous, and
+a conservative union retains 13.59% of replies on average. This motivates a
+new deeper adjudication of uncertainty-aware labels—not retrospective training
+on the favorable metric. See
+[docs/branch-separable-oracle.md](docs/branch-separable-oracle.md).
+
 ## Scientific controls
 
 - A SHA-256-derived seed-stable split assigns whole games to train, validation, or test.
