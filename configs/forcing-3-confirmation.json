@@ -1,0 +1,29 @@
+{
+  "seed": 20260831,
+  "uci_confirmation": {
+    "experiment_name": "forcing-3-uci-confirmation",
+    "event_name": "Chess Formula Forcing-3 UCI Confirmation",
+    "candidate": "forcing-3",
+    "opponents": [
+      {"name": "searched-3-baseline", "type": "policy", "policy": "searched-3"},
+      {"name": "stockfish-100n", "type": "stockfish", "nodes_per_move": 100}
+    ],
+    "primary_opponent": "searched-3-baseline",
+    "opening_suite": "configs/forcing-3-confirmation-openings.json",
+    "prior_opening_suite": "configs/uci-pilot-openings.json",
+    "expected_openings": 20,
+    "expected_opening_plies": 8,
+    "games_per_opening": 2,
+    "maximum_total_plies": 160,
+    "engine_timeout_seconds": 5.0,
+    "policy_go_nodes": 1,
+    "stockfish_threads": 1,
+    "stockfish_hash_mb": 16,
+    "draw_claims": true,
+    "bootstrap_repeats": 10000,
+    "adjudication": "checkmate, stalemate, insufficient material, automatic/claimable draws, or draw at maximum plies; no evaluation adjudication",
+    "forfeit_rule": "engine exception, timeout, null move in a live position, or illegal move loses immediately",
+    "decision_rule": "Forcing-3 confirms only with zero candidate faults, zero opponent forfeits, and a 95% opening-pair-bootstrap score lower bound above 50% against searched-3-baseline; Stockfish-100n is an external anchor without a pass threshold"
+  },
+  "benchmark_version": "forcing-3-uci-confirmation-v1"
+}

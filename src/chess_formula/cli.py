@@ -22,6 +22,7 @@ from .robustness import run_depth_robustness
 from .search_frontier import run_search_frontier
 from .selection import run_nested_selection
 from .stability import run_stability
+from .uci_confirmation import run_forcing_3_confirmation
 from .uci_match import run_uci_pilot
 
 
@@ -138,6 +139,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Compare preregistered loss-derived search extensions",
     )
     frontier.add_argument("--stockfish", required=True)
+    confirmation = subparsers.add_parser(
+        "confirm-forcing-3",
+        help="Run the frozen untouched Forcing-3 UCI confirmation",
+    )
+    confirmation.add_argument("--stockfish", required=True)
     return parser
 
 
@@ -386,6 +392,19 @@ def main(argv: list[str] | None = None) -> int:
                         }
                         for label, model in result["models"].items()
                     },
+                    "decision": result["decision"],
+                }
+            )
+        elif args.command == "confirm-forcing-3":
+            if "uci_confirmation" not in config:
+                raise ValueError("The active configuration has no uci_confirmation section")
+            result, artifact = run_forcing_3_confirmation(args.stockfish, config)
+            _print(
+                {
+                    "experiment_id": result["experiment_id"],
+                    "artifact": str(artifact),
+                    "games": result["games"],
+                    "matches": result["matches"],
                     "decision": result["decision"],
                 }
             )

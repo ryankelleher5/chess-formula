@@ -7,7 +7,12 @@ import chess
 import chess.engine
 import pytest
 
-from chess_formula.frozen_policy import LOCKED_3_COEFFICIENTS, LOCKED_3_INTERCEPT
+from chess_formula.frozen_policy import (
+    LOCKED_3_COEFFICIENTS,
+    LOCKED_3_INTERCEPT,
+    frozen_formula,
+)
+from chess_formula.search_frontier import choose_frontier_move
 from chess_formula.uci import UciPolicyEngine, parse_position, run_uci_loop
 
 
@@ -46,6 +51,21 @@ def test_uci_loop_handshake_and_legal_move() -> None:
     assert "readyok" in lines
     bestmove = next(line.split()[1] for line in lines if line.startswith("bestmove "))
     assert chess.Move.from_uci(bestmove) in chess.Board().legal_moves
+
+
+def test_forcing_3_uci_choice_matches_locked_frontier_policy() -> None:
+    board = chess.Board()
+    expected = choose_frontier_move(
+        board,
+        frozen_formula("forcing-3").evaluate,
+        selector_schedule=["forcing", "forcing", "forcing"],
+        maximum_expanded_children_per_root=256,
+        terminal_cp=2000,
+    )
+    actual = UciPolicyEngine("forcing-3").choose()
+    assert actual.move == expected.move
+    assert actual.predicted_cp == expected.predicted_cp
+    assert actual.forcing_children_expanded == expected.internal_children_expanded
 
 
 def test_python_chess_can_drive_real_uci_subprocess() -> None:

@@ -205,7 +205,7 @@ def play_uci_game(
     pgn = chess.pgn.Game.from_board(board)
     pgn.headers.update(
         {
-            "Event": "Chess Formula UCI Playing Pilot",
+            "Event": settings.get("event_name", "Chess Formula UCI Playing Pilot"),
             "Site": "local",
             "Round": opening["id"],
             "White": settings["candidate"] if candidate_color else opponent["name"],

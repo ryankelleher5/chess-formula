@@ -52,7 +52,7 @@ TERMINAL_CP = 2000.0
 
 
 def frozen_formula(policy: str) -> StaticFormula:
-    if policy in {"locked-3", "searched-3"}:
+    if policy in {"locked-3", "searched-3", "forcing-3"}:
         return StaticFormula(
             LOCKED_3_FEATURES,
             np.asarray(LOCKED_3_COEFFICIENTS),

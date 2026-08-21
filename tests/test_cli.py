@@ -46,6 +46,9 @@ def test_cli_parses_required_commands() -> None:
     frontier = build_parser().parse_args(["run-search-frontier", "--stockfish", "stockfish"])
     assert frontier.command == "run-search-frontier"
 
+    confirmation = build_parser().parse_args(["confirm-forcing-3", "--stockfish", "stockfish"])
+    assert confirmation.command == "confirm-forcing-3"
+
 
 def test_cli_help(capsys) -> None:
     with pytest.raises(SystemExit) as exc:

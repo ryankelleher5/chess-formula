@@ -16,6 +16,7 @@ from .frozen_policy import (
     frozen_formula,
 )
 from .move_policy import PolicyChoice, choose_legal_move
+from .search_frontier import choose_frontier_move
 
 ENGINE_NAME = "Chess Formula Searched Locked-3"
 ENGINE_AUTHOR = "Chess Formula contributors"
@@ -51,15 +52,27 @@ class UciPolicyEngine:
         self.board = chess.Board()
 
     def choose(self) -> PolicyChoice:
+        if self.policy == "forcing-3":
+            choice = choose_frontier_move(
+                self.board,
+                self.formula.evaluate,
+                selector_schedule=["forcing", "forcing", "forcing"],
+                maximum_expanded_children_per_root=256,
+                terminal_cp=TERMINAL_CP,
+            )
+            return PolicyChoice(
+                move=choice.move,
+                predicted_cp=choice.predicted_cp,
+                legal_moves_evaluated=choice.legal_moves_evaluated,
+                forcing_children_expanded=choice.internal_children_expanded,
+            )
         searched = self.policy == "searched-3"
         return choose_legal_move(
             self.board,
             self.formula.evaluate,
             terminal_cp=TERMINAL_CP,
             search_depth_plies=SEARCH_DEPTH_PLIES if searched else None,
-            maximum_expanded_children=(
-                MAXIMUM_EXPANDED_CHILDREN_PER_ROOT if searched else None
-            ),
+            maximum_expanded_children=(MAXIMUM_EXPANDED_CHILDREN_PER_ROOT if searched else None),
         )
 
     def handle(self, command: str) -> list[str]:
@@ -91,8 +104,7 @@ class UciPolicyEngine:
             score = choice.predicted_cp if self.board.turn is chess.WHITE else -choice.predicted_cp
             nps = round(nodes * 1000 / elapsed_ms)
             return [
-                f"info depth 3 score cp {round(score)} nodes {nodes} "
-                f"nps {nps} time {elapsed_ms}",
+                f"info depth 3 score cp {round(score)} nodes {nodes} nps {nps} time {elapsed_ms}",
                 f"bestmove {choice.move}",
             ]
         if name in {"setoption", "stop", "ponderhit", "debug", "register"}:
@@ -123,7 +135,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Frozen Chess Formula UCI engine")
     parser.add_argument(
         "--policy",
-        choices=["searched-3", "locked-3", "full-16"],
+        choices=["searched-3", "forcing-3", "locked-3", "full-16"],
         default="searched-3",
     )
     return parser
