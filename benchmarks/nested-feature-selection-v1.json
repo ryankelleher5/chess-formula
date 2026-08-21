@@ -1,0 +1,19 @@
+{
+  "name": "nested-feature-selection-v1",
+  "question": "What is the smallest handcrafted subset that retains 90% of the full model's January human-domain MAE gain over material?",
+  "source_benchmark": "human-transfer-v1",
+  "outer_resampling": {
+    "repeats": 30,
+    "test_fraction": 0.25,
+    "group": "game_id"
+  },
+  "inner_selection": {
+    "method": "greedy forward selection beginning with material",
+    "repeats": 8,
+    "validation_fraction": 0.25,
+    "group": "game_id",
+    "stopping_rule": "smallest path subset retaining 90% of the full-model MAE gain over material"
+  },
+  "lock_rule": "Upper-median selected feature count; rank features by selection frequency, then mean selected rank, then name.",
+  "frozen": true
+}

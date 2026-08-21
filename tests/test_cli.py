@@ -19,6 +19,9 @@ def test_cli_parses_required_commands() -> None:
     human = build_parser().parse_args(["prepare-human-corpus"])
     assert human.command == "prepare-human-corpus"
 
+    selection = build_parser().parse_args(["select-features"])
+    assert selection.command == "select-features"
+
 
 def test_cli_help(capsys) -> None:
     with pytest.raises(SystemExit) as exc:

@@ -112,3 +112,39 @@ The primary failure was scientific transfer, not pipeline execution: a conclusio
 ### Next experiment
 
 Use **nested game-grouped feature selection** on the January corpus to find the smallest handcrafted subset that retains the full-16 gain. Feature selection must occur inside each training fold. Lock the resulting subset and selection rule before testing it on a second CC0 Lichess month. This directly advances the complexity frontier while preventing the confirmation corpus from becoming tuning data.
+
+## 2026-08-20 — Experiment 004: nested minimum-subset selection
+
+### Hypothesis
+
+A substantially smaller handcrafted subset can retain at least 90% of full-16's January MAE gain over material-only when feature selection is repeated without game leakage.
+
+### Method
+
+Reuse the frozen 60-game, 1,091-position January human corpus and Stockfish labels. Perform 30 outer game-grouped resamples with 25% of games held out. Inside each outer training set, begin with material and perform greedy forward selection over eight additional 25% game-grouped validation resamples. Stop at the smallest path subset whose inner mean MAE retains 90% of full-16's improvement over material. Evaluate the freshly selected subset only on that outer fold's untouched games.
+
+Before examining a second month, lock the upper-median selected feature count. Fill that budget by selection frequency across outer training folds, then mean selected rank and feature name. The resulting confirmation lock is `material`, `space`, and `tempo`—three features plus an intercept.
+
+### Result
+
+| Formula | Median parameters | Mean outer MAE ± sd | Correlation | Sign accuracy | ≥500 cp error |
+|---|---:|---:|---:|---:|---:|
+| Material-only | 2 | 154.00 ± 11.08 cp | 0.6473 | **72.98%** | 3.58% |
+| Nested-selected | 4 | 150.76 ± 13.07 cp | 0.6638 | 71.07% | 3.32% |
+| Full-16 | 17 | **141.25 ± 12.00 cp** | **0.7050** | 72.72% | **2.47%** |
+
+Selected feature counts were 2 in 9 folds, 3 in 12, 4 in 7, and 6 in 2. `space` appeared in 60.0% of selections, `tempo` in 36.7%, and `piece_activity` in 30.0%; no other optional feature exceeded 23.3%.
+
+### Interpretation
+
+The hypothesis is rejected on the leakage-safe outer estimate. The selection procedure improves MAE by only 3.23 cp over material, recovering 25.3% of full-16's 12.75 cp gain rather than 90%. Its correlation improves by 0.0165, but sign accuracy falls by 1.91 percentage points. Inner-fold decisions are therefore too optimistic and unstable to establish a sufficient minimum subset from this January sample.
+
+The frozen three-feature lock remains useful as a prospective test of whether even the weak January compression gain transfers. It must not be revised after viewing February labels or metrics. A poor confirmation result would reject this selection rule, not authorize choosing a different subset on the same confirmation corpus.
+
+### What failed
+
+The preregistered stopping threshold was satisfied on inner folds but did not generalize to outer folds. Optional features also had low selection frequencies, so the apparent three-feature consensus is not structurally stable. This is a statistical/scientific failure rather than a data-pipeline failure.
+
+### Next experiment
+
+Apply the frozen `material + space + tempo` formula, material-only, and full-16 to a deterministic 60-game sample from the independently verified CC0 Lichess February 2013 archive. Train coefficients only on January, exclude exact positions duplicated across months, and report game-clustered confirmation intervals. Do not tune on February.

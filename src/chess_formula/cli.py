@@ -13,6 +13,7 @@ from .human_corpus import prepare_human_corpus
 from .ingest import ingest_pgn
 from .model import train_linear
 from .oracle import label_positions
+from .selection import run_nested_selection
 from .stability import run_stability
 
 
@@ -78,6 +79,11 @@ def build_parser() -> argparse.ArgumentParser:
         "prepare-human-corpus",
         help="Download, verify, and select a licensed human PGN sample",
     )
+    selection = subparsers.add_parser(
+        "select-features",
+        help="Run leakage-safe nested game-grouped feature selection",
+    )
+    selection.add_argument("--engine-key")
     return parser
 
 
@@ -152,6 +158,20 @@ def main(argv: list[str] | None = None) -> int:
             if "human_corpus" not in config:
                 raise ValueError("The active configuration has no human_corpus section")
             _print(prepare_human_corpus(config))
+        elif args.command == "select-features":
+            if "feature_selection" not in config:
+                raise ValueError("The active configuration has no feature_selection section")
+            result, artifact = run_nested_selection(
+                database, config, engine_key=args.engine_key
+            )
+            _print(
+                {
+                    "experiment_id": result["experiment_id"],
+                    "artifact": str(artifact),
+                    "consensus_lock": result["consensus_lock"],
+                    "nested_performance": result["nested_performance"],
+                }
+            )
     except (FileNotFoundError, RuntimeError, ValueError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2

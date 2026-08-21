@@ -97,6 +97,17 @@ The next frozen benchmark uses a deterministic 60-game reservoir sample from the
 
 Full-16 gains most in human middlegames and forcing-proxy positions. A passed-pawn term that was stably negative on synthetic data becomes stably positive on human games, showing why independent-domain validation is required before interpreting coefficients as chess structure. See [docs/human-corpus.md](docs/human-corpus.md) for provenance, licensing, exact checksums, selection rules, and reproduction commands.
 
+## Minimum-subset selection
+
+Nested game-grouped forward selection on the January corpus locked a three-feature
+subset—`material`, `space`, and `tempo`—for an untouched February confirmation.
+The selection procedure achieved 150.76 cp outer-fold MAE, recovering only 3.23
+cp of full-16's 12.75 cp improvement over material. The failure to meet the 90%
+gain-retention target on outer folds is part of the result; the subset is frozen
+rather than repaired using confirmation data. See
+[docs/feature-selection.md](docs/feature-selection.md) for the leakage controls,
+selection rule, and exact lock.
+
 ## Scientific controls
 
 - A SHA-256-derived seed-stable split assigns whole games to train, validation, or test.
