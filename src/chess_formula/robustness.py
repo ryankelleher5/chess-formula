@@ -32,7 +32,8 @@ def prior_position_hashes(databases: list[str | Path]) -> set[str]:
     hashes: set[str] = set()
     for database in databases:
         connection = connect_database(database)
-        hashes.update(row[0] for row in connection.execute("SELECT position_hash FROM positions"))
+        rows = connection.execute("SELECT position_hash FROM positions").fetchall()
+        hashes.update(row[0] for row in rows)
         connection.close()
     return hashes
 
