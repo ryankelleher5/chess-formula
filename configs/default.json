@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "seed": 20,
+  "database": "data/processed/chess_formula.duckdb",
+  "sampling": {
+    "every_n_plies": 4,
+    "min_ply": 4,
+    "max_positions_per_game": 24
+  },
+  "split": {
+    "train": 0.6,
+    "validation": 0.2,
+    "test": 0.2,
+    "version": "game-hash-v1"
+  },
+  "labeling": {
+    "limit_type": "depth",
+    "limit_value": 10,
+    "multipv": 3,
+    "mate_score_cp": 100000,
+    "threads": 1,
+    "hash_mb": 16
+  },
+  "model": {
+    "name": "baseline-linear",
+    "ridge_alpha": 10.0,
+    "target_clip_cp": 2000
+  },
+  "benchmark_version": "baseline-v1"
+}

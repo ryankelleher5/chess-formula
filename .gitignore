@@ -1,0 +1,39 @@
+.DS_Store
+.idea/
+.vscode/
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Raw/derived data and databases
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+*.duckdb
+*.duckdb.wal
+*.pgn.zst
+*.pgn.bz2
+*.pgn.gz
+
+# Generated research artifacts
+results/*
+!results/.gitkeep
+models/*
+!models/.gitkeep
+experiments/*
+!experiments/.gitkeep
+notebooks/.ipynb_checkpoints/
+
+# Binaries, checkpoints, and caches
+stockfish*
+*.pt
+*.pth
+*.ckpt
+*.onnx
+cache/
+

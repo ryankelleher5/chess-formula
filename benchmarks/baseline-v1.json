@@ -1,0 +1,14 @@
+{
+  "name": "baseline-v1",
+  "description": "Game-grouped held-out test split for the first linear evaluation milestone.",
+  "split_method": "SHA-256 of stable game ID with seed 20; duplicate positions assigned once.",
+  "metrics": [
+    "evaluation_mae_cp",
+    "evaluation_correlation",
+    "sign_accuracy",
+    "catastrophic_error_rate_500cp",
+    "inference_latency_us",
+    "parameter_count"
+  ],
+  "frozen": true
+}
