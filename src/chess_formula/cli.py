@@ -15,6 +15,7 @@ from .human_corpus import prepare_human_corpus
 from .ingest import ingest_pgn
 from .march import run_march_validation
 from .model import train_linear
+from .move_policy import run_move_policy_validation
 from .oracle import label_positions
 from .robustness import run_depth_robustness
 from .selection import run_nested_selection
@@ -112,6 +113,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     depth.add_argument("--development-database", action="append")
     depth.add_argument("--prior-database", action="append")
+    moves = subparsers.add_parser(
+        "validate-moves",
+        help="Evaluate deterministic legal move policies against a frozen oracle",
+    )
+    moves.add_argument("--stockfish", required=True)
+    moves.add_argument("--development-database", action="append")
+    moves.add_argument("--prior-database", action="append")
     return parser
 
 
@@ -292,6 +300,30 @@ def main(argv: list[str] | None = None) -> int:
                         label: model["metrics"] for label, model in result["models"].items()
                     },
                     "paired_mae_deltas": result["paired_mae_deltas"],
+                    "decision": result["decision"],
+                }
+            )
+        elif args.command == "validate-moves":
+            if "move_policy" not in config:
+                raise ValueError("The active configuration has no move_policy section")
+            settings = config["move_policy"]
+            result, artifact = run_move_policy_validation(
+                args.development_database or settings["development_databases"],
+                args.prior_database or settings["prior_databases"],
+                database,
+                args.stockfish,
+                config,
+            )
+            _print(
+                {
+                    "experiment_id": result["experiment_id"],
+                    "artifact": str(artifact),
+                    "positions": result["confirmation_positions"],
+                    "excluded_overlaps": result["prior_domain_positions_excluded"],
+                    "models": {
+                        label: model["metrics"] for label, model in result["models"].items()
+                    },
+                    "paired_regret_deltas": result["paired_regret_deltas"],
                     "decision": result["decision"],
                 }
             )

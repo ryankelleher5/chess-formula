@@ -1,0 +1,58 @@
+{
+  "name": "may-move-policy-v1",
+  "question": "Does the frozen compact searched evaluator select stronger legal moves than static compact evaluation?",
+  "source": {
+    "publisher": "Lichess open database",
+    "archive": "lichess_db_standard_rated_2013-05.pgn.zst",
+    "url": "https://database.lichess.org/standard/lichess_db_standard_rated_2013-05.pgn.zst",
+    "sha256": "f044607c9f565831524dbedfd474100c8604dba008600bfaf1b7a48ced74c17b",
+    "bytes": 26545457,
+    "reported_games": 179550,
+    "license": "CC0",
+    "license_url": "https://database.lichess.org/"
+  },
+  "selection": {
+    "method": "Seeded reservoir sample over the complete decompressed monthly stream.",
+    "seed": 20260827,
+    "games": 120,
+    "minimum_rating": 1800,
+    "minimum_plies": 40,
+    "maximum_plies": 160
+  },
+  "development": {
+    "coefficient_data": "Deduplicated January/February union with repeated targets averaged",
+    "oracle": "Stockfish 18 depth 8",
+    "implementation_domain": "April may be used for code development but not confirmation",
+    "overlap_exclusion": "All position hashes observed in January through April"
+  },
+  "confirmation_oracle": {
+    "root_ranking": "Stockfish 18 depth 12, MultiPV 3, Threads 1, Hash 16 MB",
+    "chosen_move_value": "Root-move-constrained depth-12 analysis with the same engine options",
+    "regret_clip_cp": 2000
+  },
+  "policies": {
+    "locked-3": "Enumerate every legal root move and statically evaluate its child position",
+    "full-16": "Enumerate every legal root move and statically evaluate its child position",
+    "searched-3": "Enumerate every legal root move, then apply frozen two-ply forcing search to each child position"
+  },
+  "tie_breaking": "Ascending UCI lexical order",
+  "forcing_search": {
+    "depth_plies_after_root": 2,
+    "maximum_expanded_children_per_root_candidate": 128,
+    "rules": "Identical forcing vocabulary, ordering, stand-pat, and terminal values to march-compact-rules-v1"
+  },
+  "reported_metrics": [
+    "legal coverage",
+    "mean, median, p95, and maximum centipawn regret",
+    "top-1 and top-3 agreement",
+    "within-10 cp rate",
+    "50, 100, and 300 cp mistake rates",
+    "oracle noise inversion rate",
+    "root moves evaluated, forcing expansions, and latency"
+  ],
+  "bootstrap_repeats": 1000,
+  "primary_test": "searched-3 minus locked-3 mean clipped centipawn regret",
+  "advance_rule": "100% legal coverage and a negative paired mean difference whose 95% source-game bootstrap interval excludes zero.",
+  "secondary_test": "searched-3 minus full-16 mean clipped centipawn regret",
+  "frozen": true
+}

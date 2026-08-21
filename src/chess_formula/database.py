@@ -58,6 +58,20 @@ CREATE TABLE IF NOT EXISTS engine_analysis (
     PRIMARY KEY (position_hash, engine_key)
 );
 
+CREATE TABLE IF NOT EXISTS move_analysis (
+    position_hash VARCHAR NOT NULL,
+    engine_key VARCHAR NOT NULL,
+    move VARCHAR NOT NULL,
+    eval_cp INTEGER NOT NULL,
+    mate INTEGER,
+    depth INTEGER,
+    seldepth INTEGER,
+    nodes BIGINT,
+    elapsed_ms DOUBLE NOT NULL,
+    created_at TIMESTAMP DEFAULT current_timestamp,
+    PRIMARY KEY (position_hash, engine_key, move)
+);
+
 CREATE TABLE IF NOT EXISTS experiments (
     experiment_id VARCHAR PRIMARY KEY,
     experiment_type VARCHAR NOT NULL,

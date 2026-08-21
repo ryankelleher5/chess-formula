@@ -34,6 +34,9 @@ def test_cli_parses_required_commands() -> None:
     depth = build_parser().parse_args(["validate-depth"])
     assert depth.command == "validate-depth"
 
+    moves = build_parser().parse_args(["validate-moves", "--stockfish", "stockfish"])
+    assert moves.command == "validate-moves"
+
 
 def test_cli_help(capsys) -> None:
     with pytest.raises(SystemExit) as exc:
