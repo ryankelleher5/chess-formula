@@ -25,6 +25,9 @@ def test_cli_parses_required_commands() -> None:
     confirmation = build_parser().parse_args(["confirm-subset"])
     assert confirmation.command == "confirm-subset"
 
+    failures = build_parser().parse_args(["mine-failures"])
+    assert failures.command == "mine-failures"
+
 
 def test_cli_help(capsys) -> None:
     with pytest.raises(SystemExit) as exc:

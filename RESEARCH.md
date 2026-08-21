@@ -186,3 +186,33 @@ The January nested procedure predicted only a 3.23 cp outer-fold gain for its va
 ### Next experiment
 
 Mine the already-frozen February failures without changing the confirmation result: identify game-grouped clusters where Locked-3 has ≥300 cp error or disagrees sharply with full-16, and test which omitted concepts describe those failures. Any proposed new compact rule must be preregistered and evaluated on a new March corpus; February may generate hypotheses but not validate them.
+
+## 2026-08-20 — Experiment 006: failure-directed compact-rule discovery
+
+### Hypothesis
+
+Large Locked-3 confirmation failures form recurring, interpretable structural groups that can motivate compact rules more specific than restoring all 13 omitted features.
+
+### Method
+
+Freeze `failure-mining-v1` before inspecting individual boards. Select the union of February positions with Locked-3 absolute error at least 300 cp or Locked-3/Full-16 disagreement at least 150 cp. Standardize the 13 omitted features using January training means and scales, then apply deterministic farthest-first four-cluster k-means. Report source-game counts, phase, forcing status, signed error, Full-16 improvement frequency, and top centroid deviations. Generate a local interactive board explorer; do not refit on February or treat cluster summaries as validation.
+
+### Result
+
+The union contains 157 positions from 55 games: 101 high-error cases, 74 high-disagreement cases, and 18 meeting both criteria. Of the high-error cases, 91/101 (90.1%) have a forcing option, versus 67.7% of the full February set. Full-16 improves 70.3% of high-error positions but still has 537.3 cp mean error, compared with Locked-3's 572.3 cp.
+
+Three clusters contain multiple games. Cluster 2 has 74 positions/29 games and emphasizes isolated (+1.60z), doubled (+1.06z), and disconnected pawn structure (−1.04z). Cluster 3 has 33 positions/12 games, is 84.8% forcing, and is dominated by a signed passed-pawn imbalance (−3.62z); Full-16 lowers its mean error from 410.2 to 376.5 cp. Cluster 4 has 49 positions/28 games, is 87.8% forcing and mostly openings, but its largest centroid deviations are all below 0.75z. Cluster 1 contains one position and cannot support a rule.
+
+### Interpretation
+
+The hypothesis is supported for hypothesis generation, with an important distinction. The broad, replicated signal is not another static feature: forcing positions dominate the catastrophic tail, and even Full-16 remains badly wrong there. This supports testing a strictly bounded forcing search around the compact formula. The narrower passed-pawn cluster supports a secondary one-feature extension, consistent with the stable positive human-domain passed-pawn coefficient, but its signed and cluster-selected nature makes March validation essential.
+
+The pawn-structure and opening/activity clusters are too diffuse to justify separate rules. Cluster 1 is discarded as a singleton. No February metric is used to claim that either retained hypothesis improves unseen positions.
+
+### What failed
+
+Static Full-16 does not repair the dominant tactical extremes; adding all omitted terms reduces mean high-error-case error by only 35.0 cp. K-means also isolates one extreme position as a singleton, showing that a fixed cluster count does not guarantee four meaningful structures. The candidate set is threshold-selected and cannot estimate general-population prevalence beyond the explicitly reported full-set forcing comparison.
+
+### Next experiment
+
+Run the frozen `march-compact-rules-v1` protocol on 120 independently sampled March games. Train static coefficients on the deduplicated January/February union. Compare material-only, Locked-3, Locked-4-passed, two-ply/128-child forcing-search versions of both compact models, and Full-16. Candidate A advances only with a paired overall-MAE interval excluding zero; Candidate B advances only with a paired forcing-stratum-MAE interval excluding zero. Do not alter the protocol after viewing March.

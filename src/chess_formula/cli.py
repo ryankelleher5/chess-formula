@@ -10,6 +10,7 @@ from .benchmark import benchmark_linear
 from .config import load_config
 from .confirmation import run_transfer_confirmation
 from .corpus import generate_corpus
+from .failures import run_failure_mining
 from .human_corpus import prepare_human_corpus
 from .ingest import ingest_pgn
 from .model import train_linear
@@ -91,6 +92,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     confirmation.add_argument("--training-database")
     confirmation.add_argument("--engine-key")
+    failures = subparsers.add_parser(
+        "mine-failures",
+        help="Cluster frozen confirmation failures and build a local explorer",
+    )
+    failures.add_argument("--training-database")
+    failures.add_argument("--engine-key")
     return parser
 
 
@@ -201,6 +208,28 @@ def main(argv: list[str] | None = None) -> int:
                         label: model["metrics"] for label, model in result["models"].items()
                     },
                     "paired_mae_deltas": result["paired_mae_deltas"],
+                }
+            )
+        elif args.command == "mine-failures":
+            if "failure_mining" not in config:
+                raise ValueError("The active configuration has no failure_mining section")
+            training_database = (
+                args.training_database or config["failure_mining"]["training_database"]
+            )
+            result, artifact = run_failure_mining(
+                training_database,
+                database,
+                config,
+                engine_key=args.engine_key,
+            )
+            _print(
+                {
+                    "experiment_id": result["experiment_id"],
+                    "artifact": str(artifact),
+                    "candidate_positions": result["candidate_positions"],
+                    "candidate_games": result["candidate_games"],
+                    "clusters": result["clusters"],
+                    "explorer": str(artifact / "failure_explorer.html"),
                 }
             )
     except (FileNotFoundError, RuntimeError, ValueError) as exc:

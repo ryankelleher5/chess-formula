@@ -115,6 +115,22 @@ of full-16's MAE gain with four parameters, and its paired bootstrap improvement
 over material excluded zero. Its sign accuracy was worse, so compression is not a
 uniform win. See [docs/transfer-confirmation.md](docs/transfer-confirmation.md).
 
+## Failure explorer
+
+The project now includes its first research UI. `mine-failures` generates a
+self-contained local HTML explorer for the 157 frozen February high-error or
+high-disagreement positions, with board diagrams, model comparisons, and filters.
+The audit finds that 90.1% of ≥300 cp failures have an immediate forcing option,
+motivating a preregistered compact forcing-search experiment. A smaller
+passed-pawn-imbalance cluster motivates a separate one-term extension. See
+[docs/failure-mining.md](docs/failure-mining.md) and the frozen
+[March preregistration](docs/march-preregistration.md).
+
+```bash
+chess-formula --config configs/failure-mining.json mine-failures
+open results/YYYY-MM-DD_failure_mining_NNN/failure_explorer.html
+```
+
 ## Scientific controls
 
 - A SHA-256-derived seed-stable split assigns whole games to train, validation, or test.
