@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ryankelleher5/chess-formula/schemas/exact-state-v1.json",
+  "title": "Exact three-piece canonical state",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "domain",
+    "fen",
+    "canonical_key",
+    "canonical_hash",
+    "partition",
+    "side_to_move",
+    "terminal"
+  ],
+  "properties": {
+    "schema_version": {"const": "exact-state-v1"},
+    "domain": {"enum": ["KQvK", "KRvK", "KPvK"]},
+    "fen": {"type": "string"},
+    "canonical_key": {"type": "string"},
+    "canonical_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "partition": {"enum": ["development", "selection", "confirmation"]},
+    "side_to_move": {"enum": ["white", "black"]},
+    "terminal": {"type": "boolean"},
+    "legal_moves": {"type": "integer", "minimum": 0},
+    "root_wdl": {"type": "integer", "minimum": -2, "maximum": 2},
+    "root_dtz": {"type": "integer"}
+  },
+  "additionalProperties": false
+}

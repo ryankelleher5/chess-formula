@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ryankelleher5/chess-formula/schemas/branch-record-v1.json",
+  "title": "Context-aware legal branch record",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "source_state_hash",
+    "source_fen",
+    "move_uci",
+    "successor_fen",
+    "side_to_move",
+    "node_role",
+    "path_moves",
+    "remaining_depth",
+    "branch_budget",
+    "label_definition_version",
+    "oracle"
+  ],
+  "properties": {
+    "schema_version": {"const": "branch-record-v1"},
+    "source_state_hash": {"type": "string"},
+    "source_fen": {"type": "string"},
+    "successor_fen": {"type": "string"},
+    "move_uci": {"type": "string"},
+    "side_to_move": {"enum": ["white", "black"]},
+    "source_game": {"type": ["string", "null"]},
+    "source_ply": {"type": ["integer", "null"], "minimum": 0},
+    "partition": {"enum": ["development", "selection", "confirmation"]},
+    "root_candidate_uci": {"type": ["string", "null"]},
+    "node_role": {"enum": ["root-candidate", "opponent-reply", "candidate-continuation", "other"]},
+    "path_moves": {"type": "array", "items": {"type": "string"}},
+    "remaining_depth": {"type": "integer", "minimum": 0},
+    "branch_budget": {
+      "anyOf": [
+        {"type": "integer", "minimum": 1},
+        {"type": "string", "enum": ["all"]}
+      ]
+    },
+    "move_rank": {"type": ["integer", "null"], "minimum": 1},
+    "move_wdl": {"type": ["integer", "null"], "minimum": -2, "maximum": 2},
+    "move_dtz": {"type": ["integer", "null"]},
+    "regret_cp": {"type": ["number", "null"], "minimum": 0},
+    "top_k_labels": {"type": "object"},
+    "regret_threshold_labels": {"type": "object"},
+    "root_decision_consequence": {"type": ["object", "null"]},
+    "refutation_necessity": {"type": ["object", "null"]},
+    "value_of_information": {"type": ["number", "null"]},
+    "label_definition_version": {"type": "string"},
+    "representation_version": {"type": ["string", "null"]},
+    "oracle": {
+      "type": "object",
+      "required": ["kind", "identity", "configuration"],
+      "properties": {
+        "kind": {"enum": ["syzygy", "uci-engine"]},
+        "identity": {"type": "string"},
+        "configuration": {"type": "object"}
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

@@ -52,6 +52,15 @@ def test_cli_parses_required_commands() -> None:
     curve = build_parser().parse_args(["run-budget-curve", "--stockfish", "stockfish"])
     assert curve.command == "run-budget-curve"
 
+    tablebases = build_parser().parse_args(["prepare-branch-tablebases"])
+    assert tablebases.command == "prepare-branch-tablebases"
+
+    census = build_parser().parse_args(["audit-branch-census"])
+    assert census.command == "audit-branch-census"
+
+    foundation = build_parser().parse_args(["run-branch-foundation"])
+    assert foundation.command == "run-branch-foundation"
+
 
 def test_cli_help(capsys) -> None:
     with pytest.raises(SystemExit) as exc:

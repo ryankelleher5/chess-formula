@@ -7,6 +7,11 @@ import sys
 from pathlib import Path
 
 from .benchmark import benchmark_linear
+from .branch_law import (
+    audit_exact_census,
+    prepare_branch_tablebases,
+    run_branch_law_foundation,
+)
 from .budget_curve import run_fixed_budget_curve
 from .config import load_config
 from .confirmation import run_transfer_confirmation
@@ -150,6 +155,20 @@ def build_parser() -> argparse.ArgumentParser:
         help="Run the preregistered fixed-budget search-efficiency curve",
     )
     curve.add_argument("--stockfish", required=True)
+    tablebases = subparsers.add_parser(
+        "prepare-branch-tablebases",
+        help="Download and verify frozen three-piece Syzygy files without probing outcomes",
+    )
+    tablebases.add_argument("--directory", help="Override configured tablebase directory")
+    subparsers.add_parser(
+        "audit-branch-census",
+        help="Audit the exact legal-state census without probing tablebase outcomes",
+    )
+    foundation = subparsers.add_parser(
+        "run-branch-foundation",
+        help="Run the frozen development-only exact branch-budget foundation",
+    )
+    foundation.add_argument("--tablebase-dir", help="Override configured tablebase directory")
     return parser
 
 
@@ -426,6 +445,32 @@ def main(argv: list[str] | None = None) -> int:
                     "models": result["models"],
                     "game_matches": result["game_matches"],
                     "decision": result["decision"],
+                }
+            )
+        elif args.command == "prepare-branch-tablebases":
+            if "branch_law_foundation" not in config:
+                raise ValueError("The active configuration has no branch_law_foundation section")
+            _print(prepare_branch_tablebases(config, directory=args.directory))
+        elif args.command == "audit-branch-census":
+            if "branch_law_foundation" not in config:
+                raise ValueError("The active configuration has no branch_law_foundation section")
+            _print(audit_exact_census(config))
+        elif args.command == "run-branch-foundation":
+            if "branch_law_foundation" not in config:
+                raise ValueError("The active configuration has no branch_law_foundation section")
+            result, artifact = run_branch_law_foundation(
+                config,
+                tablebase_directory=args.tablebase_dir,
+            )
+            _print(
+                {
+                    "experiment_id": result["experiment_id"],
+                    "artifact": str(artifact),
+                    "development_positions": result["development_positions"],
+                    "development_branches": result["development_branches"],
+                    "selection_outcomes_probed": result["selection_outcomes_probed"],
+                    "confirmation_outcomes_probed": result["confirmation_outcomes_probed"],
+                    "domains": result["domains"],
                 }
             )
     except (FileNotFoundError, RuntimeError, ValueError) as exc:
