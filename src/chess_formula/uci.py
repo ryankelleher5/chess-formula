@@ -10,8 +10,7 @@ from typing import TextIO
 import chess
 
 from .frozen_policy import (
-    FORCING_3_MAXIMUM_EXPANDED_CHILDREN_PER_ROOT,
-    FORCING_3_SEARCH_DEPTH_PLIES,
+    FORCING_POLICY_SPECS,
     MAXIMUM_EXPANDED_CHILDREN_PER_ROOT,
     SEARCH_DEPTH_PLIES,
     TERMINAL_CP,
@@ -54,12 +53,13 @@ class UciPolicyEngine:
         self.board = chess.Board()
 
     def choose(self) -> PolicyChoice:
-        if self.policy == "forcing-3":
+        if self.policy in FORCING_POLICY_SPECS:
+            depth, cap = FORCING_POLICY_SPECS[self.policy]
             choice = choose_frontier_move(
                 self.board,
                 self.formula.evaluate,
-                selector_schedule=["forcing"] * FORCING_3_SEARCH_DEPTH_PLIES,
-                maximum_expanded_children_per_root=(FORCING_3_MAXIMUM_EXPANDED_CHILDREN_PER_ROOT),
+                selector_schedule=["forcing"] * depth,
+                maximum_expanded_children_per_root=cap,
                 terminal_cp=TERMINAL_CP,
             )
             return PolicyChoice(
@@ -105,7 +105,13 @@ class UciPolicyEngine:
             nodes = choice.legal_moves_evaluated + choice.forcing_children_expanded
             score = choice.predicted_cp if self.board.turn is chess.WHITE else -choice.predicted_cp
             nps = round(nodes * 1000 / elapsed_ms)
-            depth = 4 if self.policy == "forcing-3" else 3 if self.policy == "searched-3" else 1
+            depth = (
+                FORCING_POLICY_SPECS.get(
+                    self.policy,
+                    (2 if self.policy == "searched-3" else 0, 0),
+                )[0]
+                + 1
+            )
             return [
                 f"info depth {depth} score cp {round(score)} nodes {nodes} "
                 f"nps {nps} time {elapsed_ms}",
@@ -139,7 +145,15 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Frozen Chess Formula UCI engine")
     parser.add_argument(
         "--policy",
-        choices=["searched-3", "forcing-3", "locked-3", "full-16"],
+        choices=[
+            "forcing-1-64",
+            "searched-3",
+            "forcing-3-128",
+            "forcing-3",
+            "forcing-4-256",
+            "locked-3",
+            "full-16",
+        ],
         default="forcing-3",
     )
     return parser

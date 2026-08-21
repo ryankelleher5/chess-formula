@@ -1,0 +1,25 @@
+{
+  "name": "fixed-budget-search-curve-v1",
+  "question": "Can a smaller forcing-search budget retain most of confirmed Forcing-3's strength gain?",
+  "domain": "Development-only reuse of the 80 completed Forcing-3 confirmation games and their 20 opening pairs",
+  "formula": "The accepted Locked-3 coefficients remain unchanged for every policy",
+  "policies": [
+    "forcing-1-64: one forcing ply, 64 children per root, calibrated near 100 mean states",
+    "searched-3: two forcing plies, 128 children per root, calibrated near 300 mean states",
+    "forcing-3-128: three forcing plies, 128 children per root, calibrated near 1,000 mean states",
+    "forcing-3: confirmed three forcing plies, 256 children per root",
+    "forcing-4-256: four forcing plies, 256 children per root, calibrated near 3,000 mean states"
+  ],
+  "position_sample": "Three SHA-256 seed-ranked candidate turns per completed game after the eight-ply opening, deduplicated by rule state; at least 230 unique positions",
+  "oracle": "Stockfish 18 depth 12 root and root-move-constrained scores, one thread, 16 MB hash",
+  "game_curve": "Each non-anchor policy plays all 20 completed confirmation openings twice against the confirmed anchor with colors reversed; development only",
+  "metrics": [
+    "mean, median, p95, and thresholded move regret",
+    "exact oracle move agreement",
+    "mean/p95/max states, cap binding, and wall time",
+    "opening-paired score and engine-pool Elo versus the confirmed anchor"
+  ],
+  "decision": "A cheaper policy is eligible only if it retains at least 80% of the anchor's regret gain over forcing-1-64, increases mean regret by at most 10 cp with bootstrap upper bound at most 15 cp, scores at least 47.5% against the anchor, and has a paired score lower bound at least 40%. Select at most one by lowest mean states, then regret, then label.",
+  "guardrail": "All positions and openings are completed confirmation data reused for development. Any selected policy requires a newly frozen opening suite before a claim.",
+  "frozen": true
+}

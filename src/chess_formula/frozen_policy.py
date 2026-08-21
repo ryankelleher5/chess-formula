@@ -52,9 +52,19 @@ FORCING_3_SEARCH_DEPTH_PLIES = 3
 FORCING_3_MAXIMUM_EXPANDED_CHILDREN_PER_ROOT = 256
 TERMINAL_CP = 2000.0
 
+FORCING_POLICY_SPECS = {
+    "forcing-1-64": (1, 64),
+    "forcing-3-128": (3, 128),
+    "forcing-3": (
+        FORCING_3_SEARCH_DEPTH_PLIES,
+        FORCING_3_MAXIMUM_EXPANDED_CHILDREN_PER_ROOT,
+    ),
+    "forcing-4-256": (4, 256),
+}
+
 
 def frozen_formula(policy: str) -> StaticFormula:
-    if policy in {"locked-3", "searched-3", "forcing-3"}:
+    if policy in {"locked-3", "searched-3", *FORCING_POLICY_SPECS}:
         return StaticFormula(
             LOCKED_3_FEATURES,
             np.asarray(LOCKED_3_COEFFICIENTS),

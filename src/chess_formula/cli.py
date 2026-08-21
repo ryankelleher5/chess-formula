@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 from .benchmark import benchmark_linear
+from .budget_curve import run_fixed_budget_curve
 from .config import load_config
 from .confirmation import run_transfer_confirmation
 from .corpus import generate_corpus
@@ -144,6 +145,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Run the frozen untouched Forcing-3 UCI confirmation",
     )
     confirmation.add_argument("--stockfish", required=True)
+    curve = subparsers.add_parser(
+        "run-budget-curve",
+        help="Run the preregistered fixed-budget search-efficiency curve",
+    )
+    curve.add_argument("--stockfish", required=True)
     return parser
 
 
@@ -405,6 +411,20 @@ def main(argv: list[str] | None = None) -> int:
                     "artifact": str(artifact),
                     "games": result["games"],
                     "matches": result["matches"],
+                    "decision": result["decision"],
+                }
+            )
+        elif args.command == "run-budget-curve":
+            if "budget_curve" not in config:
+                raise ValueError("The active configuration has no budget_curve section")
+            result, artifact = run_fixed_budget_curve(args.stockfish, config)
+            _print(
+                {
+                    "experiment_id": result["experiment_id"],
+                    "artifact": str(artifact),
+                    "development_positions": result["development_positions"],
+                    "models": result["models"],
+                    "game_matches": result["game_matches"],
                     "decision": result["decision"],
                 }
             )

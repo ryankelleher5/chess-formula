@@ -49,6 +49,9 @@ def test_cli_parses_required_commands() -> None:
     confirmation = build_parser().parse_args(["confirm-forcing-3", "--stockfish", "stockfish"])
     assert confirmation.command == "confirm-forcing-3"
 
+    curve = build_parser().parse_args(["run-budget-curve", "--stockfish", "stockfish"])
+    assert curve.command == "run-budget-curve"
+
 
 def test_cli_help(capsys) -> None:
     with pytest.raises(SystemExit) as exc:

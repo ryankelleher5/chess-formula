@@ -68,6 +68,31 @@ def test_forcing_3_uci_choice_matches_locked_frontier_policy() -> None:
     assert actual.forcing_children_expanded == expected.internal_children_expanded
 
 
+@pytest.mark.parametrize(
+    ("policy", "depth", "cap"),
+    [
+        ("forcing-1-64", 1, 64),
+        ("forcing-3-128", 3, 128),
+        ("forcing-4-256", 4, 256),
+    ],
+)
+def test_budget_curve_uci_policies_match_scheduled_search(
+    policy: str, depth: int, cap: int
+) -> None:
+    board = chess.Board()
+    expected = choose_frontier_move(
+        board,
+        frozen_formula(policy).evaluate,
+        selector_schedule=["forcing"] * depth,
+        maximum_expanded_children_per_root=cap,
+        terminal_cp=2000,
+    )
+    actual = UciPolicyEngine(policy).choose()
+    assert actual.move == expected.move
+    assert actual.predicted_cp == expected.predicted_cp
+    assert actual.forcing_children_expanded == expected.internal_children_expanded
+
+
 def test_python_chess_can_drive_real_uci_subprocess() -> None:
     engine = chess.engine.SimpleEngine.popen_uci(
         [sys.executable, "-m", "chess_formula.uci", "--policy", "searched-3"],
