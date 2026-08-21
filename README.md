@@ -176,6 +176,15 @@ while locating a steep remaining gap to even tiny modern-engine search. These
 pool-specific estimates are not human FIDE ratings. See
 [docs/uci-pilot.md](docs/uci-pilot.md).
 
+The 31 Stockfish losses have now been audited at every candidate turn with a
+frozen depth-12 oracle. All games contain a persistent ≥150 cp error. Their first
+errors split across excluded quiet replies (9), excluded pawn captures (5),
+quiet candidate continuations (9), and deeper forcing horizons (8); Stockfish's
+preferred replacement root move is quiet in 29 of 31 cases. A generated local
+board explorer makes each case inspectable. This is development evidence for a
+search-resource frontier, not a confirmation result. See
+[docs/uci-loss-audit.md](docs/uci-loss-audit.md).
+
 ## Scientific controls
 
 - A SHA-256-derived seed-stable split assigns whole games to train, validation, or test.

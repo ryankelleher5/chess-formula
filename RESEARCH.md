@@ -374,3 +374,42 @@ No protocol failure occurred. One game against Stockfish reached the frozen 160-
 ### Next experiment
 
 Treat the 31 Stockfish losses as development-only failure data. Locate each game's first large irreversible swing and classify missed quiet moves, pawn captures, exchanges, king threats, and horizon failures. Hold the three-feature formula fixed while comparing a small search breadth/depth/resource frontier. Freeze any candidate and a new opening suite before confirmation, reporting both playing strength and state/wall-time costs.
+
+## 2026-08-21 — Experiment 011: UCI loss audit
+
+### Hypothesis
+
+The first persistent large errors in the 31 Stockfish-100n losses can distinguish failures caused by excluded opponent replies, excluded candidate continuations, and the two-ply horizon without changing the accepted three-feature formula.
+
+### Method
+
+Commit the complete development-only audit at `6f0a83e` before analyzing the losses. Label every candidate turn after the frozen eight-ply opening with Stockfish 18 at depth 12, MultiPV 1, one thread, and 16 MB hash. Define a major error as at least 150 cp mover-oriented regret. Prefer the earliest such error that leaves the candidate at least 300 cp adverse and remains at least 300 cp adverse at its next turn; otherwise use the earliest major error, then maximum regret. Classify Stockfish's played-move principal variation against the exact accepted vocabulary of checks, promotions, non-pawn captures, and all check evasions.
+
+### Result
+
+The audit labels 957 candidate turns. Every loss has a first persistent major error: mean selected regret is 318.10 cp, median regret is 270 cp, and median error ply is 16. The selected games comprise 17 White and 14 Black candidate losses.
+
+| Refutation class | Games |
+|---|---:|
+| Excluded quiet opponent reply | 9 |
+| Excluded pawn-capture opponent reply | 5 |
+| Visible reply, quiet candidate continuation | 9 |
+| Visible forcing line beyond two plies | 8 |
+
+Stockfish's preferred replacement root is quiet in 29 games, a pawn capture in one, and a non-pawn capture in one. All 31 selections satisfy the persistent rule; no fallback is used. Across all turns, 179 have at least 150 cp regret, mean zero-clipped regret is 142.10 cp, and median regret is 40 cp.
+
+The independent root and constrained searches invert on 102 turns before zero-clipping, but the inversion magnitude is small: median 14 cp, 94 at most 50 cp, and maximum 74 cp. These do not approach the 150 cp major-error threshold. A cache-only replay retrieves all 957 labels with zero new Stockfish calls.
+
+### Interpretation
+
+The loss mechanism is not one missing tactical rule. Four similarly sized groups identify opponent reply breadth, omitted pawn captures, quiet candidate continuations, and horizon depth. Because every legal root is already enumerated, the 29 quiet Stockfish replacements indicate a discrimination problem inside the continuation search rather than an excluded root-move class.
+
+The result is deliberately diagnostic. It reuses games selected by losing, has only 31 game-level units, and cannot establish a playing-strength improvement. The three-feature formula and all prior confirmation claims remain frozen.
+
+### What failed
+
+No execution or protocol failure occurred. Depth-12 root and forced analyses show the expected small independent-search noise. The taxonomy describes the first three principal-variation moves and cannot prove a unique causal explanation for a loss.
+
+### Next experiment
+
+Preregister a development search-resource frontier mapped directly to the four observed classes: pawn-capture breadth, all opponent replies, all candidate continuations after a forcing reply, and a third forcing ply. Compare mover-oriented depth-12 regret, exact move agreement, expanded states, and wall time on all 957 loss-game turns. Select at most one candidate by a frozen strength-per-compute rule, then lock it before any new opening-suite games.
