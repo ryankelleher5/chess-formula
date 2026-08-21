@@ -413,3 +413,43 @@ No execution or protocol failure occurred. Depth-12 root and forced analyses sho
 ### Next experiment
 
 Preregister a development search-resource frontier mapped directly to the four observed classes: pawn-capture breadth, all opponent replies, all candidate continuations after a forcing reply, and a third forcing ply. Compare mover-oriented depth-12 regret, exact move agreement, expanded states, and wall time on all 957 loss-game turns. Select at most one candidate by a frozen strength-per-compute rule, then lock it before any new opening-suite games.
+
+## 2026-08-21 — Experiment 012: search-resource frontier
+
+### Hypothesis
+
+At least one audit-mapped search extension can reduce mean depth-12 move regret by 10% with a 31-game grouped-bootstrap interval excluding zero, and a frozen cheapest-eligible rule can distinguish useful computation from indiscriminate breadth while keeping the Locked-3 formula unchanged.
+
+### Method
+
+Commit the complete frontier at `a739e62` before running any policy comparison. Replay all 957 candidate turns from the 31 Stockfish-100n losses and require the forcing/forcing baseline to reproduce every recorded move. Compare it with four deterministic schedules: all captures at both internal plies, all opponent replies followed by forcing continuations, forcing replies followed by all candidate continuations, and three forcing plies. Use a 128-child per-root cap for baseline/all-captures and 256 for the broader/deeper policies. Allow stand-pat at forcing and all-captures nodes but require a legal move at all-legal nodes.
+
+Score every distinct selected move with Stockfish 18 at depth 12, one thread, and 16 MB hash. Orient regret to the mover and clip scores to ±2,000 cp. Bootstrap complete games 5,000 times. An extension is eligible only if it improves mean regret by at least 10% and the regret-delta interval is below zero. Select at most one eligible extension by lowest mean total states, then lower regret, then lexical label.
+
+### Result
+
+| Policy | Mean regret | Delta [95%] | Top-1 | ≥300 cp | Mean states | ms/position |
+|---|---:|---:|---:|---:|---:|---:|
+| Searched-3 baseline | 130.45 | — | 28.63% | 8.88% | 279.7 | 86.3 |
+| All-captures-2 | 127.07 | −3.38 [−7.34, −0.61] | 28.53% | 8.67% | 434.4 | 140.0 |
+| All-opponent-replies-2 | 106.48 | −23.97 [−33.38, −15.76] | **31.35%** | 7.31% | 2,303.7 | 794.4 |
+| All-candidate-continuations-2 | 128.42 | −2.03 [−6.76, +2.61] | 28.84% | 8.67% | 865.7 | 259.8 |
+| **Forcing-3** | **102.61** | **−27.84 [−39.59, −17.81]** | 30.93% | **6.17%** | **1,074.8** | **332.5** |
+
+Forcing-3 and all-opponent-replies qualify. Forcing-3 advances under the frozen rule because it uses less than half the mean states and also has lower regret. Its 21.34% mean regret improvement exceeds the gate; all-opponent-replies improves 18.37%. All-captures has a resolved but only 2.59% improvement, and all-candidate-continuations improves 1.55% with an interval crossing zero.
+
+Baseline replay agreement is 100%. The 1,525 distinct oracle requests reuse 388 root-best and 683 actually played scores; 454 alternative moves require new constrained analyses. A cache replay performs zero new analyses. On the 31 selected first-error boards, Forcing-3 changes 14 choices and reduces mean regret from 318.10 to 195.45 cp.
+
+### Interpretation
+
+The loss audit's horizon signal transfers across all turns in those games more strongly and efficiently than either narrow capture expansion or an all-legal ply. A third selective ply is not cheap—it uses 3.84 times the baseline states and latency—but it lies on the observed development strength/compute frontier. Full opponent replies offer slightly better top-1 agreement but use 8.24 times the baseline states and 2.14 times the selected candidate's states.
+
+This remains selection on games chosen for baseline losses. The bootstrap measures variation among those 31 games, not independent confirmation. It cannot establish a new playing-strength or generalization result.
+
+### What failed
+
+The two locally obvious breadth patches do not qualify. Including every capture changes only 43 of 957 choices and fails the 10% improvement threshold. Allowing all candidate continuations changes only 33 choices, has a regret interval crossing zero, and is slower than the all-captures policy. Forcing-3 reaches its 256-child cap in 146 positions and 490 legal-root searches, so its result is conditional on the frozen ordering and cap. The full sequential Python run takes 1,549.93 seconds.
+
+### Next experiment
+
+Lock Forcing-3 exactly as tested and expose it through UCI. Before scored play, freeze a new color-reversed opening suite that excludes all 20 pilot openings, direct comparison against the accepted two-ply policy and Stockfish-100n, fault/adjudication rules, paired score and engine-pool Elo intervals, and explicit state/wall-time reporting. Do not tune from confirmation games.

@@ -185,6 +185,15 @@ board explorer makes each case inspectable. This is development evidence for a
 search-resource frontier, not a confirmation result. See
 [docs/uci-loss-audit.md](docs/uci-loss-audit.md).
 
+The preregistered development frontier then compares four targeted extensions
+on all 957 loss-game turns. A third forcing ply lowers mean depth-12 move regret
+from 130.45 to 102.61 cp, with a paired 31-game interval of [−39.59, −17.81]
+cp for the −27.84 cp difference. It is selected over full opponent-reply breadth
+because it averages 1,074.8 states rather than 2,303.7, although it still costs
+3.84 times the baseline state count. This is a locked candidate awaiting a new
+opening-suite confirmation, not a playing-strength result. See
+[docs/search-frontier.md](docs/search-frontier.md).
+
 ## Scientific controls
 
 - A SHA-256-derived seed-stable split assigns whole games to train, validation, or test.
