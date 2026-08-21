@@ -63,3 +63,11 @@ not control the primary decision.
 Low regret can establish useful legal move selection, but not game strength.
 Root enumeration and every forcing expansion count toward computation. UCI play
 testing begins only after this prospective gate.
+
+## Outcome
+
+The gate passed on 2,131 non-overlapping May positions with 100% legal coverage.
+Searched Locked-3 reduced mean clipped regret by 188.08 cp relative to static
+Locked-3, with a 95% paired game-bootstrap interval of [176.33, 199.93] cp. See
+[May legal move-policy validation](may-move-policy.md) for provenance, complete
+metrics, computation, the execution-only repair, and limitations.

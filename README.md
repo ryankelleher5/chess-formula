@@ -147,6 +147,21 @@ game-bootstrap interval of [18.60, 30.26] cp. The result remains position-value
 prediction, not move prediction. See
 [docs/april-depth-robustness.md](docs/april-depth-robustness.md).
 
+## Legal move-policy validation
+
+The evaluator now has a deterministic wrapper that enumerates every legal root
+move, so it always returns a move rather than stand-pat. On 2,131 non-overlapping
+positions from 120 untouched May games, Searched Locked-3 achieved 125.02 cp
+mean regret against Stockfish depth 12, versus 312.96 for static Locked-3 and
+274.46 for static Full-16. Its paired improvement over Locked-3 was 188.08 cp
+with a 95% game-bootstrap interval of [176.33, 199.93]. Top-three agreement rose
+from 24.92% to 38.95%, and ≥300 cp mistakes fell from 48.33% to 13.80%.
+
+The gain costs computation: the searched policy evaluates 34.34 root moves and
+expands 215.11 additional forcing children on average, taking about 90 ms per
+position in Python. This establishes prospective move quality, not Elo or game
+strength. See [docs/may-move-policy.md](docs/may-move-policy.md).
+
 ## Scientific controls
 
 - A SHA-256-derived seed-stable split assigns whole games to train, validation, or test.

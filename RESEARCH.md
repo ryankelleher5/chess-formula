@@ -294,3 +294,43 @@ The first post-label validation command stopped before computing any metrics bec
 ### Next experiment
 
 Freeze the accepted evaluator and build a deterministic legal-root-move wrapper. Preregister root enumeration, fixed computation budget, tie-breaking, oracle depth, top-1/top-k agreement, centipawn regret, legal coverage, and latency before accessing an untouched May human corpus. Use April only for implementation development; do not use it for the final move-policy claim.
+
+## 2026-08-20 — Experiment 009: untouched May legal move-policy validation
+
+### Hypothesis
+
+A deterministic wrapper that evaluates every legal root move with frozen Searched Locked-3 achieves 100% legal coverage and lower mean clipped Stockfish regret than the equivalent static Locked-3 policy, with a 95% paired source-game-bootstrap interval excluding zero.
+
+### Method
+
+Commit the complete protocol at `0fd3c9b` before downloading May. Verify and stream the official CC0 May 2013 Lichess archive (179,550 games; 26,545,457 bytes; SHA-256 `f044607c9f565831524dbedfd474100c8604dba008600bfaf1b7a48ced74c17b`). From 11,013 eligible games, select a seed-20260827 reservoir sample of 120 games. The selected ratings span 1800–2301 and the PGN SHA-256 is `4d9f5f27bda163bde7f977868c3a6ac45cfa319af7c2faea49f93dcb85e2d9b1`.
+
+Ingest 2,199 unique positions, balanced 1,093/1,106 by side to move, with zero parse errors. Exclude 68 hashes observed in January through April, leaving 2,131 positions across all 120 games. Fit coefficients only on the 2,170-position January/February depth-8 development union. Compare all-legal-root-move static Locked-3, static Full-16, and Searched Locked-3 policies with deterministic UCI-lexical tie-breaking. For Searched Locked-3, apply the unchanged two-ply forcing search with a 128-child budget separately after every root candidate.
+
+Label roots using Stockfish 18 depth 12, MultiPV 3, one thread, and 16 MB hash. Evaluate policy choices outside the oracle's best move with root-move-constrained searches at the same depth/options. Clip best and chosen scores to ±2,000 cp, orient regret to the mover, clamp independent-search inversions to zero, and use 1,000 paired source-game bootstrap samples.
+
+### Result
+
+| Policy | Mean regret | Median | p95 | Top-1 | Top-3 | ≥100 cp | ≥300 cp |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Locked-3 | 312.96 | 282 | 784 | 15.81% | 24.92% | 66.87% | 48.33% |
+| Full-16 | 274.46 | 206 | 742.5 | 17.03% | 27.73% | 61.38% | 41.53% |
+| Searched Locked-3 | **125.02** | **61** | **456** | **24.12%** | **38.95%** | **38.06%** | **13.80%** |
+
+Every policy has 100% legal coverage. The primary gate passes: Searched Locked-3 minus static Locked-3 mean regret is −188.08 cp with a 95% interval of [−199.93, −176.33]. The secondary contrast against Full-16 is −149.55 cp [−162.72, −136.38]. Search improves mean regret in opening, middlegame, endgame, forcing-proxy, and quiet-proxy strata.
+
+The policy evaluates 34.34 legal root moves per position on average. Searched Locked-3 expands another 215.11 forcing children (p95 629.5; maximum 3,612 aggregated across candidates) and takes 90.00 ms/position in Python, versus roughly 10.3 ms for either static policy. The requested oracle set contains 4,000 unique position/move pairs: 592 root-best values and 3,408 constrained analyses.
+
+### Interpretation
+
+The compact searched evaluator now supports legal move choice, and its prospective move regret is dramatically better than either static formula's. Exact top-1 agreement remains only 24.12%, but top-3 agreement, regret, and large-mistake rates all move in the same direction. The result supports a compact formula plus selective computation rather than a static equation alone.
+
+The accepted computational object is substantially larger than April's average five-child position evaluator: exhaustive root enumeration plus selective continuations inspects roughly 249 states per decision. That cost must accompany every claim. Move regret still does not measure Elo, clock handling, error accumulation over games, or opponent interaction.
+
+### What failed
+
+The first post-cache command stopped before computing or exposing metrics because the scorer omitted its already-loaded root-oracle map. Commit `0560b14` supplied the argument and added a regression test for root-best reuse and constrained-score retrieval. It changed no policy, cached oracle score, metric, threshold, or analysis choice. The accepted rerun used all cached constrained labels. Negative regret from independent root and forced searches occurred on 1.69% of searched-policy positions and was handled by the preregistered zero clamp.
+
+### Next experiment
+
+Expose the frozen Searched Locked-3 policy through a minimal UCI process. Before rated games, freeze a color-balanced, opening-paired match protocol with fixed resources, opponents/baselines, adjudication, timeout and illegal-move handling, and win-rate/Elo uncertainty. Validate UCI correctness and zero illegal moves before interpreting any game result as playing strength.
