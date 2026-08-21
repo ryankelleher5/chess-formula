@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ryankelleher5/chess-formula/schemas/ordinary-root-record-v1.json",
+  "title": "Ordinary branch-law source root",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "position_hash",
+    "fen",
+    "source_game",
+    "pair_group",
+    "partition",
+    "side_to_move",
+    "legal_root_moves",
+    "all_reply_reference_move",
+    "direct_oracle_move"
+  ],
+  "properties": {
+    "schema_version": {"const": "ordinary-root-record-v1"},
+    "position_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "fen": {"type": "string"},
+    "source_game": {"type": "string"},
+    "pair_group": {"type": "string"},
+    "partition": {"const": "development"},
+    "side_to_move": {"enum": ["white", "black"]},
+    "legal_root_moves": {"type": "integer", "minimum": 1},
+    "all_reply_reference_move": {"type": "string"},
+    "direct_oracle_move": {"type": "string"},
+    "all_reply_reference_absolute_regret_cp": {"type": "number", "minimum": 0}
+  },
+  "additionalProperties": true
+}

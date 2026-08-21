@@ -24,6 +24,10 @@ from .march import run_march_validation
 from .model import train_linear
 from .move_policy import run_move_policy_validation
 from .oracle import label_positions
+from .ordinary_branch import (
+    audit_ordinary_branch_source,
+    run_ordinary_branch_foundation,
+)
 from .robustness import run_depth_robustness
 from .search_frontier import run_search_frontier
 from .selection import run_nested_selection
@@ -169,6 +173,15 @@ def build_parser() -> argparse.ArgumentParser:
         help="Run the frozen development-only exact branch-budget foundation",
     )
     foundation.add_argument("--tablebase-dir", help="Override configured tablebase directory")
+    subparsers.add_parser(
+        "audit-ordinary-branch-source",
+        help="Audit the frozen ordinary branch source without probing outcomes",
+    )
+    ordinary = subparsers.add_parser(
+        "run-ordinary-branch-foundation",
+        help="Run the frozen development-only ordinary opponent-reply foundation",
+    )
+    ordinary.add_argument("--stockfish", required=True)
     return parser
 
 
@@ -471,6 +484,31 @@ def main(argv: list[str] | None = None) -> int:
                     "selection_outcomes_probed": result["selection_outcomes_probed"],
                     "confirmation_outcomes_probed": result["confirmation_outcomes_probed"],
                     "domains": result["domains"],
+                }
+            )
+        elif args.command == "audit-ordinary-branch-source":
+            _print(audit_ordinary_branch_source(config))
+        elif args.command == "run-ordinary-branch-foundation":
+            result, artifact = run_ordinary_branch_foundation(
+                args.stockfish,
+                config,
+            )
+            _print(
+                {
+                    "experiment_id": result["experiment_id"],
+                    "artifact": str(artifact),
+                    "source_positions": result["source_audit"]["positions"],
+                    "root_candidates": result["source_audit"]["candidate_contexts"],
+                    "opponent_replies": result["source_audit"][
+                        "opponent_reply_records"
+                    ],
+                    "selection_outcomes_probed": result[
+                        "selection_outcomes_probed"
+                    ],
+                    "confirmation_outcomes_probed": result[
+                        "confirmation_outcomes_probed"
+                    ],
+                    "curves": result["curves"],
                 }
             )
     except (FileNotFoundError, RuntimeError, ValueError) as exc:

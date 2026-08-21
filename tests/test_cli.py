@@ -61,6 +61,14 @@ def test_cli_parses_required_commands() -> None:
     foundation = build_parser().parse_args(["run-branch-foundation"])
     assert foundation.command == "run-branch-foundation"
 
+    ordinary_audit = build_parser().parse_args(["audit-ordinary-branch-source"])
+    assert ordinary_audit.command == "audit-ordinary-branch-source"
+
+    ordinary = build_parser().parse_args(
+        ["run-ordinary-branch-foundation", "--stockfish", "stockfish"]
+    )
+    assert ordinary.command == "run-ordinary-branch-foundation"
+
 
 def test_cli_help(capsys) -> None:
     with pytest.raises(SystemExit) as exc:

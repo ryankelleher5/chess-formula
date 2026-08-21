@@ -1,0 +1,39 @@
+{
+  "name": "ordinary-branch-foundation-v1",
+  "question": "How much opponent-reply breadth is required to preserve ordinary root decisions, and how do forcing, capture, random, and Locked-3 orderings compare at equal retained-reply budgets?",
+  "status": "frozen before new ordinary branch-oracle probing",
+  "source": "The 240 deterministic positions frozen and used as development in Experiment 014, grouped across 80 completed games and 40 opening/opponent pairs",
+  "development_guardrail": "All source games and positions are permanently development-only for Branch-Law Discovery and cannot support a later confirmation claim",
+  "candidate_scope": "Every legal root candidate is retained; Experiment 016 varies opponent replies only",
+  "oracle": "Stockfish 18, one thread, 16 MB hash, 20000 nodes, all-legal MultiPV, new-game boundary per context",
+  "stability_oracle": "Deterministic outcome-free SHA samples are repeated at 80000 nodes",
+  "records": [
+    "root candidate desirability, rank, and 10/25/50/100-cp viability",
+    "opponent reply rank and regret",
+    "candidate-value consequence of omitting each reply",
+    "root-decision consequence of omitting each reply",
+    "node role, root candidate, path, source game, and grouping context"
+  ],
+  "baselines": [
+    "20 deterministic random orderings",
+    "current forcing priority plus lexical fill",
+    "check/all-capture/promotion/evasion priority plus lexical fill",
+    "Locked-3 successor evaluation ordering",
+    "oracle reply ordering as a nondeployable reference",
+    "all legal replies as the endpoint"
+  ],
+  "primary_curve": "fraction of opponent replies retained to root decision preservation within 25 cp",
+  "north_star": "rho_95",
+  "guardrails": [
+    "absolute root regret for full-reference and pruned choices",
+    "100-cp and 300-cp catastrophic pruning-induced loss",
+    "candidate-refutation and root-critical reply recall",
+    "all-critical-replies preservation",
+    "oracle stability at four times the node budget",
+    "selector operations, latency, and retained branches"
+  ],
+  "advancement": "No learned selector may be trained or advanced in Experiment 016",
+  "selection_locked": true,
+  "confirmation_locked": true,
+  "frozen": true
+}

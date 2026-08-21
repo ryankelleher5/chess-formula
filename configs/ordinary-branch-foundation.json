@@ -1,0 +1,67 @@
+{
+  "seed": 20260903,
+  "benchmark_version": "ordinary-branch-foundation-v1",
+  "ordinary_branch_foundation": {
+    "experiment_name": "ordinary-branch-foundation",
+    "protocol_version": "ordinary-branch-foundation-v1",
+    "source_positions": "results/2026-08-21_fixed_budget_curve_001/positions.json",
+    "source_positions_bytes": 94209,
+    "source_positions_sha256": "9807df41c009a7a297ec12b84db866aabd29a80dad007b68cab59d770cce797a",
+    "source_position_hash_digest": "4df38e86ffc9ec60a52164779fd546f11754a03227c72a49906e06651111626d",
+    "source_game_key_digest": "8687559374a5f53b950aec87559e75c6be34dbb874ba8bb88e5c1269bc195ca7",
+    "expected_positions": 240,
+    "expected_source_games": 80,
+    "expected_pair_groups": 40,
+    "expected_candidate_contexts": 6689,
+    "expected_nonterminal_parent_contexts": 6683,
+    "expected_terminal_candidates": 6,
+    "expected_opponent_reply_records": 217973,
+    "parent_key_digest": "99ef44a5c8cf4d472e0d0560272d82f28baf05c0e45af5b68a46952c739866a3",
+    "oracle_cache": "data/processed/ordinary_branch_foundation_cache.ndjson",
+    "oracle_cache_metadata": "data/processed/ordinary_branch_foundation_cache_metadata.json",
+    "oracle": {
+      "engine": "Stockfish 18",
+      "limit_type": "nodes",
+      "limit_value": 20000,
+      "multipv": "all-legal",
+      "mate_score_cp": 100000,
+      "score_clip_cp": 2000,
+      "threads": 1,
+      "hash_mb": 16,
+      "new_game_per_context": true
+    },
+    "stability_audit": {
+      "limit_type": "nodes",
+      "limit_value": 80000,
+      "root_contexts": 24,
+      "parent_contexts": 134,
+      "root_sample_digest": "a5233b3290347789d4c63f9e29eb0b47f4c0edd76e9fcd6e5843e8ab50d078df",
+      "parent_sample_digest": "74a78bf4723c8806865ecd30e2d7e46fee4a9346ab86057f86e9b66ff5bb51f7"
+    },
+    "branch_budgets": [1, 2, 3, 4, 5, 8, 16, "all"],
+    "baseline_orderings": [
+      "random",
+      "forcing",
+      "all-captures",
+      "locked-3",
+      "oracle"
+    ],
+    "budget_fill_rule": "Every baseline returns a complete deterministic opponent-reply ordering; category baselines place qualifying moves first and fill remaining budget lexically",
+    "random_repeats": 20,
+    "regret_thresholds_cp": [10, 25, 50, 100],
+    "catastrophic_thresholds_cp": [100, 300],
+    "decision_preservation_threshold_cp": 25,
+    "north_star": {
+      "name": "rho_95",
+      "definition": "Minimum tested retained-reply fraction whose pruning-induced root loss is at most 25 cp for at least 95% of source decisions at that and every larger nested budget"
+    },
+    "root_reference": "All legal root candidates; each candidate value is the opponent-optimal reply score from the frozen child-context oracle",
+    "independent_root_oracle": "Frozen all-legal MultiPV analysis of the source root supplies candidate rank, regret, and absolute regret for full and pruned choices",
+    "reply_refutation": "A reply is candidate-critical at threshold t when omitting it improves the root candidate by more than t cp from the root mover perspective; root-criticality separately measures changed root decision loss",
+    "development_only": true,
+    "train_models": false,
+    "selection_outcomes_probed": 0,
+    "confirmation_outcomes_probed": 0,
+    "results_directory": "results"
+  }
+}
