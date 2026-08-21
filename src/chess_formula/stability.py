@@ -314,7 +314,7 @@ def run_stability(
     )
     (artifact / "report.md").write_text(_report(experiment_id, result), encoding="utf-8")
     connection.execute(
-        "INSERT INTO experiments VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        "INSERT OR REPLACE INTO experiments VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
         [
             experiment_id,
             "coefficient-stability",

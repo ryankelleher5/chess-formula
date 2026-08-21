@@ -161,7 +161,7 @@ def train_linear(
     )
     (artifact / "formula.txt").write_text(model.formula(), encoding="utf-8")
     connection.execute(
-        "INSERT INTO experiments VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        "INSERT OR REPLACE INTO experiments VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
         [
             experiment_id,
             "baseline-linear",
