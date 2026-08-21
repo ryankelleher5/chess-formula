@@ -28,6 +28,9 @@ def test_cli_parses_required_commands() -> None:
     failures = build_parser().parse_args(["mine-failures"])
     assert failures.command == "mine-failures"
 
+    march = build_parser().parse_args(["validate-march"])
+    assert march.command == "validate-march"
+
 
 def test_cli_help(capsys) -> None:
     with pytest.raises(SystemExit) as exc:

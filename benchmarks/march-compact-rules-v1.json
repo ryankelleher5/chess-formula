@@ -20,6 +20,7 @@
     "maximum_plies": 160
   },
   "development_data": "Deduplicated union of human-transfer-v1 and transfer-confirmation-v1",
+  "duplicate_target_aggregation": "Arithmetic mean of repeated shallow-Stockfish labels for the same rule-state hash.",
   "confirmation_overlap_policy": "Exclude every March rule-state hash present in the development union.",
   "static_candidates": {
     "material-only": ["material"],

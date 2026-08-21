@@ -13,6 +13,7 @@ from .corpus import generate_corpus
 from .failures import run_failure_mining
 from .human_corpus import prepare_human_corpus
 from .ingest import ingest_pgn
+from .march import run_march_validation
 from .model import train_linear
 from .oracle import label_positions
 from .selection import run_nested_selection
@@ -98,6 +99,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     failures.add_argument("--training-database")
     failures.add_argument("--engine-key")
+    march = subparsers.add_parser(
+        "validate-march",
+        help="Run the frozen pooled-development compact-rule validation",
+    )
+    march.add_argument("--development-database", action="append")
+    march.add_argument("--engine-key")
     return parser
 
 
@@ -230,6 +237,32 @@ def main(argv: list[str] | None = None) -> int:
                     "candidate_games": result["candidate_games"],
                     "clusters": result["clusters"],
                     "explorer": str(artifact / "failure_explorer.html"),
+                }
+            )
+        elif args.command == "validate-march":
+            if "march_validation" not in config:
+                raise ValueError("The active configuration has no march_validation section")
+            development_databases = (
+                args.development_database
+                or config["march_validation"]["development_databases"]
+            )
+            result, artifact = run_march_validation(
+                development_databases,
+                database,
+                config,
+                engine_key=args.engine_key,
+            )
+            _print(
+                {
+                    "experiment_id": result["experiment_id"],
+                    "artifact": str(artifact),
+                    "positions": result["confirmation_positions"],
+                    "excluded_overlaps": result["cross_domain_positions_excluded"],
+                    "models": {
+                        label: model["metrics"] for label, model in result["models"].items()
+                    },
+                    "paired_mae_deltas": result["paired_mae_deltas"],
+                    "decisions": result["decisions"],
                 }
             )
     except (FileNotFoundError, RuntimeError, ValueError) as exc:

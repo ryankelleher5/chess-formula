@@ -9,6 +9,9 @@ January and February become development data. Deduplicate their union by the
 rule-state position hash and fit all static coefficients with ridge alpha 10 and
 the existing ±2,000 cp target clip. March is an untouched confirmation domain.
 Exclude any March position hash found in the development union before evaluation.
+If the same development hash has slightly different shallow-Stockfish labels in
+January and February, use their arithmetic mean. This resolves 26 differing
+duplicates (maximum observed range 24 cp) without choosing a favored month.
 
 The March corpus will be a seed-20260825 reservoir sample of 120 eligible games
 from the verified CC0 Lichess March 2013 standard-rated archive. Eligibility,
