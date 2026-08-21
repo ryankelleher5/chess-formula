@@ -334,3 +334,43 @@ The first post-cache command stopped before computing or exposing metrics becaus
 ### Next experiment
 
 Expose the frozen Searched Locked-3 policy through a minimal UCI process. Before rated games, freeze a color-balanced, opening-paired match protocol with fixed resources, opponents/baselines, adjudication, timeout and illegal-move handling, and win-rate/Elo uncertainty. Validate UCI correctness and zero illegal moves before interpreting any game result as playing strength.
+
+## 2026-08-21 — Experiment 010: UCI playing-strength pilot
+
+### Hypothesis
+
+The frozen Searched Locked-3 policy can operate correctly through UCI with zero illegal moves, crashes, or timeouts, and a color-balanced opening-paired pilot can quantify its playing strength relative to static compact controls and constrained Stockfish without assuming a positive result.
+
+### Method
+
+Commit the UCI engine, referee, 20-opening suite, opponent pool, adjudication, resources, metrics, and decision rule at `badc98c` before any scored game. Confirm protocol behavior with an external `python-chess` handshake and an explicitly unscored short game. Then play every immutable eight-ply opening twice with candidate colors reversed against static Locked-3, static Full-16, and Stockfish 18 at 100 nodes per move: 40 games per opponent, 120 total.
+
+The candidate retains the exact May formula, exhaustive legal-root enumeration, lexical tie-breaking, two forcing plies, and 128 expanded children per root candidate. Use a five-second UCI operation timeout, one Stockfish thread and 16 MB hash, claimable chess draws, a 160-total-ply draw cap, no evaluation adjudication, and immediate loss for an engine exception, timeout, live-position null move, or illegal move. Report 10,000-bootstrap intervals by complete reversed-color opening pair and logistic engine-pool Elo differences, explicitly not human FIDE Elo.
+
+### Result
+
+| Opponent | W-D-L | Score [95%] | Engine-pool Elo [95%] |
+|---|---:|---:|---:|
+| Static Locked-3 | 17-23-0 | 71.25% [63.75%, 78.75%] | +158 [+98, +228] |
+| Static Full-16 | 17-23-0 | 71.25% [62.50%, 80.00%] | +158 [+89, +241] |
+| Stockfish-100n | 0-9-31 | 11.25% [6.25%, 16.25%] | −359 [−470, −285] |
+
+The protocol gate passes: all 120 games have zero candidate illegal moves, timeouts, crashes, and null moves. All generated PGNs parse without error. Candidate scores against each static control are 72.5% as White and 70.0% as Black. Against Stockfish they are 7.5% as White and 15.0% as Black; the candidate wins no game.
+
+Candidate latency ranges from 79.22 to 90.94 ms/move across matches, with 253.05–285.93 reported legal-root-plus-forcing states per move. Static controls take 4.27–5.52 ms/move. Stockfish takes 0.78 ms/move and reports 107.62 nodes/move, although Stockfish nodes and candidate states are not equivalent operations. The complete run takes 355.94 seconds.
+
+### Interpretation
+
+Selective computation converts the same three-feature formula into a materially stronger player than static evaluation. The move-regret advantage survives complete-game interaction, both colors, repeated positions, and rule-based termination. Static Full-16 does not overcome the missing continuation search.
+
+The 0-9-31 Stockfish result marks a steep efficiency and strength boundary. A modern alpha-beta/NNUE engine at only 100 nodes per move is far stronger while using less wall time. This does not isolate whether the compact engine is limited primarily by forcing-only move vocabulary, two-ply horizon, move ordering, static information, or Python implementation. Nominal node counts cannot answer that because the engines perform different work per node.
+
+The +158/−359 estimates are conditional on 20 opening pairs, this resource control, and this opponent pool. They are neither universal ratings nor human FIDE Elo. The pilot is sufficient to establish direction and expose the next bottleneck, not to calibrate broad chess strength.
+
+### What failed
+
+No protocol failure occurred. One game against Stockfish reached the frozen 160-ply draw cap; all other games ended by checkmate, threefold repetition, or stalemate. Fresh UCI processes per game prevented state carryover but added startup overhead. The referee did not persist the probed Stockfish identity inside the generated metrics, although the invoked binary was independently verified as Stockfish 18; future reports should capture engine identity directly.
+
+### Next experiment
+
+Treat the 31 Stockfish losses as development-only failure data. Locate each game's first large irreversible swing and classify missed quiet moves, pawn captures, exchanges, king threats, and horizon failures. Hold the three-feature formula fixed while comparing a small search breadth/depth/resource frontier. Freeze any candidate and a new opening suite before confirmation, reporting both playing strength and state/wall-time costs.

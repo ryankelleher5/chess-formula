@@ -56,3 +56,11 @@ The protocol gate passes only if the candidate has zero illegal moves, crashes,
 and timeouts. Playing strength has no pass threshold in this pilot: report the
 result whether positive or negative. Engine-pool Elo is conditional on this
 opening/resource/opponent pool and must never be called human FIDE Elo.
+
+## Outcome
+
+The protocol gate passed across all 120 games with zero candidate illegal moves,
+timeouts, crashes, or null moves. Searched Locked-3 scored 71.25% against each
+static control and 11.25% against Stockfish at 100 nodes/move. See
+[UCI playing-strength pilot](uci-pilot.md) for paired intervals, engine-pool Elo,
+resources, interpretation, and limitations.

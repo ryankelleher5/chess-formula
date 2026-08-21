@@ -162,6 +162,20 @@ expands 215.11 additional forcing children on average, taking about 90 ms per
 position in Python. This establishes prospective move quality, not Elo or game
 strength. See [docs/may-move-policy.md](docs/may-move-policy.md).
 
+## UCI playing-strength pilot
+
+The frozen searched policy now runs as a real UCI engine. In a preregistered
+120-game opening-paired pilot it made zero illegal moves, timed out zero times,
+and scored 17 wins, 23 draws, and no losses against each static formula control:
+71.25% and approximately +158 engine-pool Elo. Against Stockfish 18 restricted
+to 100 nodes per move, it scored no wins, nine draws, and 31 losses: 11.25% and
+approximately −359 engine-pool Elo.
+
+This establishes a genuine playing-strength improvement from selective search
+while locating a steep remaining gap to even tiny modern-engine search. These
+pool-specific estimates are not human FIDE ratings. See
+[docs/uci-pilot.md](docs/uci-pilot.md).
+
 ## Scientific controls
 
 - A SHA-256-derived seed-stable split assigns whole games to train, validation, or test.
