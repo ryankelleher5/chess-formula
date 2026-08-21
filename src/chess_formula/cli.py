@@ -13,6 +13,7 @@ from .corpus import generate_corpus
 from .failures import run_failure_mining
 from .human_corpus import prepare_human_corpus
 from .ingest import ingest_pgn
+from .loss_audit import run_uci_loss_audit
 from .march import run_march_validation
 from .model import train_linear
 from .move_policy import run_move_policy_validation
@@ -126,6 +127,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Run the frozen color-balanced UCI playing-strength pilot",
     )
     pilot.add_argument("--stockfish", required=True)
+    audit = subparsers.add_parser(
+        "audit-uci-losses",
+        help="Audit the first major errors in lost UCI pilot games",
+    )
+    audit.add_argument("--stockfish", required=True)
     return parser
 
 
@@ -344,6 +350,21 @@ def main(argv: list[str] | None = None) -> int:
                     "games": result["games"],
                     "matches": result["matches"],
                     "decision": result["decision"],
+                }
+            )
+        elif args.command == "audit-uci-losses":
+            if "uci_loss_audit" not in config:
+                raise ValueError("The active configuration has no uci_loss_audit section")
+            result, artifact = run_uci_loss_audit(args.stockfish, config)
+            _print(
+                {
+                    "experiment_id": result["experiment_id"],
+                    "artifact": str(artifact),
+                    "explorer": str(artifact / "loss_explorer.html"),
+                    "lost_games": result["lost_games"],
+                    "candidate_turns": result["candidate_turns"],
+                    "first_error_reply_classes": result["first_error_reply_classes"],
+                    "first_error_best_move_kinds": result["first_error_best_move_kinds"],
                 }
             )
     except (FileNotFoundError, RuntimeError, ValueError) as exc:

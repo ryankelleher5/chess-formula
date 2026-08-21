@@ -1,0 +1,24 @@
+{
+  "name": "uci-loss-audit-v1",
+  "question": "Which search limitations first drive Searched Locked-3's losses to Stockfish-100?",
+  "domain": "The 31 lost games from uci-playing-pilot-v1; development-only",
+  "oracle": "Stockfish 18 depth 12, MultiPV 1, Threads 1, Hash 16 MB",
+  "positions": "Every candidate-to-move position after the frozen eight-ply opening",
+  "regret": "Side-to-move difference between root best and root-move-constrained played move, clipped to ±2000 cp",
+  "first_error_rule": {
+    "major_regret_cp": 150,
+    "preferred": "Earliest major error whose played-move value is at least 300 cp adverse and whose next candidate-turn root remains at least 300 cp adverse",
+    "fallback": "Earliest major error, otherwise maximum-regret candidate move"
+  },
+  "reply_taxonomy": [
+    "excluded-pawn-capture-reply",
+    "excluded-quiet-reply",
+    "excluded-other-reply",
+    "quiet-second-ply",
+    "beyond-two-ply",
+    "short-or-terminal-pv"
+  ],
+  "outputs": ["report", "JSON records", "self-contained board explorer"],
+  "guardrail": "Exploratory development audit only. No candidate advances without a new preregistered opening-suite confirmation.",
+  "frozen": true
+}

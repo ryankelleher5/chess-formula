@@ -1,0 +1,24 @@
+{
+  "seed": 20260829,
+  "labeling": {
+    "limit_type": "depth",
+    "limit_value": 12,
+    "multipv": 1,
+    "mate_score_cp": 100000,
+    "threads": 1,
+    "hash_mb": 16
+  },
+  "uci_loss_audit": {
+    "experiment_name": "uci-loss-audit",
+    "games_json": "results/2026-08-21_uci_playing_pilot_001/games.json",
+    "analysis_cache": "data/processed/uci_loss_audit_cache.json",
+    "opponent": "stockfish-100n",
+    "candidate": "searched-3",
+    "opening_plies": 8,
+    "major_regret_cp": 150,
+    "persistent_disadvantage_cp": 300,
+    "score_clip_cp": 2000,
+    "exploratory_only": true
+  },
+  "benchmark_version": "uci-loss-audit-v1"
+}

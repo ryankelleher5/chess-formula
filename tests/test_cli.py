@@ -40,6 +40,9 @@ def test_cli_parses_required_commands() -> None:
     pilot = build_parser().parse_args(["run-uci-pilot", "--stockfish", "stockfish"])
     assert pilot.command == "run-uci-pilot"
 
+    audit = build_parser().parse_args(["audit-uci-losses", "--stockfish", "stockfish"])
+    assert audit.command == "audit-uci-losses"
+
 
 def test_cli_help(capsys) -> None:
     with pytest.raises(SystemExit) as exc:
