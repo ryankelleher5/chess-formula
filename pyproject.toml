@@ -15,6 +15,7 @@ dependencies = [
   "matplotlib>=3.8",
   "numpy>=1.26",
   "python-chess>=1.999",
+  "zstandard>=0.23",
 ]
 
 [project.optional-dependencies]
@@ -36,4 +37,3 @@ target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
-

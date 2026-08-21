@@ -74,3 +74,41 @@ The first attempted run sampled every fourth ply from an even starting ply, sele
 ### Next experiment
 
 Validate the material-only and compact-5 frontier on an **independent, non-synthetic, license-verified human-game corpus** with the same game-grouped resampling and a new frozen benchmark version. Stratify errors by tactical/quiet character and game phase. This is more valuable than adding another feature now: it tests whether the compact result transfers outside the distribution that created it. If it transfers, compare compact-5 with and without a strictly fixed forcing-line search budget.
+
+## 2026-08-20 — Experiment 003: independent human-domain transfer
+
+### Hypothesis
+
+The compact-5 formula identified on synthetic games retains essentially all useful signal from full-16 when evaluated on independently sourced human games.
+
+### Method
+
+Use the official CC0 Lichess January 2013 standard-rated archive (121,332 games; 17,761,302 compressed bytes; SHA-256 `aa40b3671fa3cf1072eb182892cd90b0e1e003a4a5943492f64b77e7f3fd1635`). Stream the complete verified archive and select a seed-20260822 reservoir sample of 60 completed non-BOT standard games with both ratings at least 1800 and lengths of 40–160 plies. The selected games span ratings 1800–2189 and have PGN SHA-256 `d9797fd5d6867268c8304b6adb954e6058738cac133940e254a8a13c342e305d`.
+
+Sample every third ply after ply four, capped at 20 positions/game. After deduplication, label 1,091 positions (542 White-to-move, 549 Black-to-move) with the same Stockfish 18 depth-8, MultiPV-1, one-thread, 16 MB oracle as Experiment 002. Compare material-only, compact-5, and full-16 over 30 seeded 25% game-grouped holdouts. Stratify by opening/middlegame/endgame and a preregistered forcing proxy: in check or a legal check, promotion, or non-pawn capture exists.
+
+### Result
+
+| Formula | Parameters | Mean MAE ± sd | Mean correlation ± sd | Sign accuracy | ≥500 cp error |
+|---|---:|---:|---:|---:|---:|
+| Material-only | 2 | 154.00 ± 11.08 cp | 0.6473 ± 0.0848 | 72.98% | 3.58% |
+| Compact-5 | 6 | 150.67 ± 10.76 cp | 0.6548 ± 0.0868 | **73.68%** | 3.58% |
+| Full-16 | 17 | **141.25 ± 12.00 cp** | **0.7050 ± 0.0743** | 72.72% | **2.47%** |
+
+Full-16 improves over compact-5 by 9.42 cp mean MAE, 0.0501 correlation, and 1.11 percentage points of catastrophic-error frequency. The gain is concentrated in middlegames (32.03 cp MAE) and forcing-proxy positions (11.24 cp), with little opening MAE gain (0.55 cp). Only 55 endgame positions were present; full-16 had worse endgame MAE but higher endgame correlation, so that stratum is inconclusive.
+
+Several coefficients change materially across domains. Most notably, passed pawns change from a stable median −59.35 cp/unit in synthetic games to a stable +64.25 cp/unit in human games. Human-domain bishop pair, connected pawns, piece activity, and threat pressure are stably positive. These cross-domain reversals are stronger evidence about sampling artifacts than either domain's coefficient alone is evidence about chess law.
+
+### Interpretation
+
+The hypothesis is rejected. Compact-5 does not retain essentially all of full-16's useful human-domain signal. Full-16 is clearly preferable for evaluation MAE, correlation, and catastrophic-error frequency on this sample, although compact-5 retains a small sign-accuracy edge. The description remains tiny at 17 parameters, but the earlier claim that six parameters were the current general Pareto candidate was a synthetic-domain artifact.
+
+The result also identifies where complexity buys value: not much in these openings, but substantially more in human middlegames and positions with forcing options. This supports investigating a minimum transferable subset rather than either discarding handcrafted structure or accepting all 16 features wholesale.
+
+### What failed
+
+The primary failure was scientific transfer, not pipeline execution: a conclusion that looked stable across 30 synthetic game splits failed on an independent human domain. The forcing proxy is intentionally broad (744/1,091 positions), and the endgame stratum is small, so neither should be treated as a precise tactical or endgame result. The sample is from one early Lichess month and remains a narrow human population.
+
+### Next experiment
+
+Use **nested game-grouped feature selection** on the January corpus to find the smallest handcrafted subset that retains the full-16 gain. Feature selection must occur inside each training fold. Lock the resulting subset and selection rule before testing it on a second CC0 Lichess month. This directly advances the complexity frontier while preventing the confirmation corpus from becoming tuning data.

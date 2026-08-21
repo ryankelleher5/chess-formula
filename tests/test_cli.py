@@ -16,6 +16,9 @@ def test_cli_parses_required_commands() -> None:
     corpus = build_parser().parse_args(["generate-corpus", "--output", "generated.pgn"])
     assert corpus.output == "generated.pgn"
 
+    human = build_parser().parse_args(["prepare-human-corpus"])
+    assert human.command == "prepare-human-corpus"
+
 
 def test_cli_help(capsys) -> None:
     with pytest.raises(SystemExit) as exc:

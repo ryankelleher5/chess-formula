@@ -9,6 +9,7 @@ from pathlib import Path
 from .benchmark import benchmark_linear
 from .config import load_config
 from .corpus import generate_corpus
+from .human_corpus import prepare_human_corpus
 from .ingest import ingest_pgn
 from .model import train_linear
 from .oracle import label_positions
@@ -72,6 +73,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     stability.add_argument("model", choices=["baseline-linear"])
     stability.add_argument("--engine-key")
+
+    subparsers.add_parser(
+        "prepare-human-corpus",
+        help="Download, verify, and select a licensed human PGN sample",
+    )
     return parser
 
 
@@ -142,6 +148,10 @@ def main(argv: list[str] | None = None) -> int:
                     "feature_sets": compact,
                 }
             )
+        elif args.command == "prepare-human-corpus":
+            if "human_corpus" not in config:
+                raise ValueError("The active configuration has no human_corpus section")
+            _print(prepare_human_corpus(config))
     except (FileNotFoundError, RuntimeError, ValueError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2

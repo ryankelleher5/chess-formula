@@ -85,6 +85,18 @@ chess-formula --config configs/stability.json stability baseline-linear
 
 The generated PGN, DuckDB database, and report remain ignored. See [docs/synthetic-corpus.md](docs/synthetic-corpus.md) for the sampling domain and limitations.
 
+## Human-domain transfer
+
+The next frozen benchmark uses a deterministic 60-game reservoir sample from the official CC0 Lichess January 2013 standard-rated archive. It contains 1,091 unique positions, balanced 542/549 by side to move. The synthetic compact-5 conclusion did **not** transfer cleanly:
+
+| Formula | Mean MAE | Mean correlation | Sign accuracy | ≥500 cp errors |
+|---|---:|---:|---:|---:|
+| Material-only | 154.00 cp | 0.6473 | 72.98% | 3.58% |
+| Compact-5 | 150.67 cp | 0.6548 | **73.68%** | 3.58% |
+| Full-16 | **141.25 cp** | **0.7050** | 72.72% | **2.47%** |
+
+Full-16 gains most in human middlegames and forcing-proxy positions. A passed-pawn term that was stably negative on synthetic data becomes stably positive on human games, showing why independent-domain validation is required before interpreting coefficients as chess structure. See [docs/human-corpus.md](docs/human-corpus.md) for provenance, licensing, exact checksums, selection rules, and reproduction commands.
+
 ## Scientific controls
 
 - A SHA-256-derived seed-stable split assigns whole games to train, validation, or test.

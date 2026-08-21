@@ -6,6 +6,7 @@ import time
 from datetime import UTC, datetime
 from pathlib import Path
 
+import chess
 import duckdb
 import matplotlib
 import numpy as np
@@ -64,6 +65,34 @@ def summarize_coefficients(
             dominant = 1.0
         summary[name] = {**_interval(values.tolist()), "dominant_sign_fraction": dominant}
     return summary
+
+
+def position_categories(
+    fens: list[str], matrix: np.ndarray, feature_names: list[str]
+) -> dict[str, np.ndarray]:
+    phase = matrix[:, feature_names.index("game_phase")]
+    forcing = []
+    for fen in fens:
+        board = chess.Board(fen)
+        has_forcing_move = board.is_check() or any(
+            move.promotion
+            or board.gives_check(move)
+            or (
+                board.is_capture(move)
+                and (captured := board.piece_at(move.to_square)) is not None
+                and captured.piece_type != chess.PAWN
+            )
+            for move in board.legal_moves
+        )
+        forcing.append(has_forcing_move)
+    forcing_array = np.asarray(forcing, dtype=bool)
+    return {
+        "opening": phase >= 0.75,
+        "middlegame": (phase >= 0.35) & (phase < 0.75),
+        "endgame": phase < 0.35,
+        "forcing-proxy": forcing_array,
+        "quiet-proxy": ~forcing_array,
+    }
 
 
 def _save_plots(artifact: Path, feature_sets: dict, summaries: dict) -> None:
@@ -140,16 +169,26 @@ def _report(experiment_id: str, result: dict) -> str:
     full_correlation_gain = (
         full["evaluation_correlation"]["mean"] - compact["evaluation_correlation"]["mean"]
     )
-    return f"""# Coefficient Stability Experiment: {experiment_id}
+    category_rows = []
+    for label, summary in result["feature_sets"].items():
+        for category, metrics in summary["categories"].items():
+            category_rows.append(
+                f"| {label} | {category} | {result['category_counts'][category]} | "
+                f"{metrics['evaluation_mae_cp']['mean']:.2f} | "
+                f"{metrics['evaluation_correlation']['mean']:.4f} | "
+                f"{metrics['sign_accuracy']['mean']:.2%} |"
+            )
+    return f"""# {result["report_title"]}: {experiment_id}
 
 ## Question
 
-Does the apparent signal in the first 16-feature formula survive changes in which
-source games are held out, and how much does each added level of description buy?
+{result["research_question"]}
 
 ## Method
 
-- Benchmark: `coefficient-stability-v1` (frozen)
+- Benchmark: `{result["benchmark_version"]}` (frozen)
+- Dataset domain: {result["dataset_domain"]}
+- Dataset source: {result["dataset_source"]}
 - Git revision: {result["git_commit"]}
 - Unique source games: {result["games"]}
 - Unique labeled positions: {result["positions"]}
@@ -171,6 +210,15 @@ position-level confidence intervals.
 |---|---:|---:|---:|---:|---:|
 {chr(10).join(rows)}
 
+## Domain strata
+
+`forcing-proxy` means the side to move is in check or has a legal check,
+promotion, or non-pawn capture. It is a reproducible proxy, not a tactical proof.
+
+| Formula | Stratum | Domain positions | Mean MAE cp | Mean correlation | Sign accuracy |
+|---|---|---:|---:|---:|---:|
+{chr(10).join(category_rows)}
+
 ## Full-model coefficient stability
 
 | Feature | Median | 95% resampling interval | Dominant sign fraction |
@@ -179,18 +227,18 @@ position-level confidence intervals.
 
 ## Result
 
-Compact-5 reduces mean MAE by {compact_mae_gain:.2f} cp relative to material-only.
-Adding the other eleven features then worsens mean MAE by {full_mae_cost:.2f} cp
-while increasing mean correlation by only {full_correlation_gain:.4f}. The full
-model also has a higher mean catastrophic-error rate. On this synthetic domain,
-compact-5 is the current description-complexity Pareto candidate; full-16 is not
-justified by its mean held-out measurements.
+Relative to material-only, compact-5 changes mean MAE by {-compact_mae_gain:+.2f}
+cp (negative is better). Relative to compact-5, full-16 changes mean MAE by
+{full_mae_cost:+.2f} cp and mean correlation by {full_correlation_gain:+.4f}.
+These are domain-specific transfer measurements; the research log determines
+whether any quality change justifies the added description complexity and whether
+the differences are large relative to between-game resampling variation.
 
 ## Interpretation guardrail
 
-This experiment measures robustness of Stockfish-evaluation prediction on a
-deterministically generated legal corpus. It does not measure move selection or
-playing strength, and synthetic self-play is not representative of all chess.
+This experiment measures robustness of Stockfish-evaluation prediction within
+the recorded dataset domain. It does not measure move selection or playing
+strength, and no sampled human or synthetic corpus is representative of all chess.
 """
 
 
@@ -236,11 +284,13 @@ def run_stability(
     alpha = float(config["model"]["ridge_alpha"])
     summaries = {}
     game_array = np.asarray(game_ids)
+    categories = position_categories(fens, all_matrix, all_names)
     for label, names in feature_sets.items():
         indexes = [all_names.index(name) for name in names]
         matrix = all_matrix[:, indexes]
         metric_runs: list[dict] = []
         coefficient_runs: list[np.ndarray] = []
+        category_runs: dict[str, list[dict]] = {name: [] for name in categories}
         for train_games, test_games in samples:
             train_mask = np.isin(game_array, list(train_games))
             test_mask = np.isin(game_array, list(test_games))
@@ -248,6 +298,12 @@ def run_stability(
             predicted = matrix[test_mask] @ coefficients + intercept
             metric_runs.append(calculate_metrics(target[test_mask], predicted))
             coefficient_runs.append(coefficients)
+            for category, category_mask in categories.items():
+                selected = category_mask[test_mask]
+                if int(selected.sum()) >= 2:
+                    category_runs[category].append(
+                        calculate_metrics(target[test_mask][selected], predicted[selected])
+                    )
         metric_names = (
             "evaluation_mae_cp",
             "evaluation_correlation",
@@ -263,19 +319,34 @@ def run_stability(
             },
             "coefficients": summarize_coefficients(coefficient_runs, names),
             "coefficient_runs": [run.tolist() for run in coefficient_runs],
+            "categories": {
+                category: {
+                    metric: _interval([float(run[metric]) for run in runs])
+                    for metric in metric_names
+                }
+                for category, runs in category_runs.items()
+            },
         }
     engine = connection.execute(
         "SELECT engine_version, limit_type, limit_value, parameters_json "
         "FROM engine_analysis WHERE engine_key = ? LIMIT 1",
         [resolved_key],
     ).fetchone()
-    experiment_id = _next_experiment_id(Path(results_dir), "coefficient-stability")
+    experiment_name = stability.get("experiment_name", "coefficient-stability")
+    experiment_id = _next_experiment_id(Path(results_dir), experiment_name)
     artifact = Path(results_dir) / experiment_id
     artifact.mkdir(parents=True, exist_ok=False)
     runtime = time.perf_counter() - started
     result = {
         "experiment_id": experiment_id,
         "benchmark_version": config["benchmark_version"],
+        "report_title": stability.get("report_title", "Coefficient Stability Experiment"),
+        "research_question": stability.get(
+            "research_question",
+            "Does formula quality survive changes in which source games are held out?",
+        ),
+        "dataset_domain": stability.get("dataset_domain", "synthetic generated games"),
+        "dataset_source": stability.get("dataset_source", "local deterministic generator"),
         "git_commit": _git_commit(),
         "engine_key": resolved_key,
         "engine": {
@@ -290,6 +361,7 @@ def run_stability(
             "white": sum(fen.split()[1] == "w" for fen in fens),
             "black": sum(fen.split()[1] == "b" for fen in fens),
         },
+        "category_counts": {category: int(mask.sum()) for category, mask in categories.items()},
         "repeats": len(samples),
         "test_fraction": float(stability["test_fraction"]),
         "target_clip_cp": clip,
@@ -317,7 +389,7 @@ def run_stability(
         "INSERT OR REPLACE INTO experiments VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
         [
             experiment_id,
-            "coefficient-stability",
+            experiment_name,
             json.dumps(config, sort_keys=True),
             result["git_commit"],
             started_at,

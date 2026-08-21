@@ -84,5 +84,8 @@ Only after the preceding evidence ask whether near-perfect chess may have a comp
 
 ## Immediate milestone
 
-Phases 0–4 now support the first small-PGN linear experiment. Phase 5 has begun with a 30-repeat game-grouped comparison of 2-, 6-, and 17-parameter formulas. The compact-5 formula is the current Pareto candidate on synthetic data; the next decision gate is independent-domain validation, not additional feature growth.
+Phases 0–4 now support the first small-PGN linear experiment. Phase 5 has begun with a 30-repeat game-grouped comparison of 2-, 6-, and 17-parameter formulas. The compact-5 formula is the current Pareto candidate on synthetic data.
 
+**Completed milestone — independent human-domain validation:** `human-transfer-v1` deterministically selected 60 rating-filtered games from the CC0 Lichess January 2013 archive and evaluated 1,091 unique balanced-side positions over 30 game-grouped resamples. Full-16 improved mean MAE by 9.42 cp and correlation by 0.0501 over compact-5 while reducing catastrophic errors from 3.58% to 2.47%. The synthetic compact-5 Pareto conclusion did not transfer. Provenance, source/license/checksums, integrity audits, phase strata, and a forcing-position proxy are recorded without changing `coefficient-stability-v1`.
+
+**Active milestone — minimum transferable handcrafted subset:** use nested game-grouped feature selection on the January human corpus to identify the smallest subset that retains the full model's human-domain gain, then lock that subset before validating it on a second CC0 month. Do not choose features on the final confirmation month. Exit when a new complexity frontier reports selection frequency, nested held-out performance, and confirmation-domain performance without leakage.

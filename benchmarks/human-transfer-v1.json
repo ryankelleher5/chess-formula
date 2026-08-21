@@ -1,0 +1,29 @@
+{
+  "name": "human-transfer-v1",
+  "question": "Does the synthetic-domain compact formula frontier transfer to independent human games?",
+  "source": {
+    "publisher": "Lichess open database",
+    "archive": "lichess_db_standard_rated_2013-01.pgn.zst",
+    "url": "https://database.lichess.org/standard/lichess_db_standard_rated_2013-01.pgn.zst",
+    "sha256": "aa40b3671fa3cf1072eb182892cd90b0e1e003a4a5943492f64b77e7f3fd1635",
+    "license": "CC0",
+    "license_url": "https://database.lichess.org/"
+  },
+  "selection": {
+    "method": "Seeded reservoir sample over the complete decompressed monthly stream.",
+    "seed": 20260822,
+    "games": 60,
+    "minimum_rating": 1800,
+    "minimum_plies": 40,
+    "maximum_plies": 160,
+    "excluded": ["missing ratings", "BOT titles", "non-standard variants", "unfinished games"]
+  },
+  "position_sampling": "Every 3 plies after ply 4, capped at 20 positions/game; alternates side to move.",
+  "resampling": {
+    "repeats": 30,
+    "test_fraction": 0.25,
+    "group": "game_id"
+  },
+  "frozen": true
+}
+

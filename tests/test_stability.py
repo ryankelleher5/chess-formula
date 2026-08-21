@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import numpy as np
 
+from chess_formula.features import feature_matrix
 from chess_formula.model import fit_ridge
-from chess_formula.stability import grouped_resamples, summarize_coefficients
+from chess_formula.stability import grouped_resamples, position_categories, summarize_coefficients
 
 
 def test_grouped_resamples_are_deterministic_and_disjoint() -> None:
@@ -30,3 +31,15 @@ def test_fit_ridge_recovers_simple_raw_unit_relation() -> None:
     coefficients, intercept = fit_ridge(matrix, target, alpha=0.0)
     np.testing.assert_allclose(coefficients, [3.0], atol=1e-10)
     assert abs(intercept - 7.0) < 1e-10
+
+
+def test_position_categories_partition_phase_and_forcing() -> None:
+    fens = [
+        "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+        "8/8/8/8/8/4k3/6q1/4K3 w - - 0 1",
+    ]
+    matrix, names = feature_matrix(fens)
+    categories = position_categories(fens, matrix, names)
+    assert int(categories["opening"].sum()) == 1
+    assert int(categories["endgame"].sum()) == 1
+    assert np.all(categories["forcing-proxy"] ^ categories["quiet-proxy"])
