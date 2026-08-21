@@ -42,6 +42,10 @@ from .selection import run_nested_selection
 from .stability import run_stability
 from .uci_confirmation import run_forcing_3_confirmation
 from .uci_match import run_uci_pilot
+from .uncertainty_adjudication import (
+    audit_uncertainty_adjudication_source,
+    run_uncertainty_adjudication,
+)
 
 
 def _database(args: argparse.Namespace, config: dict) -> str:
@@ -208,6 +212,15 @@ def build_parser() -> argparse.ArgumentParser:
         help="Run the frozen independent per-legal-move oracle calibration",
     )
     separable.add_argument("--stockfish", required=True)
+    subparsers.add_parser(
+        "audit-uncertainty-adjudication-source",
+        help="Audit the frozen Experiment 019 union and sources without new outcomes",
+    )
+    adjudication = subparsers.add_parser(
+        "run-uncertainty-adjudication",
+        help="Run the frozen 640k independent conservative-union audit",
+    )
+    adjudication.add_argument("--stockfish", required=True)
     return parser
 
 
@@ -562,6 +575,23 @@ def main(argv: list[str] | None = None) -> int:
                     "contexts": result["source_audit"]["contexts"],
                     "legal_branches_per_tier": result["source_audit"][
                         "legal_branches"
+                    ],
+                    "oracle": result["oracle"],
+                    "decision": result["measurement"]["decision"],
+                }
+            )
+        elif args.command == "audit-uncertainty-adjudication-source":
+            _print(audit_uncertainty_adjudication_source(config))
+        elif args.command == "run-uncertainty-adjudication":
+            result, artifact = run_uncertainty_adjudication(args.stockfish, config)
+            _print(
+                {
+                    "experiment_id": result["experiment_id"],
+                    "artifact": str(artifact),
+                    "contexts": result["source_audit"]["contexts"],
+                    "legal_branches": result["source_audit"]["legal_branches"],
+                    "frozen_union_branches": result["source_audit"][
+                        "retained_branches"
                     ],
                     "oracle": result["oracle"],
                     "decision": result["measurement"]["decision"],

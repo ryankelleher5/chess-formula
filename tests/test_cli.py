@@ -80,6 +80,14 @@ def test_cli_parses_required_commands() -> None:
         ["run-branch-separable-oracle", "--stockfish", "stockfish"]
     )
     assert separable.command == "run-branch-separable-oracle"
+    adjudication_audit = build_parser().parse_args(
+        ["audit-uncertainty-adjudication-source"]
+    )
+    assert adjudication_audit.command == "audit-uncertainty-adjudication-source"
+    adjudication = build_parser().parse_args(
+        ["run-uncertainty-adjudication", "--stockfish", "stockfish"]
+    )
+    assert adjudication.command == "run-uncertainty-adjudication"
 
 
 def test_cli_help(capsys) -> None:

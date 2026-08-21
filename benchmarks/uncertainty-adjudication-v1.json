@@ -1,0 +1,26 @@
+{
+  "name": "uncertainty-adjudication-v1",
+  "question": "Does the frozen independent-40k/160k conservative branch union preserve every important branch under a new 640k-per-move audit?",
+  "status": "frozen before any Experiment 019 oracle query",
+  "source": "All 24 root and 134 opponent-parent development contexts frozen before Experiment 016",
+  "legal_branches": 5259,
+  "frozen_union": "Unchanged union of moves within 25 cp at independent 40000 or 160000 nodes per move",
+  "frozen_union_branches": 555,
+  "audit": "Stockfish 18, one thread, 16 MB hash, 640000 nodes per legal move, one independently constrained root move and new-game boundary per call",
+  "metrics": [
+    "top-reply recall",
+    "within-25-cp micro recall",
+    "complete within-25-cp set rate",
+    "25-cp decision preservation",
+    "pruning loss",
+    "omissions over 100 and 300 cp",
+    "mean and micro retained branch fraction"
+  ],
+  "controls": ["40k only", "160k only", "40k/160k intersection", "40k/160k union"],
+  "empty_control_rule": "An empty intersection retains no branch and receives a 4000-cp capped control loss; it is not filled",
+  "advancement": "For both root and parent contexts require 100% top recall, 100% within-25-cp recall, 100% 25-cp decision preservation, zero >100/>300-cp omissions, and mean retained fraction no more than 35% at roots and 20% at parents",
+  "model_training": false,
+  "selection_locked": true,
+  "confirmation_locked": true,
+  "frozen": true
+}

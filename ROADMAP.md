@@ -112,10 +112,11 @@ branch necessity, and exact play across different representations and oracles.
    branches an independent 2,500-to-160,000-node constrained-root search. The
    40,000-node tier reaches only 76.87% opponent top-reply agreement with the
    audit endpoint, so no training reference advances.
-8. **Current:** preregister uncertainty-aware adjudication. Freeze divergent
-   development contexts plus stable controls, then test whether the 40k/160k
-   conservative important-branch union survives a new deeper independent
-   audit without exposing any selection or confirmation outcome.
+8. **Current — Experiment 019 protocol frozen:** audit the unchanged 555-branch
+   40k/160k conservative union against independent 640,000-node searches of all
+   5,259 legal branches across all 158 development contexts. Require complete
+   top and within-25-cp recall, zero catastrophic omissions, and continued
+   compression without exposing selection or confirmation outcomes.
 9. Train only compact initial selectors after the oracle-label gate, select
    at most one under a separately frozen rule, and confirm it on untouched
    grouped data.
