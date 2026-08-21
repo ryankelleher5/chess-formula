@@ -290,6 +290,16 @@ new deeper adjudication of uncertainty-aware labels—not retrospective training
 on the favorable metric. See
 [docs/branch-separable-oracle.md](docs/branch-separable-oracle.md).
 
+Experiment 019 audits that unchanged 40k/160k conservative union with a new
+independent 640,000-node search of every legal development branch. The strict
+complete-recall gate fails, so no training is licensed. However, while
+retaining only 13.59% of opponent replies on average, the union preserves a
+reply within 25 cp in 133 of 134 contexts; its sole decision-level miss costs
+31 cp and none exceeds 100 cp. This separates the harder demand to retain every
+near-best move from the practical demand to retain enough branches for a safe
+decision. See
+[docs/uncertainty-adjudication.md](docs/uncertainty-adjudication.md).
+
 ## Scientific controls
 
 - A SHA-256-derived seed-stable split assigns whole games to train, validation, or test.

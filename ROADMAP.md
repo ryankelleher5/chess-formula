@@ -112,15 +112,21 @@ branch necessity, and exact play across different representations and oracles.
    branches an independent 2,500-to-160,000-node constrained-root search. The
    40,000-node tier reaches only 76.87% opponent top-reply agreement with the
    audit endpoint, so no training reference advances.
-8. **Current — Experiment 019 protocol frozen:** audit the unchanged 555-branch
-   40k/160k conservative union against independent 640,000-node searches of all
-   5,259 legal branches across all 158 development contexts. Require complete
-   top and within-25-cp recall, zero catastrophic omissions, and continued
-   compression without exposing selection or confirmation outcomes.
-9. Train only compact initial selectors after the oracle-label gate, select
-   at most one under a separately frozen rule, and confirm it on untouched
-   grouped data.
-10. Test recursive selection only after branch prediction itself passes.
+8. **Completed in Experiment 019:** audit the unchanged 555-branch 40k/160k
+   conservative union against independent 640,000-node searches of all 5,259
+   legal branches. The literal complete-recall gate fails. Nevertheless, the
+   union preserves a within-25-cp reply in 133 of 134 opponent contexts while
+   retaining 13.59% of replies on average, with one 31-cp miss and no loss over
+   100 cp.
+9. **Current — Experiment 020 design:** preregister a counterexample and
+   decision-sufficiency audit around the sole 31-cp miss plus frozen stable
+   controls. Keep exact-set recall separate, use a deeper or cross-oracle
+   adjudication, and test only prospectively defined compact uncertainty
+   signals—never a hand-added exception for the observed move.
+10. Train only compact initial selectors after a prospective oracle-label
+    gate, select at most one under a separately frozen rule, and confirm it on
+    untouched grouped data.
+11. Test recursive selection only after branch prediction itself passes.
 
 ## Historical phase map — preserved
 
@@ -240,3 +246,5 @@ The summaries below preserve the sequence that motivated the research fork.
 **Completed milestone — branch-oracle convergence:** Experiment 017 runs 1,264 analyses on the frozen 24 root and 134 opponent-parent development contexts. At comparable deepest mean cost, fixed-total and per-legal-reply allocation agree on 87.50% of root moves but only 83.58% of opponent top replies, missing the frozen 85% cross-rule gate; all other cross-rule criteria pass. The penultimate-to-maximum opponent top-reply agreements are only 70.90% and 74.63%, so neither curve has plateaued. No reference is selected and no model is trained. The next calibration isolates every legal move under its own compute budget.
 
 **Completed milestone — branch-separable oracle calibration:** Experiment 018 completes 21,036 independent constrained-root analyses across four budgets and 5,259 legal branches per tier. The 40,000-node tier agrees with the 160,000-node audit on only 76.87% of opponent top replies and has 69.48% top-3 Jaccard, so the frozen gate fails. Its 25-cp labels agree in 96.62% of parent branches, leaving 155 ambiguous moves; treating those conservatively retains 13.59% of replies on average. Matched independent and shared 40,000-node allocation agree on only 76.12% of parent top replies, confirming allocation matters but does not explain all instability. No model is trained; uncertainty-aware labels require a new deeper adjudication.
+
+**Completed milestone — uncertainty-aware branch adjudication:** Experiment 019 audits the frozen 555-branch 40k/160k union with 5,259 new independent 640,000-node searches across all 158 development contexts. The strict gate fails: root/parent top recall is 95.83%/90.30%, and within-25-cp recall is 83.67%/78.40%. Yet decision preservation is 100.00% at roots and 99.25% at opponent parents. The union retains 13.59% of parent replies on average, has 0.47 cp mean loss, one 31-cp miss, and zero losses over 100 or 300 cp. This does not license training; it motivates a prospective distinction between complete near-best-set recovery and decision-sufficient branch recovery.

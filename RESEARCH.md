@@ -926,3 +926,58 @@ moves at a new deeper independent budget. Test prospectively whether the
 already frozen conservative union retains the new top reply and near-best set,
 its catastrophic false-negative rate, and its branch fraction. Only a pass may
 license uncertainty-aware labels for a later training experiment.
+
+## 2026-08-21 — Experiment 019: uncertainty-aware branch adjudication
+
+### Hypothesis
+
+The unchanged conservative union of the independent 40,000- and 160,000-node
+within-25-cp labels will contain every important branch under a new independent
+640,000-node-per-move audit while preserving substantial branch compression.
+
+### Method
+
+Commit the complete protocol, implementation, source checksums, frozen
+555-branch union and its digests, metrics, and firm advancement gate at
+`1ec7aea` before any new oracle query. Give every one of 5,259 legal moves in
+all 158 frozen development contexts its own Stockfish 18 constrained-root
+search of exactly 640,000 nodes. Measure exact top recall, complete
+within-25-cp-set recall, decision preservation, 100/300-cp false-negative
+consequences, and retained branch fraction. Probe no selection or confirmation
+outcome and train no model.
+
+### Result
+
+The strict gate fails. Root top recall is 95.83%, within-25-cp micro recall is
+83.67%, and complete-set recall is 91.67%. Opponent-parent top recall is
+90.30%, within-25-cp micro recall is 78.40%, and complete-set recall is 84.33%.
+The union therefore does not contain every newly important branch and cannot
+license training.
+
+Decision-level performance is substantially stronger. All 24 roots retain an
+audit-co-best move, producing zero pruning loss. At opponent parents, 133 of
+134 contexts retain a move within 25 cp. While retaining 13.59% of replies on
+average, the union has 0.47 cp mean loss, zero median loss, one 31-cp miss, and
+no loss over 100 or 300 cp. The sole unsafe context is preserved under key
+`parent:6116f207af30ada6658fc7c13d679690732de0981eabac4a1498cfa8b93470fd`:
+the audit selects `c7d7`, while the best retained reply `c7b7` is 31 cp worse.
+
+### Interpretation
+
+Reject the literal completeness hypothesis and keep the frozen gate failed.
+The result nevertheless supplies strong evidence that exact near-best-set
+recovery and decision-sufficient branch recovery are different targets. Deep
+search can place many moves inside a 25-cp band; omitting some of them often
+has no effect when an equally good retained move remains. This is evidence for
+compression under a finite Stockfish audit, not a learned branch law and not
+proof of chess truth.
+
+### Next experiment
+
+Do not train yet and do not add a handcrafted exception for the missed move.
+Preregister a counterexample-focused Experiment 020 using the one 31-cp miss
+and SHA-frozen stable controls. Use deeper or cross-oracle adjudication to test
+whether the miss persists, keep complete-set recall as a separate strong
+criterion, and prospectively test whether compact uncertainty information can
+preserve a decision-sufficient branch set. Only a new frozen pass may reopen
+compact selector training.
