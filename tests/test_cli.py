@@ -31,6 +31,9 @@ def test_cli_parses_required_commands() -> None:
     march = build_parser().parse_args(["validate-march"])
     assert march.command == "validate-march"
 
+    depth = build_parser().parse_args(["validate-depth"])
+    assert depth.command == "validate-depth"
+
 
 def test_cli_help(capsys) -> None:
     with pytest.raises(SystemExit) as exc:

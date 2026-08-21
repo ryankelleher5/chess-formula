@@ -16,6 +16,7 @@ from .ingest import ingest_pgn
 from .march import run_march_validation
 from .model import train_linear
 from .oracle import label_positions
+from .robustness import run_depth_robustness
 from .selection import run_nested_selection
 from .stability import run_stability
 
@@ -105,6 +106,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     march.add_argument("--development-database", action="append")
     march.add_argument("--engine-key")
+    depth = subparsers.add_parser(
+        "validate-depth",
+        help="Test the frozen searched formula against a deeper oracle",
+    )
+    depth.add_argument("--development-database", action="append")
+    depth.add_argument("--prior-database", action="append")
     return parser
 
 
@@ -263,6 +270,29 @@ def main(argv: list[str] | None = None) -> int:
                     },
                     "paired_mae_deltas": result["paired_mae_deltas"],
                     "decisions": result["decisions"],
+                }
+            )
+        elif args.command == "validate-depth":
+            if "depth_robustness" not in config:
+                raise ValueError("The active configuration has no depth_robustness section")
+            settings = config["depth_robustness"]
+            result, artifact = run_depth_robustness(
+                args.development_database or settings["development_databases"],
+                args.prior_database or settings["prior_databases"],
+                database,
+                config,
+            )
+            _print(
+                {
+                    "experiment_id": result["experiment_id"],
+                    "artifact": str(artifact),
+                    "positions": result["confirmation_positions"],
+                    "excluded_overlaps": result["prior_domain_positions_excluded"],
+                    "models": {
+                        label: model["metrics"] for label, model in result["models"].items()
+                    },
+                    "paired_mae_deltas": result["paired_mae_deltas"],
+                    "decision": result["decision"],
                 }
             )
     except (FileNotFoundError, RuntimeError, ValueError) as exc:
