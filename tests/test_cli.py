@@ -43,6 +43,9 @@ def test_cli_parses_required_commands() -> None:
     audit = build_parser().parse_args(["audit-uci-losses", "--stockfish", "stockfish"])
     assert audit.command == "audit-uci-losses"
 
+    frontier = build_parser().parse_args(["run-search-frontier", "--stockfish", "stockfish"])
+    assert frontier.command == "run-search-frontier"
+
 
 def test_cli_help(capsys) -> None:
     with pytest.raises(SystemExit) as exc:

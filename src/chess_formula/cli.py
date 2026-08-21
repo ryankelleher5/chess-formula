@@ -19,6 +19,7 @@ from .model import train_linear
 from .move_policy import run_move_policy_validation
 from .oracle import label_positions
 from .robustness import run_depth_robustness
+from .search_frontier import run_search_frontier
 from .selection import run_nested_selection
 from .stability import run_stability
 from .uci_match import run_uci_pilot
@@ -132,6 +133,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Audit the first major errors in lost UCI pilot games",
     )
     audit.add_argument("--stockfish", required=True)
+    frontier = subparsers.add_parser(
+        "run-search-frontier",
+        help="Compare preregistered loss-derived search extensions",
+    )
+    frontier.add_argument("--stockfish", required=True)
     return parser
 
 
@@ -209,9 +215,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "select-features":
             if "feature_selection" not in config:
                 raise ValueError("The active configuration has no feature_selection section")
-            result, artifact = run_nested_selection(
-                database, config, engine_key=args.engine_key
-            )
+            result, artifact = run_nested_selection(database, config, engine_key=args.engine_key)
             _print(
                 {
                     "experiment_id": result["experiment_id"],
@@ -270,8 +274,7 @@ def main(argv: list[str] | None = None) -> int:
             if "march_validation" not in config:
                 raise ValueError("The active configuration has no march_validation section")
             development_databases = (
-                args.development_database
-                or config["march_validation"]["development_databases"]
+                args.development_database or config["march_validation"]["development_databases"]
             )
             result, artifact = run_march_validation(
                 development_databases,
@@ -365,6 +368,25 @@ def main(argv: list[str] | None = None) -> int:
                     "candidate_turns": result["candidate_turns"],
                     "first_error_reply_classes": result["first_error_reply_classes"],
                     "first_error_best_move_kinds": result["first_error_best_move_kinds"],
+                }
+            )
+        elif args.command == "run-search-frontier":
+            if "search_frontier" not in config:
+                raise ValueError("The active configuration has no search_frontier section")
+            result, artifact = run_search_frontier(args.stockfish, config)
+            _print(
+                {
+                    "experiment_id": result["experiment_id"],
+                    "artifact": str(artifact),
+                    "positions": result["positions"],
+                    "models": {
+                        label: {
+                            "mean_regret_cp": model["metrics"]["mean_regret_cp"],
+                            "mean_total_states": model["complexity"]["mean_total_states"],
+                        }
+                        for label, model in result["models"].items()
+                    },
+                    "decision": result["decision"],
                 }
             )
     except (FileNotFoundError, RuntimeError, ValueError) as exc:
