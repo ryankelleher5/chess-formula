@@ -8,6 +8,7 @@ from pathlib import Path
 
 from .benchmark import benchmark_linear
 from .config import load_config
+from .confirmation import run_transfer_confirmation
 from .corpus import generate_corpus
 from .human_corpus import prepare_human_corpus
 from .ingest import ingest_pgn
@@ -84,6 +85,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Run leakage-safe nested game-grouped feature selection",
     )
     selection.add_argument("--engine-key")
+    confirmation = subparsers.add_parser(
+        "confirm-subset",
+        help="Evaluate a frozen January-trained subset on confirmation data",
+    )
+    confirmation.add_argument("--training-database")
+    confirmation.add_argument("--engine-key")
     return parser
 
 
@@ -170,6 +177,30 @@ def main(argv: list[str] | None = None) -> int:
                     "artifact": str(artifact),
                     "consensus_lock": result["consensus_lock"],
                     "nested_performance": result["nested_performance"],
+                }
+            )
+        elif args.command == "confirm-subset":
+            if "confirmation" not in config:
+                raise ValueError("The active configuration has no confirmation section")
+            training_database = (
+                args.training_database or config["confirmation"]["training_database"]
+            )
+            result, artifact = run_transfer_confirmation(
+                training_database,
+                database,
+                config,
+                engine_key=args.engine_key,
+            )
+            _print(
+                {
+                    "experiment_id": result["experiment_id"],
+                    "artifact": str(artifact),
+                    "positions": result["confirmation_positions"],
+                    "excluded_overlaps": result["cross_month_positions_excluded"],
+                    "models": {
+                        label: model["metrics"] for label, model in result["models"].items()
+                    },
+                    "paired_mae_deltas": result["paired_mae_deltas"],
                 }
             )
     except (FileNotFoundError, RuntimeError, ValueError) as exc:

@@ -1,0 +1,31 @@
+{
+  "name": "transfer-confirmation-v1",
+  "question": "Does the January-locked minimum subset transfer unchanged to independent February human games?",
+  "training_benchmark": "human-transfer-v1",
+  "feature_lock": "transferable-subset-v1",
+  "source": {
+    "publisher": "Lichess open database",
+    "archive": "lichess_db_standard_rated_2013-02.pgn.zst",
+    "url": "https://database.lichess.org/standard/lichess_db_standard_rated_2013-02.pgn.zst",
+    "sha256": "c136acdf343293c45252906fee91e3b561fb26a936979f52dbe04bb649a2fd86",
+    "bytes": 18151480,
+    "reported_games": 123961,
+    "license": "CC0",
+    "license_url": "https://database.lichess.org/"
+  },
+  "selection": {
+    "method": "Seeded reservoir sample over the complete decompressed monthly stream.",
+    "seed": 20260823,
+    "games": 60,
+    "minimum_rating": 1800,
+    "minimum_plies": 40,
+    "maximum_plies": 160,
+    "excluded": ["missing ratings", "BOT titles", "non-standard variants", "unfinished games"]
+  },
+  "position_sampling": "Every 3 plies after ply 4, capped at 20 positions/game; exact hashes present in January are excluded.",
+  "uncertainty": {
+    "method": "source-game bootstrap",
+    "repeats": 1000
+  },
+  "frozen": true
+}

@@ -22,6 +22,9 @@ def test_cli_parses_required_commands() -> None:
     selection = build_parser().parse_args(["select-features"])
     assert selection.command == "select-features"
 
+    confirmation = build_parser().parse_args(["confirm-subset"])
+    assert confirmation.command == "confirm-subset"
+
 
 def test_cli_help(capsys) -> None:
     with pytest.raises(SystemExit) as exc:
