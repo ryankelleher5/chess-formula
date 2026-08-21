@@ -61,3 +61,5 @@ chess-formula --config configs/failure-mining.json mine-failures
 February is now development data for hypothesis generation. Neither the cluster
 labels nor post-hoc subgroup measurements count as confirmation. The frozen March
 protocol is documented in [march-preregistration.md](march-preregistration.md).
+The subsequent result rejected the passed-pawn extension and confirmed the
+bounded forcing-search hypothesis; see [march-validation.md](march-validation.md).

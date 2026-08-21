@@ -131,6 +131,13 @@ chess-formula --config configs/failure-mining.json mine-failures
 open results/YYYY-MM-DD_failure_mining_NNN/failure_explorer.html
 ```
 
+The untouched March test confirms the forcing-search hypothesis and rejects the
+passed-pawn extension. Searched Locked-3 achieves 115.91 cp MAE and 0.7465
+correlation, beating static Locked-3 (132.45/0.5933) and static Full-16
+(125.77/0.6400). It expands only 5.04 child positions on average; the paired
+forcing-stratum improvement is −26.65 cp with a 95% interval of [−33.45, −20.11].
+See [docs/march-validation.md](docs/march-validation.md).
+
 ## Scientific controls
 
 - A SHA-256-derived seed-stable split assigns whole games to train, validation, or test.

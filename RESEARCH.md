@@ -216,3 +216,44 @@ Static Full-16 does not repair the dominant tactical extremes; adding all omitte
 ### Next experiment
 
 Run the frozen `march-compact-rules-v1` protocol on 120 independently sampled March games. Train static coefficients on the deduplicated January/February union. Compare material-only, Locked-3, Locked-4-passed, two-ply/128-child forcing-search versions of both compact models, and Full-16. Candidate A advances only with a paired overall-MAE interval excluding zero; Candidate B advances only with a paired forcing-stratum-MAE interval excluding zero. Do not alter the protocol after viewing March.
+
+## 2026-08-20 — Experiment 007: untouched March compact-rule validation
+
+### Hypothesis
+
+Two February-derived candidates can be distinguished prospectively: a passed-pawn term may improve overall compact-formula MAE, while a strictly bounded forcing search may improve forcing-stratum MAE.
+
+### Method
+
+Commit the complete executable protocol at `79b8787` before accessing March. Stream and verify the official CC0 March 2013 Lichess archive (158,635 games; 23,590,691 bytes; SHA-256 `89da64fc3c1fe3bfd571d7f626232189f3259aa728b46ea81e5cb8f3fdb34b9e`). From 11,349 eligible games, select a seed-20260825 reservoir sample of 120 games. The selected ratings span 1800–2313 and the PGN SHA-256 is `3cfc9f5b36343da68d4cce67bad364528faa3294bb972d634f7a26a6e98ae7c4`.
+
+Sample 2,229 unique positions, balanced 1,108/1,121 by side to move, and label with the unchanged Stockfish 18 depth-8 oracle. Pool and deduplicate January/February into 2,170 development positions, averaging the 26 duplicate shallow labels that differ by at most 24 cp. Exclude 45 March/development overlaps, leaving 2,184 March positions. Fit static coefficients only on development data. Evaluate the preregistered static models and two-ply/128-child selective minimax, using compact formulas—not Stockfish—at leaves. Use 1,000 paired source-game bootstrap samples.
+
+### Result
+
+| Candidate | Params | Overall MAE | Forcing MAE | Correlation | Sign | ≥500 cp |
+|---|---:|---:|---:|---:|---:|---:|
+| Material-only | 2 | 134.98 | 162.27 | 0.5291 | **72.12%** | 2.66% |
+| Locked-3 | 4 | 132.45 | 154.93 | 0.5933 | 69.32% | 2.20% |
+| Locked-4-passed | 5 | 132.64 | 155.05 | 0.5973 | 69.41% | 2.06% |
+| Full-16 | 17 | 125.77 | 147.72 | 0.6400 | 71.84% | 2.15% |
+| Searched Locked-3 | 4 + search | **115.91** | **128.18** | **0.7465** | 70.47% | 1.01% |
+| Searched Locked-4-passed | 5 + search | 116.60 | 129.12 | 0.7446 | 70.60% | **0.87%** |
+
+Candidate A does not advance: passed-pawn minus Locked-3 overall MAE is +0.21 cp with 95% interval [−1.20, +1.68]. Candidate B advances: searched minus static Locked-3 forcing MAE is −26.65 cp [−33.45, −20.11]. Search also improves overall MAE by 16.55 cp, correlation by 0.1532, and catastrophic-error frequency by 1.19 percentage points. It beats static Full-16 overall MAE by 9.86 cp.
+
+The search expands a mean of 5.04 child positions per root (p95 18, maximum 60); no position reaches the 128-child cap. The Python implementation takes 2.18 ms/position including feature extraction.
+
+### Interpretation
+
+The passed-pawn cluster did not transfer as a useful one-term MAE improvement, validating the preregistered refusal to promote a February association without confirmation. The forcing pattern did transfer strongly. On this domain, a tiny amount of selective computation provides more predictive value than thirteen additional static coefficients.
+
+This supports the project's “compact principles plus rare search-heavy exceptions” possibility, although “rare” is not yet established and the algorithm's rules/expanded positions count toward complexity. The result predicts a shallow engine evaluation; it is not evidence of move quality or playing strength. Material-only's sign-accuracy edge also remains.
+
+### What failed
+
+Candidate A failed its primary decision rule despite the apparently coherent February cluster and a positive fitted passed-pawn coefficient. This is precisely the kind of false lead prospective validation is meant to eliminate. The 128-child budget was never reached, so this experiment does not reveal behavior at the cap. Static and searched latency were not benchmarked in an optimized common implementation, so the recorded Python latency is descriptive rather than a fair speed ratio.
+
+### Next experiment
+
+Freeze Searched Locked-3 and test whether its gain survives a deeper Stockfish oracle on an untouched April human corpus. Keep the formula, forcing-move definition, two-ply depth, and 128-child cap unchanged. Add explicit move-choice evaluation only after depth robustness: the current stand-pat mechanism predicts position value but does not always select a legal root move.
