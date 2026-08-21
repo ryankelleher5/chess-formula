@@ -148,3 +148,41 @@ The preregistered stopping threshold was satisfied on inner folds but did not ge
 ### Next experiment
 
 Apply the frozen `material + space + tempo` formula, material-only, and full-16 to a deterministic 60-game sample from the independently verified CC0 Lichess February 2013 archive. Train coefficients only on January, exclude exact positions duplicated across months, and report game-clustered confirmation intervals. Do not tune on February.
+
+## 2026-08-20 — Experiment 005: frozen February transfer confirmation
+
+### Hypothesis
+
+The prospectively locked `material + space + tempo` subset preserves a meaningful majority of full-16's MAE gain over material when its coefficients are trained only on January and evaluated unchanged on independent February games.
+
+### Method
+
+Before accessing February labels, freeze `transfer-confirmation-v1` at Git revision `7dc772a`. Verify the official CC0 Lichess February 2013 standard-rated archive (123,961 games; 18,151,480 bytes; SHA-256 `c136acdf343293c45252906fee91e3b561fb26a936979f52dbe04bb649a2fd86`) and stream all games. With seed 20260823 and the unchanged January eligibility rules, select 60 of 8,966 eligible games. The sample spans ratings 1802–2208 and has PGN SHA-256 `08f4a02582b9d5c131b1475dbea1b06647f8136981d456985967c2fd8724cd5b`.
+
+Use the unchanged position sampler and Stockfish 18 depth-8 oracle. Sampling yields 1,106 unique balanced-side positions (551 White/555 Black). Exclude 27 exact rule-state hashes present in January, leaving 1,079 confirmation positions. Fit material-only, locked-3, and full-16 coefficients on all 1,091 January positions only. Report fixed February metrics and 1,000 source-game bootstrap intervals.
+
+### Result
+
+| Formula | Parameters | February MAE | Correlation | Sign accuracy | ≥500 cp error |
+|---|---:|---:|---:|---:|---:|
+| Material-only | 2 | 149.09 cp | 0.5637 | **73.68%** | 3.80% |
+| Locked-3 | 4 | 142.85 cp | 0.6330 | 70.71% | 3.43% |
+| Full-16 | 17 | **141.76 cp** | **0.6473** | 72.01% | **3.15%** |
+
+Locked-3 improves point MAE by 6.24 cp over material and captures 85.2% of full-16's 7.32 cp gain. The paired bootstrap mean for locked minus material is −6.31 cp with a 95% interval of [−12.33, −1.08]. Full minus locked is only −1.10 cp [−8.41, +6.08], leaving the incremental MAE value of the extra 13 parameters unresolved on this sample.
+
+The January-trained locked formula is `13.1843 + 78.2224·material + 11.7123·space + 68.8036·tempo`. Relative to material, it improves forcing-proxy MAE by 10.96 cp, middlegame MAE by 14.64 cp, and endgame MAE by 26.76 cp. It is 3.64 cp worse on quiet-proxy positions and loses 2.97 percentage points of overall sign accuracy.
+
+### Interpretation
+
+The hypothesis is supported in its deliberately modest form. A four-parameter evaluator transfers a substantial majority of the 17-parameter evaluator's MAE gain to an untouched month, and the paired game bootstrap supports an improvement over material. This prospective result is stronger evidence for compression than January's unstable inner selections alone.
+
+The result does not establish that Locked-3 is universally sufficient or strictly superior. It misses the preselection target of 90% by point estimate, performs worse on sign accuracy and quiet positions, and full-16 retains slightly better MAE, correlation, and catastrophic-error frequency. Because full-minus-locked uncertainty crosses zero, the current sample cannot justify those 13 extra parameters on MAE alone.
+
+### What failed
+
+The January nested procedure predicted only a 3.23 cp outer-fold gain for its varying selected subsets, substantially underestimating the frozen consensus lock's 6.24 cp February gain. Conversely, the lock did not quite reach its nominal 90% gain-retention target. Metric choice matters: material-only still has the best sign accuracy. These tensions prevent a single “best formula” claim.
+
+### Next experiment
+
+Mine the already-frozen February failures without changing the confirmation result: identify game-grouped clusters where Locked-3 has ≥300 cp error or disagrees sharply with full-16, and test which omitted concepts describe those failures. Any proposed new compact rule must be preregistered and evaluated on a new March corpus; February may generate hypotheses but not validate them.

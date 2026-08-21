@@ -33,8 +33,10 @@ outer folds, despite the inner 90% stopping target. This is evidence that the
 selection decision is unstable at the present sample size, not evidence that the
 three-feature formula is sufficient.
 
-The subset remains frozen for the independent February test. Changing it in
-response to February results would convert the confirmation set into tuning data.
+The subset remained frozen for the independent February test. It subsequently
+captured 85.2% of full-16's February MAE gain over material; the complete one-shot
+result is in [transfer-confirmation.md](transfer-confirmation.md). February remains
+confirmation data and is not used to repair the lock.
 
 ## Reproduction
 

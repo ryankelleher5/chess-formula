@@ -108,6 +108,13 @@ rather than repaired using confirmation data. See
 [docs/feature-selection.md](docs/feature-selection.md) for the leakage controls,
 selection rule, and exact lock.
 
+The frozen February confirmation evaluated 1,079 positions not duplicated in
+January. Locked-3 achieved 142.85 cp MAE and 0.6330 correlation, compared with
+149.09/0.5637 for material-only and 141.76/0.6473 for full-16. It captured 85.2%
+of full-16's MAE gain with four parameters, and its paired bootstrap improvement
+over material excluded zero. Its sign accuracy was worse, so compression is not a
+uniform win. See [docs/transfer-confirmation.md](docs/transfer-confirmation.md).
+
 ## Scientific controls
 
 - A SHA-256-derived seed-stable split assigns whole games to train, validation, or test.
