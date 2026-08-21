@@ -118,15 +118,21 @@ branch necessity, and exact play across different representations and oracles.
    union preserves a within-25-cp reply in 133 of 134 opponent contexts while
    retaining pooled `rho = 10.87%` of replies (13.59% mean-context fraction),
    with one 31-cp miss and no loss over 100 cp.
-9. **Current — Experiment 020 protocol frozen:** test whether value trajectory
-   across compute budgets is a general allocation signal. Audit the unchanged
-   10k/40k/160k temporal union against independent 2.56M-node searches of all
-   5,259 branches. Advance on decision sufficiency and continued compression;
-   report exact-set recall only as a diagnostic.
-10. Train only compact initial selectors after a prospective oracle-label
-    gate, select at most one under a separately frozen rule, and confirm it on
-    untouched grouped data.
-11. Test recursive selection only after branch prediction itself passes.
+9. **Completed in Experiment 020:** audit the frozen 10k/40k/160k temporal
+   union against independent 2.56M-node searches of all 5,259 branches. It
+   retains pooled `rho = 11.66%` of parent replies and preserves a within-25-cp
+   reply in 133 of 134 parent contexts, but one genuinely late-emerging branch
+   causes a 61-cp loss. The frozen gate fails; no selector discovery is
+   licensed.
+10. **Current — Experiment 021 design:** stop escalating Stockfish node
+    budgets and move branch-law calibration to exact-domain ground truth.
+    Extend beyond the completed three-piece foundation, define exact branch
+    necessity and decision sufficiency, and test generic allocation signals
+    with symmetry-isolated development, selection, and confirmation domains.
+11. Train compact ordinary-position selectors only after an exact-domain or
+    alternative-oracle experiment supplies a separately frozen training
+    license.
+12. Test recursive selection only after branch prediction itself passes.
 
 ## Historical phase map — preserved
 
@@ -248,3 +254,5 @@ The summaries below preserve the sequence that motivated the research fork.
 **Completed milestone — branch-separable oracle calibration:** Experiment 018 completes 21,036 independent constrained-root analyses across four budgets and 5,259 legal branches per tier. The 40,000-node tier agrees with the 160,000-node audit on only 76.87% of opponent top replies and has 69.48% top-3 Jaccard, so the frozen gate fails. Its 25-cp labels agree in 96.62% of parent branches, leaving 155 ambiguous moves; treating those conservatively retains pooled `rho = 10.87%` of parent replies, or 13.59% when context fractions are equally weighted. Matched independent and shared 40,000-node allocation agree on only 76.12% of parent top replies, confirming allocation matters but does not explain all instability. No model is trained; uncertainty-aware labels require a new deeper adjudication.
 
 **Completed milestone — uncertainty-aware branch adjudication:** Experiment 019 audits the frozen 555-branch 40k/160k union with 5,259 new independent 640,000-node searches across all 158 development contexts. The strict gate fails: root/parent top recall is 95.83%/90.30%, and within-25-cp recall is 83.67%/78.40%. Yet local reply decision preservation is 100.00% at roots and 99.25% at opponent parents. The union retains pooled `rho = 10.87%` of parent replies; its equally weighted mean-context fraction is 13.59%. It has 0.47 cp mean loss, one 31-cp miss, and zero losses over 100 or 300 cp. This expensive oracle-built set is neither deployable nor recursive and does not measure final root decisions. The result does not license training; it motivates a prospective distinction between complete near-best-set recovery and decision-sufficient branch recovery.
+
+**Completed milestone — temporal computation-allocation adjudication:** Experiment 020 audits the frozen 594-branch 10k/40k/160k temporal union with 5,259 new independent 2.56M-node searches. Roots preserve a co-best branch in every context. Opponent parents retain pooled `rho = 11.66%` (14.39% mean-context fraction) and preserve a within-25-cp reply in 133 of 134 contexts, but the sole miss costs 61 cp and fails the frozen maximum-loss gate. The omitted `a4c6` branch was 124, 59, and 69 cp behind at the three selector checkpoints before becoming best at 640k and 2.56M. Previous computational promise is therefore useful but insufficient as a complete allocation law. No model is trained or licensed; the Stockfish budget ladder ends and the next calibration moves to exact-domain or alternative-oracle truth.

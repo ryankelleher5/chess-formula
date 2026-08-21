@@ -312,6 +312,16 @@ is the primary gate; exact top and complete near-best-set recall are
 diagnostics. See
 [docs/temporal-allocation-preregistration.md](docs/temporal-allocation-preregistration.md).
 
+That prospective 2.56M-node audit fails its decision-sufficiency gate. The
+temporal union preserves a within-25-cp reply in 133 of 134 opponent contexts
+at pooled `rho = 11.66%`, but one branch that looked 59–124 cp inferior at all
+three early checkpoints later becomes best and produces a 61-cp omission.
+This rejects the tested temporal-union rule without rejecting branch
+compression generally. Per the frozen protocol, the project will not add
+another Stockfish budget tier or train an ordinary selector from these labels;
+the next calibration moves to exact-domain ground truth. See
+[docs/temporal-allocation-adjudication.md](docs/temporal-allocation-adjudication.md).
+
 ## Scientific controls
 
 - A SHA-256-derived seed-stable split assigns whole games to train, validation, or test.

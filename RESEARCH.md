@@ -984,3 +984,55 @@ work. Freeze the generic 10k/40k/160k temporal union across all contexts and
 audit every legal move at 2.56M nodes. Make decision sufficiency primary and
 complete-set recall diagnostic. Only a new frozen pass may reopen compact
 selector training.
+
+## 2026-08-21 — Experiment 020: temporal computation-allocation adjudication
+
+### Hypothesis
+
+A generic history of computational promise identifies branches deserving
+continued work: retaining every move within 25 cp at any independent 10k, 40k,
+or 160k checkpoint will remain decision-sufficient under a new 2.56M-node
+audit while preserving substantial compression.
+
+### Method
+
+Commit the complete protocol, implementation, source checksums, frozen
+594-branch temporal union, metrics, and gate at `a64f17a` before any new oracle
+query. Give all 5,259 legal moves in all 158 development contexts an
+independent Stockfish 18 constrained-root search of exactly 2,560,000 nodes.
+Make 25-cp decision preservation and maximum loss the advancement target;
+retain exact-top and complete near-best-set recall as diagnostics. Train no
+model and probe no selection or confirmation outcome.
+
+### Result
+
+The gate fails. All 24 roots retain an audit-co-best move and have zero pruning
+loss. At opponent parents, the temporal union retains 534 of 4,580 branches,
+pooled `rho = 11.66%`; its mean-context fraction is 14.39%. It retains a move
+within 25 cp in 133 of 134 contexts, with 0.66 cp mean loss, zero median loss,
+and one 61-cp maximum loss. No omission exceeds 100 or 300 cp, but the frozen
+maximum was 25 cp. Compact selector discovery is not licensed.
+
+The sole decision failure is
+`parent:d995ce6f9bebaf70a1c7e52cbbaac6f48d3c15177db9defb7cff9ee91d3f84d2`.
+The omitted `a4c6` branch has regrets of 154, 124, 59, and 69 cp at 2.5k, 10k,
+40k, and 160k, then becomes best at both 640k and 2.56M. At the final audit,
+the best retained `c5c6` branch is 61 cp worse.
+
+### Interpretation
+
+Reject the tested temporal-union hypothesis under the frozen gate. Previous
+computational promise contains signal—the selector is sufficient in 99.25% of
+sampled opponent contexts—but cannot guarantee discovery of branches whose
+value emerges only much later. Do not turn the failure into a move exception
+or new chess category. This experiment remains local oracle-set calibration,
+not recursive search or final root-decision measurement.
+
+### Next experiment
+
+Honor the preregistered stop rule: do not add another Stockfish budget tier and
+do not train an ordinary compact selector. Move the next branch-law calibration
+to exact-domain ground truth, with alternative-oracle work retained as a later
+cross-check. Extend beyond the completed three-piece measurement foundation so
+branch necessity and decision sufficiency can be labeled without finite-search
+horizon uncertainty.
