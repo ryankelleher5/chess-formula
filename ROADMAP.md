@@ -124,11 +124,14 @@ branch necessity, and exact play across different representations and oracles.
    reply in 133 of 134 parent contexts, but one genuinely late-emerging branch
    causes a 61-cp loss. The frozen gate fails; no selector discovery is
    licensed.
-10. **Current — Experiment 021 design:** stop escalating Stockfish node
-    budgets and move branch-law calibration to exact-domain ground truth.
-    Extend beyond the completed three-piece foundation, define exact branch
-    necessity and decision sufficiency, and test generic allocation signals
-    with symmetry-isolated development, selection, and confirmation domains.
+10. **Current — Experiment 021 draft awaiting preregistration review:** move
+    branch-law calibration to KPKP exact-domain ground truth. The draft makes
+    five-valued WDL preservation the absolute safety condition, uses DTZ and
+    unique-saving strata to prevent equivalence saturation, predicts at least
+    one optimal branch rather than every redundant optimum, and keeps exact
+    selection and confirmation outcomes technically sealed. No new tablebase
+    outcome is authorized until the outcome-free census, manifests, metrics,
+    candidate caps, and final protocol are reviewed and committed.
 11. Train compact ordinary-position selectors only after an exact-domain or
     alternative-oracle experiment supplies a separately frozen training
     license.
