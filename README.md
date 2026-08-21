@@ -194,6 +194,14 @@ because it averages 1,074.8 states rather than 2,303.7, although it still costs
 opening-suite confirmation, not a playing-strength result. See
 [docs/search-frontier.md](docs/search-frontier.md).
 
+Forcing-3 then passes a prospectively frozen 80-game confirmation on 20 new
+opening pairs with zero pilot-position overlap. It scores 14-24-2 against the
+accepted two-ply policy: 65.0% [58.75%, 72.5%], approximately +108 engine-pool
+Elo [+61, +168]. It also scores 0-14-26 against Stockfish-100n. All games have
+zero faults. The gain costs 4.99 times the baseline state count and 4.82 times
+its Python latency, so Forcing-3 is stronger but substantially less efficient.
+See [docs/forcing-3-confirmation.md](docs/forcing-3-confirmation.md).
+
 ## Scientific controls
 
 - A SHA-256-derived seed-stable split assigns whole games to train, validation, or test.

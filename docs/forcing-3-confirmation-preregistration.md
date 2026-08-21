@@ -56,3 +56,12 @@ Forcing-3 confirms only if both conditions hold:
 Stockfish-100n is an external anchor with no pass threshold. If the primary gate
 fails, Searched-3 remains the accepted policy. Report the result without tuning
 the candidate, openings, resources, or rule. Pool Elo is not human FIDE Elo.
+
+## Outcome
+
+The gate passes. Forcing-3 scores 14-24-2 against Searched-3: 65.0% with a
+paired interval of [58.75%, 72.5%], approximately +108 engine-pool Elo
+[+61, +168]. It scores 0-14-26 against Stockfish-100n. All 80 games have zero
+candidate faults and opponent forfeits. See
+[Forcing-3 UCI confirmation](forcing-3-confirmation.md) for resources,
+interpretation, PGN validation, and limitations.

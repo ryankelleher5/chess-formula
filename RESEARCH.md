@@ -453,3 +453,44 @@ The two locally obvious breadth patches do not qualify. Including every capture 
 ### Next experiment
 
 Lock Forcing-3 exactly as tested and expose it through UCI. Before scored play, freeze a new color-reversed opening suite that excludes all 20 pilot openings, direct comparison against the accepted two-ply policy and Stockfish-100n, fault/adjudication rules, paired score and engine-pool Elo intervals, and explicit state/wall-time reporting. Do not tune from confirmation games.
+
+## 2026-08-21 — Experiment 013: untouched Forcing-3 UCI confirmation
+
+### Hypothesis
+
+The loss-derived Forcing-3 policy improves complete-game score over the accepted Searched-3 baseline on untouched opening pairs, with a 95% paired-bootstrap lower bound above 50%, while retaining perfect UCI reliability.
+
+### Method
+
+Commit the complete policy, UCI runner, opening suite, opponents, resources, and decision rule at `df7c2da` before any scored game. The candidate keeps the exact Locked-3 coefficients and adds a third forcing ply, tactical-first ordering, stand-pat outside check, and a 256-child budget separately for each legal root.
+
+Use 20 new eight-ply openings with 20 unique final rule states, suite SHA-256 `a4a8b749d8ad5fbbb8c21f2a297caab4576e2d4659e94b5d22c93f57b9324e85`, and zero final-state or move-sequence overlap with the pilot suite. Play each twice with candidate colors reversed against Searched-3 and Stockfish 18 at 100 nodes per move: 40 games per opponent, 80 total. Preserve the five-second timeout, 160-ply cap, claimable draws, no evaluation adjudication, immediate fault forfeits, and 10,000 complete-opening-pair bootstrap samples.
+
+Confirm only with zero candidate faults, zero opponent forfeits, and a primary score lower bound above 50% against Searched-3. Treat Stockfish as an external anchor without a threshold. Before scoring, an external Forcing-3 UCI handshake and an unscored six-ply game completed legally. One initial handshake assertion incorrectly required more reported states than legal roots in the start position; legal stand-pat can make the counts equal. Correcting that smoke-only assertion changed no engine, protocol, or scored data.
+
+### Result
+
+| Opponent | W-D-L | Score [95%] | Engine-pool Elo [95%] |
+|---|---:|---:|---:|
+| Searched-3 baseline | 14-24-2 | **65.0% [58.75%, 72.5%]** | **+108 [+61, +168]** |
+| Stockfish-100n | 0-14-26 | 17.5% [10.0%, 25.0%] | −269 [−382, −191] |
+
+The preregistered gate passes. Against Searched-3, candidate score is 62.5% as White and 67.5% as Black. Against Stockfish it is 10.0% as White and 25.0% as Black. All 80 games have zero candidate illegal moves, timeouts, crashes, or null moves and zero opponent forfeits. All 80 PGNs parse without error and match the JSON records. Terminations are 42 checkmates, 36 threefold repetitions, and two 160-ply draws.
+
+Forcing-3 averages 1,099.37 states and 329.10 ms/move against Searched-3, versus 220.19 states and 68.24 ms for the baseline: 4.99x states and 4.82x latency. Against Stockfish, candidate averages rise to 1,418.62 states and 427.09 ms because the games and positions differ. The full run takes 1,229.29 seconds.
+
+### Interpretation
+
+The loss-derived move-regret improvement generalizes across a clean opening boundary and complete adversarial games. The same three-feature formula becomes substantially stronger through one additional selective ply. Forcing-3 therefore replaces Searched-3 as the accepted compact policy.
+
+The result also quantifies a steep computational trade: approximately +108 pool Elo against the baseline costs about five times its work. This supports compact evaluation plus selective search, not a claim that strong chess is captured by the four fitted coefficients alone. Stockfish remains decisively stronger and roughly 500 times faster per move in this Python comparison, although its nodes are not equivalent to candidate states.
+
+The 17.5% external-anchor score is numerically above the prior pilot's 11.25%, but the opening suites differ. It is therefore contextual evidence, not a direct paired improvement estimate. Neither pool Elo number is a human FIDE rating.
+
+### What failed
+
+No scored protocol failure occurred. Two games against Stockfish reached the 160-ply cap. The primary match contains only 20 opening pairs, so its interval remains conditional on this suite. The selected candidate reaches its per-root cap on development positions, and the confirmation does not isolate depth from the doubled cap. Pure-Python latency is unsuitable for conventional real-time engine play without optimization.
+
+### Next experiment
+
+Build a fixed-budget search-efficiency curve around the confirmed policy. Hold the formula fixed and preregister forcing-search depth/cap combinations spanning approximately 100, 300, 1,000, and 3,000 mean states per decision. Use the completed games only for development, then freeze a new opening suite for any playing-strength claim. Determine whether most of the third-ply gain survives at materially lower computation.

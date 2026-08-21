@@ -10,6 +10,8 @@ from typing import TextIO
 import chess
 
 from .frozen_policy import (
+    FORCING_3_MAXIMUM_EXPANDED_CHILDREN_PER_ROOT,
+    FORCING_3_SEARCH_DEPTH_PLIES,
     MAXIMUM_EXPANDED_CHILDREN_PER_ROOT,
     SEARCH_DEPTH_PLIES,
     TERMINAL_CP,
@@ -18,7 +20,7 @@ from .frozen_policy import (
 from .move_policy import PolicyChoice, choose_legal_move
 from .search_frontier import choose_frontier_move
 
-ENGINE_NAME = "Chess Formula Searched Locked-3"
+ENGINE_NAME = "Chess Formula Locked-3"
 ENGINE_AUTHOR = "Chess Formula contributors"
 
 
@@ -46,7 +48,7 @@ def parse_position(command: str) -> chess.Board:
 
 
 class UciPolicyEngine:
-    def __init__(self, policy: str = "searched-3") -> None:
+    def __init__(self, policy: str = "forcing-3") -> None:
         self.policy = policy
         self.formula = frozen_formula(policy)
         self.board = chess.Board()
@@ -56,8 +58,8 @@ class UciPolicyEngine:
             choice = choose_frontier_move(
                 self.board,
                 self.formula.evaluate,
-                selector_schedule=["forcing", "forcing", "forcing"],
-                maximum_expanded_children_per_root=256,
+                selector_schedule=["forcing"] * FORCING_3_SEARCH_DEPTH_PLIES,
+                maximum_expanded_children_per_root=(FORCING_3_MAXIMUM_EXPANDED_CHILDREN_PER_ROOT),
                 terminal_cp=TERMINAL_CP,
             )
             return PolicyChoice(
@@ -103,8 +105,10 @@ class UciPolicyEngine:
             nodes = choice.legal_moves_evaluated + choice.forcing_children_expanded
             score = choice.predicted_cp if self.board.turn is chess.WHITE else -choice.predicted_cp
             nps = round(nodes * 1000 / elapsed_ms)
+            depth = 4 if self.policy == "forcing-3" else 3 if self.policy == "searched-3" else 1
             return [
-                f"info depth 3 score cp {round(score)} nodes {nodes} nps {nps} time {elapsed_ms}",
+                f"info depth {depth} score cp {round(score)} nodes {nodes} "
+                f"nps {nps} time {elapsed_ms}",
                 f"bestmove {choice.move}",
             ]
         if name in {"setoption", "stop", "ponderhit", "debug", "register"}:
@@ -136,7 +140,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--policy",
         choices=["searched-3", "forcing-3", "locked-3", "full-16"],
-        default="searched-3",
+        default="forcing-3",
     )
     return parser
 
