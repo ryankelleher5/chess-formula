@@ -94,6 +94,8 @@ def test_cli_parses_required_commands() -> None:
         ["run-temporal-allocation-adjudication", "--stockfish", "stockfish"]
     )
     assert temporal.command == "run-temporal-allocation-adjudication"
+    kpkp = build_parser().parse_args(["audit-kpkp-review-source"])
+    assert kpkp.command == "audit-kpkp-review-source"
 
 
 def test_cli_help(capsys) -> None:

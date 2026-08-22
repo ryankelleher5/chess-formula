@@ -20,6 +20,7 @@ from .budget_curve import run_fixed_budget_curve
 from .config import load_config
 from .confirmation import run_transfer_confirmation
 from .corpus import generate_corpus
+from .exact_kpkp import audit_kpkp_review_config
 from .failures import run_failure_mining
 from .human_corpus import prepare_human_corpus
 from .ingest import ingest_pgn
@@ -234,6 +235,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="Run the frozen 2.56M independent temporal-union audit",
     )
     temporal.add_argument("--stockfish", required=True)
+    subparsers.add_parser(
+        "audit-kpkp-review-source",
+        help="Run the outcome-free Experiment 021 census and leakage audit",
+    )
     return parser
 
 
@@ -629,6 +634,8 @@ def main(argv: list[str] | None = None) -> int:
                     "decision": result["measurement"]["decision"],
                 }
             )
+        elif args.command == "audit-kpkp-review-source":
+            _print(audit_kpkp_review_config(config))
     except (FileNotFoundError, RuntimeError, ValueError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2

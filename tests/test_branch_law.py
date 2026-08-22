@@ -161,6 +161,7 @@ def test_baselines_return_complete_deterministic_orderings() -> None:
 def test_branch_law_json_contracts_parse() -> None:
     for path in (
         Path("configs/branch-law-foundation.json"),
+        Path("configs/experiment-021-kpkp-review.json"),
         Path("benchmarks/branch-law-foundation-v1.json"),
         Path("schemas/exact-state-v1.json"),
         Path("schemas/branch-record-v1.json"),

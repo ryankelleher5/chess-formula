@@ -1,10 +1,10 @@
-# Draft for review — Experiment 021 KPKP exact branch-law discovery
+# Final review candidate — Experiment 021 KPKP exact branch-law discovery
 
 ## Status: not frozen and not authorized to run
 
-This document is a preregistration **draft**. It is not a frozen protocol,
+This document is a preregistration **review candidate**. It is not a frozen protocol,
 benchmark, configuration, or authorization to download/probe new tablebase
-outcomes. No KPKP tablebase outcome has been opened for this draft.
+outcomes. No KPKP tablebase outcome has been opened for this review candidate.
 
 Before any exact outcome is probed, implementation must reproduce an
 outcome-free census, canonicalization audit, partition counts, sample digests,
@@ -102,16 +102,92 @@ Before tablebase probing:
 5. freeze SHA-256 digests for every partition and deterministic sample; and
 6. verify zero canonical-key overlap among partitions.
 
+Partition identity alone does not prevent label leakage. Samples therefore use
+a bidirectional **one-ply transition embargo** after the initial 60/20/20 hash
+assignment:
+
+- no root in one sample may equal or be symmetry-equivalent to a root in
+  another sample;
+- no legal successor of a development root may be a selection or confirmation
+  root;
+- no legal successor of a selection or confirmation root may be a development
+  root;
+- selection and confirmation samples obey the same bidirectional isolation;
+- audits report exact root, symmetry, directed transition, predecessor, and
+  successor overlap counts; every count must be zero; and
+- development roots connected by any one-ply KPKP transition are unioned into
+  one component and assigned wholly to the same nested fold.
+
+Successors outside fixed-material KPKP are labeled from the frozen dependency
+closure but cannot equal a KPKP root. For a later recursive experiment, the
+embargo expands to every state reachable within the complete tested recursion
+horizon before any recursive outcome is opened.
+
 Proposed deterministic samples are:
 
 - 100,000 nonterminal development states;
 - 25,000 nonterminal selection states; and
 - 25,000 nonterminal confirmation states.
 
-Sampling is by SHA-256 rank within partition, with side-to-move and en-passant
-coverage fixed using outcome-free strata. Primary population metrics use
-inverse sampling weights if structural strata are sampled disproportionately.
-Challenge-stratum metrics are reported separately.
+Sampling is by SHA-256 rank within partition after the transition embargo,
+processed in the fixed order development, selection, confirmation. The
+four outcome-free strata and exact requested counts are:
+
+| Sample | White/no EP | Black/no EP | White/EP | Black/EP | Total |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Development | 49,000 | 49,000 | 1,000 | 1,000 | 100,000 |
+| Selection | 12,250 | 12,250 | 250 | 250 | 25,000 |
+| Confirmation | 12,250 | 12,250 | 250 | 250 | 25,000 |
+
+The outcome-free audit must find at least the requested count in every stratum
+after all embargoes. It keeps a SHA-ranked reservoir four times the requested
+size before embargo filtering. If any stratum is short, fail before probing;
+do not resize, replace a stratum, or change a sampling rate. Any revision
+requires another reviewed outcome-free protocol commit.
+
+### Reproduced outcome-free identities
+
+The review implementation, run with Python 3.14.5 and `python-chess` 1.11.2,
+enumerated 17,029,028 valid raw rule states and 4,257,257 canonical states.
+Those comprise 4,257,138 nonterminal and 119 terminal states, including
+539,213 canonical en-passant states. The 60/20/20 partition totals are:
+
+| Partition | All canonical | Nonterminal | Sample |
+| --- | ---: | ---: | ---: |
+| Development | 2,555,471 | 2,555,405 | 100,000 |
+| Selection | 851,379 | 851,350 | 25,000 |
+| Confirmation | 850,407 | 850,383 | 25,000 |
+
+The fixed sample SHA-256 identities are:
+
+```text
+development  fb733c06f208e93786966e1a7d89544cd1ddef7eac4e41d25f8aa8fc77a84930
+selection    68246307f596e59dfa21a8638f1e36b5b97fad25591fe8d8836114fd637e5310
+confirmation 0fc3bf54b26a9aca53dc414c470a4a0a868385d2dd5f63824a882cda490ce76a
+folds        8cf269d3fa9e4250f2430f0fbd4b53389d4b2a5359ed33c5cfc3377f52c08e5a
+```
+
+Fold sizes are 19,958, 19,944, 20,073, 19,964, and 20,061. The audit found
+zero exact-root overlaps, zero symmetry-class overlaps, and zero directed
+predecessor/successor overlaps. It reports `outcomes_probed: 0` and
+`tablebase_files_opened: 0`. The complete partition, stratum, nonterminal,
+sample, and fold identities are machine-checked in
+`configs/experiment-021-kpkp-review.json`.
+
+Let `N_h` be the complete canonical nonterminal count for stratum `h` in the
+partition being evaluated and `n_h` its sample count. Each sampled state has
+population weight `N_h / n_h`. Freeze and report three distinct retention
+estimands:
+
+```text
+population pooled rho = sum_i w_i retained_i / sum_i w_i legal_i
+population mean-context rho = sum_i w_i (retained_i/legal_i) / sum_i w_i
+stratum-balanced mean rho = (1/4) sum_h mean_{i in h}(retained_i/legal_i)
+```
+
+Exact safety gates are unweighted: a single sampled WDL failure fails the
+candidate. Weighted population estimates, raw sample estimates, and every
+stratum are reported separately.
 
 Experiment 021 may probe and train on the development sample only. Selection
 and confirmation FENs, exact labels, branch records, and aggregates must be
@@ -143,13 +219,22 @@ Define the five-valued WDL-optimal set
 O_WDL(P) = {m : WDL(P, m) = max_j WDL(P, j)}
 ```
 
-and the DTZ-optimal subset
+and the DTZ-optimal subset only after constructing mover-oriented move DTZ
+through Experiment 015's validated recurrence:
 
 ```text
-O_DTZ(P) = argmin_{m in O_WDL(P)} DTZ(P, m)
+move_wdl = -successor_wdl
+move_dtz = {2:1, 1:101, 0:0, -1:-101, -2:-1}[move_wdl]
+           when the move is zeroing or terminal
+move_dtz = -successor_dtz + 1 when move_wdl > 0 and nonzeroing
+move_dtz = -successor_dtz - 1 when move_wdl < 0 and nonzeroing
+move_dtz = 0                  when move_wdl = 0
+O_DTZ(P) = argmin_{m in O_WDL(P)} move_dtz(P, m)
 ```
 
-using the frozen Syzygy one-ply recurrence and deterministic lexical ties.
+The WDL filter occurs before the DTZ comparison. A raw signed DTZ argmin across
+different WDL categories is forbidden. Lexical order breaks only exact WDL and
+derived-move-DTZ ties.
 
 Store at least:
 
@@ -176,19 +261,35 @@ Report unique necessary branches separately from redundant WDL-optimal and
 redundant DTZ-optimal branches. Complete optimal-set recall is diagnostic only
 and is never substituted for decision sufficiency.
 
-## Primitive representation
+## Frozen transferable primitive representation
 
-Candidate inputs may describe `P -> P_m` using only generic, locally computed
-information:
+Every transition is first canonicalized jointly with its move under the four
+valid transforms. The implemented vector is fixed-length and color-relative,
+so it accepts zero, one, or multiple pieces of every type per color. It never
+assumes exactly one pawn per side.
 
-- raw piece/square occupancy before and after;
-- changed squares, moving piece, source, destination, capture, and promotion;
-- side to move and en-passant availability;
-- attack and defense maps before and after;
-- legal-move counts before and after;
-- king and pawn distance relationships;
-- local geometry, rays, blockers, adjacency, and promotion distance; and
-- differences of these quantities across the transition.
+The complete proposed vocabulary is:
+
+- 12 binary occupancy planes before and 12 after: self/opponent × pawn,
+  knight, bishop, rook, queen, king × 64 squares;
+- four binary union-attack planes: self/opponent before and after × 64 squares;
+- one-hot moving piece over six types;
+- one-hot captured piece over none plus six types, with en-passant encoded as a
+  captured pawn;
+- one-hot promotion over none, knight, bishop, rook, and queen;
+- source and destination file/rank divided by seven;
+- capture, gives-check, zeroing, and en-passant-available flags;
+- legal-move counts before and after divided by 218;
+- self and opponent pawn counts divided by eight; and
+- minimum self/opponent pawn promotion distance divided by six, using one when
+  that side has no pawn.
+
+No other input is permitted. Binary features are unchanged. Continuous
+features use exactly the normalizations above; sparse/tree/symbolic candidates
+receive no outcome-dependent standardization. Before labels are opened, tests
+must prove that every valid transformed `(P,m)` produces an identical feature
+vector and that transformed move scores/orderings correspond exactly. Tests
+must also exercise KPPvK positions with two same-colored pawns.
 
 Human-named concepts such as opposition, zugzwang, breakthrough, key square,
 outside passer, or corresponding squares are forbidden as learner inputs in
@@ -196,8 +297,7 @@ Experiment 021. They may be considered only as post-result interpretations.
 
 Tablebase WDL, DTZ, ranks, optimal-set size, or any transform of an exact label
 is forbidden as input. A candidate's uncertainty may use only its own score
-margin, sparse-model resampling on development folds, or disagreement among
-frozen compact candidates.
+margin or disagreement among its five frozen outer-fold fits.
 
 ## Baselines and compact candidates
 
@@ -205,13 +305,14 @@ Every method produces either a complete deterministic move ordering or a
 deterministic adaptive retained set. Compare at equal branch budgets of top 1,
 2, 3, 4, 5, 8, and all legal moves:
 
-1. deterministic random ordering with frozen repeats;
+1. deterministic random ordering with 20 repeats, each seeded by
+   `SHA256(20260908, canonical_state_key, repeat_index)`;
 2. forcing-category priority then lexical fill;
 3. checks, all captures, promotions, and evasions then lexical fill;
 4. Locked-3 successor ranking;
-5. primitive sparse logistic/ranking model, capped at 64 nonzero coefficients;
-6. primitive decision tree, capped at depth five and 31 internal nodes;
-7. primitive rule list or symbolic expression, capped at 16 clauses/nodes;
+5. the frozen sparse logistic ranker below;
+6. the frozen decision tree below;
+7. the frozen symbolic score below;
 8. compact-model uncertainty set using only frozen score margins or
    development-fold disagreement; and
 9. oracle WDL then DTZ as a nondeployable upper reference.
@@ -220,10 +321,55 @@ A diagnostic nonlinear model of at most 2,048 scalar parameters may estimate
 whether the primitive representation contains learnable signal, but it cannot
 advance as the discovered law in Experiment 021.
 
-Training and hyperparameter choice use nested folds entirely inside the
-development partition, grouped by canonical symmetry class. All candidate
-families, feature computation, caps, tie rules, folds, and the final nomination
-rule must be committed before any KPKP label is probed.
+### Sparse logistic ranker
+
+Fit binary `wdl_optimal` with position weight `1/legal_moves(P)` and a positive
+class multiplier equal to `negative_weight/positive_weight` inside each
+training fold. Use L1 logistic regression, SAGA, intercept enabled, tolerance
+`1e-6`, maximum 20,000 iterations, seed `20260908`, and
+`C in {2^-8, 2^-6, 2^-4, 2^-2, 1, 2^2, 2^4, 2^6, 2^8}`. Reject a fit that
+does not converge or has more than 64 nonzero coefficients after rounding.
+
+### Decision tree
+
+Use deterministic CART with Gini impurity, best splitter, the same sample/class
+weights, seed `20260908`, `max_depth in {2,3,4,5}`, and
+`min_samples_leaf in {32,128,512}`. Cap the chosen tree at 31 internal nodes.
+No pruning or split threshold may be edited after results.
+
+### Symbolic score
+
+Deterministically enumerate at most 100,000 expressions by AST node count then
+SHA-256 tie order with seed `20260908`. Terminals are the frozen primitive
+features and constants `{-2,-1,-0.5,0,0.5,1,2}`. Permitted operators are binary
+`+`, `-`, `*`, `min`, `max` and unary `abs`, unary negation. Division,
+conditionals, transcendental functions, tablebase labels, and ephemeral
+constants are forbidden. Cap expressions at 16 AST nodes.
+
+### Nested folds, serialization, and uncertainty set
+
+Use five outer and four inner development folds. One-ply-connected roots are
+unioned before seeded fold assignment, so no transition component crosses a
+fold. Hyperparameters are selected by: zero inner-fold WDL errors, then lower
+pooled retention, higher DTZ retention, smaller description, lexical tie.
+
+Rank moves by score descending and UCI lexical ties. Store coefficients and
+thresholds rounded to six decimal places in canonical sorted-key UTF-8 JSON.
+Serialized size includes feature names, coefficients, intercept, tree nodes or
+AST, thresholds, normalization constants, and hyperparameters. Report source
+bytes separately. Operation counts include every feature read, comparison,
+addition, multiplication, min/max, absolute value, and retained-set comparison.
+
+For logistic regression, the normalized score is its predicted probability.
+For tree and symbolic scores, use within-position min-max normalization; when
+all legal moves tie, every normalized score is one. The only adaptive
+uncertainty set retains the full-development model's top
+move plus: (a) every move ranked top by at least two of the five outer-fold
+models, and (b) every move whose full-model probability/normalized score is
+within `delta` of the state best for
+`delta in {0,0.01,0.02,0.05,0.10,0.20}`. Choose `delta` by the same inner-fold
+rule. No variance statistic, extra ensemble, or post-result threshold is
+allowed.
 
 ## Primary measurements
 
@@ -265,7 +411,8 @@ selection experiment. On every held-out development fold it must:
 - preserve exact five-valued WDL in 100% of states;
 - recall 100% of unique-WDL-necessary and unique-saving branches;
 - produce zero catastrophic WDL degradation in every prespecified stratum;
-- achieve at least 95% DTZ-optimal retention;
+- match or exceed the best deployable baseline's DTZ-optimal retention under
+  the candidate's exact per-position retained counts;
 - reduce `rho_perfect` by at least 25% relative to the best deployable baseline;
 - use pooled retained fraction at most 25% and mean-context fraction at most
   30%;
@@ -279,6 +426,11 @@ If one candidate passes, select by lower `rho_perfect`, then higher
 DTZ-optimal retention, then fewer unique-saving errors, then smaller serialized
 description, then lower inference operations, with lexical model-family ties.
 Freeze that exact candidate before any selection probe.
+
+A passing candidate with at least 95% DTZ-optimal retention additionally earns
+the descriptive label **distance-aware candidate**. Falling below 95% cannot
+veto an otherwise perfect-WDL candidate when it still matches or beats the
+best deployable DTZ baseline.
 
 ## Later evidence sequence — not part of Experiment 021
 
@@ -311,6 +463,8 @@ Before changing this draft to `frozen`:
 
 - review KPKP state scope, en-passant reachability, and symmetry transforms;
 - implement and test outcome-free enumeration and canonicalization;
+- freeze and reproduce the bidirectional one-ply embargo and connected-fold
+  assignment;
 - freeze exact census counts, partition counts, and sample digests;
 - freeze the complete tablebase dependency closure and file checksums;
 - freeze primitive feature definitions and description accounting;

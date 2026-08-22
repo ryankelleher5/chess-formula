@@ -1,0 +1,202 @@
+{
+  "seed": 20260908,
+  "benchmark_version": "experiment-021-kpkp-review-not-frozen",
+  "experiment_021_kpkp_review": {
+    "status": "review candidate; not frozen and not authorized to probe tablebases",
+    "domain": "KPKP",
+    "reservoir_multiplier": 4,
+    "development_folds": 5,
+    "samples": {
+      "development": {
+        "white_noep": 49000,
+        "black_noep": 49000,
+        "white_ep": 1000,
+        "black_ep": 1000
+      },
+      "selection": {
+        "white_noep": 12250,
+        "black_noep": 12250,
+        "white_ep": 250,
+        "black_ep": 250
+      },
+      "confirmation": {
+        "white_noep": 12250,
+        "black_noep": 12250,
+        "white_ep": 250,
+        "black_ep": 250
+      }
+    },
+    "expected_outcome_free_audit": {
+      "raw_valid_states": 17029028,
+      "canonical_states": 4257257,
+      "canonical_terminal_states": 119,
+      "canonical_en_passant_states": 539213,
+      "partition_counts": {
+        "confirmation": 850407,
+        "development": 2555471,
+        "selection": 851379
+      },
+      "partition_stratum_counts": {
+        "confirmation:black:ep": 51911,
+        "confirmation:black:noep": 368880,
+        "confirmation:white:ep": 56093,
+        "confirmation:white:noep": 373523,
+        "development:black:ep": 154987,
+        "development:black:noep": 1109833,
+        "development:white:ep": 168555,
+        "development:white:noep": 1122096,
+        "selection:black:ep": 51646,
+        "selection:black:noep": 369076,
+        "selection:white:ep": 56021,
+        "selection:white:noep": 374636
+      },
+      "nonterminal_partition_stratum_counts": {
+        "confirmation:black:ep": 51909,
+        "confirmation:black:noep": 368862,
+        "confirmation:white:ep": 56092,
+        "confirmation:white:noep": 373520,
+        "development:black:ep": 154980,
+        "development:black:noep": 1109780,
+        "development:white:ep": 168555,
+        "development:white:noep": 1122090,
+        "selection:black:ep": 51642,
+        "selection:black:noep": 369053,
+        "selection:white:ep": 56021,
+        "selection:white:noep": 374634
+      },
+      "partition_digests": {
+        "confirmation": "7b9f21abfe7922dad73841387f6082a42d5833b74741733eadb3d59bd5cdb534",
+        "development": "524e804463a1acfca85bd425cbc3e50b55e3d7fe4cb16bbb540032975a54497b",
+        "selection": "5d33dd874164ad2598efdf7b9f17093222a126ca8b3796141bdc0b5d4fc9e725"
+      },
+      "sample_counts": {
+        "confirmation": 25000,
+        "development": 100000,
+        "selection": 25000
+      },
+      "sample_digests": {
+        "confirmation": "0fc3bf54b26a9aca53dc414c470a4a0a868385d2dd5f63824a882cda490ce76a",
+        "development": "fb733c06f208e93786966e1a7d89544cd1ddef7eac4e41d25f8aa8fc77a84930",
+        "selection": "68246307f596e59dfa21a8638f1e36b5b97fad25591fe8d8836114fd637e5310"
+      },
+      "sample_stratum_counts": {
+        "confirmation": {
+          "black:ep": 250,
+          "black:noep": 12250,
+          "white:ep": 250,
+          "white:noep": 12250
+        },
+        "development": {
+          "black:ep": 1000,
+          "black:noep": 49000,
+          "white:ep": 1000,
+          "white:noep": 49000
+        },
+        "selection": {
+          "black:ep": 250,
+          "black:noep": 12250,
+          "white:ep": 250,
+          "white:noep": 12250
+        }
+      },
+      "development_fold_counts": {
+        "0": 19958,
+        "1": 19944,
+        "2": 20073,
+        "3": 19964,
+        "4": 20061
+      },
+      "development_fold_digest": "8cf269d3fa9e4250f2430f0fbd4b53389d4b2a5359ed33c5cfc3377f52c08e5a",
+      "transition_isolation": {
+        "exact_root_overlap": 0,
+        "symmetry_class_root_overlap": 0,
+        "directed_predecessor_successor_overlap": 0,
+        "passed": true,
+        "details": []
+      },
+      "outcomes_probed": 0,
+      "tablebase_files_opened": 0
+    },
+    "estimands": {
+      "population_pooled_rho": "sum_i w_i retained_i / sum_i w_i legal_i",
+      "population_mean_context_rho": "sum_i w_i (retained_i/legal_i) / sum_i w_i",
+      "stratum_balanced_mean_rho": "one quarter of the four stratum means",
+      "state_weight": "complete canonical nonterminal stratum count divided by sampled stratum count",
+      "safety_gate": "unweighted zero-error exact five-valued WDL preservation"
+    },
+    "candidate_seed": 20260908,
+    "feature_schema": {
+      "name": "color-relative-transition-v1",
+      "features": 1824,
+      "continuous_normalization": {
+        "square_file_rank": 7,
+        "legal_move_count": 218,
+        "pawn_count": 8,
+        "promotion_distance": 6,
+        "no_pawn_promotion_distance": 1
+      },
+      "outcome_dependent_standardization": false
+    },
+    "candidate_algorithms": {
+      "sparse_logistic": {
+        "objective": "binary wdl_optimal",
+        "solver": "saga",
+        "penalty": "l1",
+        "fit_intercept": true,
+        "tolerance": 0.000001,
+        "max_iterations": 20000,
+        "c_grid": [0.00390625, 0.015625, 0.0625, 0.25, 1, 4, 16, 64, 256],
+        "maximum_nonzero_coefficients": 64
+      },
+      "decision_tree": {
+        "criterion": "gini",
+        "splitter": "best",
+        "max_depth_grid": [2, 3, 4, 5],
+        "min_samples_leaf_grid": [32, 128, 512],
+        "maximum_internal_nodes": 31
+      },
+      "symbolic_score": {
+        "maximum_expressions": 100000,
+        "maximum_ast_nodes": 16,
+        "constants": [-2, -1, -0.5, 0, 0.5, 1, 2],
+        "binary_operators": ["+", "-", "*", "min", "max"],
+        "unary_operators": ["abs", "negate"],
+        "enumeration_order": "AST node count, then SHA-256 tie order"
+      }
+    },
+    "cross_validation": {
+      "outer_folds": 5,
+      "inner_folds": 4,
+      "grouping": "complete sampled-root one-ply transition components",
+      "hyperparameter_tie_order": [
+        "zero WDL errors",
+        "lower pooled retention",
+        "higher DTZ retention",
+        "smaller serialized description",
+        "lexical identifier"
+      ]
+    },
+    "uncertainty_set": {
+      "delta_grid": [0, 0.01, 0.02, 0.05, 0.1, 0.2],
+      "normalized_score": "within-position min-max; all tied scores map to 1",
+      "fold_vote_minimum": 2
+    },
+    "serialization": {
+      "decimal_places": 6,
+      "format": "canonical sorted-key UTF-8 JSON"
+    },
+    "nomination_gate": {
+      "wdl_preservation": 1,
+      "unique_saving_recall": 1,
+      "maximum_population_pooled_rho": 0.25,
+      "maximum_population_mean_context_rho": 0.3,
+      "minimum_rho_perfect_improvement": 0.25,
+      "dtz_requirement": "match or exceed the best deployable baseline under exact per-position retained counts",
+      "distance_aware_designation_threshold": 0.95
+    },
+    "tablebase_downloads_authorized": false,
+    "tablebase_probes_authorized": false,
+    "selection_outcomes_authorized": false,
+    "confirmation_outcomes_authorized": false
+  }
+}

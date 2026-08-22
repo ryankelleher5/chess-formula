@@ -124,14 +124,17 @@ branch necessity, and exact play across different representations and oracles.
    reply in 133 of 134 parent contexts, but one genuinely late-emerging branch
    causes a 61-cp loss. The frozen gate fails; no selector discovery is
    licensed.
-10. **Current — Experiment 021 draft awaiting preregistration review:** move
-    branch-law calibration to KPKP exact-domain ground truth. The draft makes
+10. **Current — Experiment 021 final review candidate:** move branch-law
+    calibration to KPKP exact-domain ground truth. The revised protocol makes
     five-valued WDL preservation the absolute safety condition, uses DTZ and
     unique-saving strata to prevent equivalence saturation, predicts at least
     one optimal branch rather than every redundant optimum, and keeps exact
-    selection and confirmation outcomes technically sealed. No new tablebase
-    outcome is authorized until the outcome-free census, manifests, metrics,
-    candidate caps, and final protocol are reviewed and committed.
+    selection and confirmation outcomes technically sealed. The complete
+    outcome-free census, bidirectional one-ply embargo, transferable feature
+    representation, fixed samples, connected folds, estimands, and compact
+    candidate specifications are implemented for review. No KPKP tablebase
+    download or outcome probe is authorized until review; dependency manifests
+    and file hashes remain a post-approval, pre-probe freeze step.
 11. Train compact ordinary-position selectors only after an exact-domain or
     alternative-oracle experiment supplies a separately frozen training
     license.
