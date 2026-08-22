@@ -1,0 +1,25 @@
+{
+  "seed": 20260828,
+  "uci_pilot": {
+    "experiment_name": "uci-playing-pilot",
+    "candidate": "searched-3",
+    "opponents": [
+      {"name": "locked-3", "type": "policy", "policy": "locked-3"},
+      {"name": "full-16", "type": "policy", "policy": "full-16"},
+      {"name": "stockfish-100n", "type": "stockfish", "nodes_per_move": 100}
+    ],
+    "opening_suite": "configs/uci-pilot-openings.json",
+    "games_per_opening": 2,
+    "maximum_total_plies": 160,
+    "engine_timeout_seconds": 5.0,
+    "policy_go_nodes": 1,
+    "stockfish_threads": 1,
+    "stockfish_hash_mb": 16,
+    "draw_claims": true,
+    "bootstrap_repeats": 10000,
+    "adjudication": "checkmate, stalemate, insufficient material, automatic/claimable draws, or draw at maximum plies; no evaluation adjudication",
+    "forfeit_rule": "engine exception, timeout, null move in a live position, or illegal move loses immediately",
+    "decision_rule": "protocol gate passes only with zero candidate illegal moves, crashes, and timeouts; strength is reported without a win-rate threshold"
+  },
+  "benchmark_version": "uci-playing-pilot-v1"
+}

@@ -1,0 +1,73 @@
+{
+  "seed": 20260827,
+  "database": "data/processed/may_move_policy.duckdb",
+  "sampling": {
+    "every_n_plies": 3,
+    "min_ply": 4,
+    "max_positions_per_game": 20
+  },
+  "labeling": {
+    "limit_type": "depth",
+    "limit_value": 12,
+    "multipv": 3,
+    "mate_score_cp": 100000,
+    "threads": 1,
+    "hash_mb": 16
+  },
+  "model": {
+    "ridge_alpha": 10.0,
+    "target_clip_cp": 2000
+  },
+  "human_corpus": {
+    "source_url": "https://database.lichess.org/standard/lichess_db_standard_rated_2013-05.pgn.zst",
+    "source_sha256": "f044607c9f565831524dbedfd474100c8604dba008600bfaf1b7a48ced74c17b",
+    "source_bytes": 26545457,
+    "source_games": 179550,
+    "license": "CC0",
+    "license_url": "https://database.lichess.org/",
+    "archive": "data/raw/lichess_db_standard_rated_2013-05.pgn.zst",
+    "sample": "data/raw/lichess_may_move_policy_120.pgn",
+    "provenance": "data/raw/lichess_may_move_policy_120.provenance.json",
+    "games": 120,
+    "minimum_rating": 1800,
+    "minimum_plies": 40,
+    "maximum_plies": 160
+  },
+  "move_policy": {
+    "experiment_name": "may-move-policy",
+    "development_databases": [
+      "data/processed/human_transfer.duckdb",
+      "data/processed/transfer_confirmation.duckdb"
+    ],
+    "prior_databases": [
+      "data/processed/human_transfer.duckdb",
+      "data/processed/transfer_confirmation.duckdb",
+      "data/processed/march_validation.duckdb",
+      "data/processed/april_depth_robustness.duckdb"
+    ],
+    "development_engine_key": "c4a795ee7baf9d33441f",
+    "confirmation_depth": 12,
+    "top_k": 3,
+    "static_candidates": {
+      "locked-3": [
+        "material",
+        "space",
+        "tempo"
+      ],
+      "full-16": "all"
+    },
+    "forcing_search": {
+      "depth_plies": 2,
+      "maximum_expanded_children": 128,
+      "terminal_win_loss_cp": 2000,
+      "budget_scope": "per legal root candidate"
+    },
+    "regret": {
+      "oracle_method": "root-move-constrained depth-12 analysis",
+      "score_clip_cp": 2000,
+      "negative_noise_handling": "clamp regret to zero and report inversion rate"
+    },
+    "bootstrap_repeats": 1000
+  },
+  "benchmark_version": "may-move-policy-v1"
+}

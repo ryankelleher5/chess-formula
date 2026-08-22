@@ -11,3 +11,14 @@ Every change should serve a stated research question. Before adding machinery, w
 
 Do not change a frozen benchmark in place. Create a new named version and explain why comparability was intentionally broken.
 
+Branch-law experiments must additionally freeze the branch-importance
+definition, node/path context, retained-branch budget, oracle limits, and
+counterfactual procedure before comparing selectors. Report the complete
+retained-branch fraction versus decision-quality curve, `rho_95`, catastrophic
+omissions, refutation recall, and selector-plus-search complexity. Keep ordinary
+confirmation games and exact confirmation components untouched until the
+candidate and advancement rule are committed.
+
+Do not add conventional engine machinery solely for Elo. Every search mechanism
+must isolate a stated question about evaluation, branch necessity, exact play,
+or description complexity.

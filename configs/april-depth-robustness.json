@@ -1,0 +1,68 @@
+{
+  "seed": 20260826,
+  "database": "data/processed/april_depth_robustness.duckdb",
+  "sampling": {
+    "every_n_plies": 3,
+    "min_ply": 4,
+    "max_positions_per_game": 20
+  },
+  "labeling": {
+    "limit_type": "depth",
+    "limit_value": 12,
+    "multipv": 1,
+    "mate_score_cp": 100000,
+    "threads": 1,
+    "hash_mb": 16
+  },
+  "model": {
+    "ridge_alpha": 10.0,
+    "target_clip_cp": 2000
+  },
+  "human_corpus": {
+    "source_url": "https://database.lichess.org/standard/lichess_db_standard_rated_2013-04.pgn.zst",
+    "source_sha256": "11c795d3c81c49fa97cd958b0984c044410c78ad90f454ed08abb57ab7d00d52",
+    "source_bytes": 23299559,
+    "source_games": 157871,
+    "license": "CC0",
+    "license_url": "https://database.lichess.org/",
+    "archive": "data/raw/lichess_db_standard_rated_2013-04.pgn.zst",
+    "sample": "data/raw/lichess_april_depth_robustness_120.pgn",
+    "provenance": "data/raw/lichess_april_depth_robustness_120.provenance.json",
+    "games": 120,
+    "minimum_rating": 1800,
+    "minimum_plies": 40,
+    "maximum_plies": 160
+  },
+  "depth_robustness": {
+    "experiment_name": "april-depth-robustness",
+    "development_databases": [
+      "data/processed/human_transfer.duckdb",
+      "data/processed/transfer_confirmation.duckdb"
+    ],
+    "prior_databases": [
+      "data/processed/human_transfer.duckdb",
+      "data/processed/transfer_confirmation.duckdb",
+      "data/processed/march_validation.duckdb"
+    ],
+    "development_engine_key": "c4a795ee7baf9d33441f",
+    "confirmation_depth": 12,
+    "static_candidates": {
+      "material-only": [
+        "material"
+      ],
+      "locked-3": [
+        "material",
+        "space",
+        "tempo"
+      ],
+      "full-16": "all"
+    },
+    "forcing_search": {
+      "depth_plies": 2,
+      "maximum_expanded_children": 128,
+      "terminal_win_loss_cp": 2000
+    },
+    "bootstrap_repeats": 1000
+  },
+  "benchmark_version": "april-depth-robustness-v1"
+}

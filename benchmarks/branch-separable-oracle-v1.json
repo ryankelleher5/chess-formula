@@ -1,0 +1,28 @@
+{
+  "name": "branch-separable-oracle-v1",
+  "question": "Do branch values stabilize when every legal move receives an independent constrained-root compute budget?",
+  "status": "frozen before new Experiment 018 oracle probing",
+  "source": "The 24 root and 134 opponent-parent development contexts frozen before Experiment 016",
+  "legal_branches_per_tier": 5259,
+  "oracle": "Stockfish 18, one thread, 16 MB hash, one constrained legal root move per call, new-game boundary per branch",
+  "nodes_per_move": [2500, 10000, 40000, 160000],
+  "audit_only_tier": 160000,
+  "measurements": [
+    "top-move agreement",
+    "top-3 and top-5 set Jaccard",
+    "rank Spearman correlation",
+    "common-move score and mover-regret differences",
+    "within-10/25/50/100-cp set Jaccard",
+    "10/25/50/100-cp threshold-label agreement",
+    "stable-important, stable-unimportant, and ambiguous label counts",
+    "top-disagreement reciprocal regret"
+  ],
+  "prospective_gate": "For both root and parent contexts: top move >=85%, top-3 Jaccard >=80%, within-25-cp Jaccard >=75%, 25/50/100-cp label agreement >=90%, and median regret difference <=25 cp",
+  "selection": "A non-maximum tier must pass against both its next tier and the 160000-node-per-move audit endpoint; choose the cheapest eligible tier",
+  "external_diagnostic": "Compare independent and shared MultiPV allocation at 40000 nominal nodes per move without using that comparison to waive the selection gate",
+  "development_guardrail": "The audit endpoint cannot validate itself, and no finite Stockfish budget is perfect chess truth",
+  "model_training": false,
+  "selection_locked": true,
+  "confirmation_locked": true,
+  "frozen": true
+}

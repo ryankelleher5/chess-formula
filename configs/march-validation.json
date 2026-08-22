@@ -1,0 +1,68 @@
+{
+  "seed": 20260825,
+  "database": "data/processed/march_validation.duckdb",
+  "sampling": {
+    "every_n_plies": 3,
+    "min_ply": 4,
+    "max_positions_per_game": 20
+  },
+  "labeling": {
+    "limit_type": "depth",
+    "limit_value": 8,
+    "multipv": 1,
+    "mate_score_cp": 100000,
+    "threads": 1,
+    "hash_mb": 16
+  },
+  "model": {
+    "ridge_alpha": 10.0,
+    "target_clip_cp": 2000
+  },
+  "human_corpus": {
+    "source_url": "https://database.lichess.org/standard/lichess_db_standard_rated_2013-03.pgn.zst",
+    "source_sha256": "89da64fc3c1fe3bfd571d7f626232189f3259aa728b46ea81e5cb8f3fdb34b9e",
+    "source_bytes": 23590691,
+    "source_games": 158635,
+    "license": "CC0",
+    "license_url": "https://database.lichess.org/",
+    "archive": "data/raw/lichess_db_standard_rated_2013-03.pgn.zst",
+    "sample": "data/raw/lichess_march_validation_120.pgn",
+    "provenance": "data/raw/lichess_march_validation_120.provenance.json",
+    "games": 120,
+    "minimum_rating": 1800,
+    "minimum_plies": 40,
+    "maximum_plies": 160
+  },
+  "march_validation": {
+    "experiment_name": "march-compact-rules",
+    "development_databases": [
+      "data/processed/human_transfer.duckdb",
+      "data/processed/transfer_confirmation.duckdb"
+    ],
+    "duplicate_target_aggregation": "arithmetic mean",
+    "static_candidates": {
+      "material-only": [
+        "material"
+      ],
+      "locked-3": [
+        "material",
+        "space",
+        "tempo"
+      ],
+      "locked-4-passed": [
+        "material",
+        "space",
+        "tempo",
+        "passed_pawns"
+      ],
+      "full-16": "all"
+    },
+    "forcing_search": {
+      "depth_plies": 2,
+      "maximum_expanded_children": 128,
+      "terminal_win_loss_cp": 2000
+    },
+    "bootstrap_repeats": 1000
+  },
+  "benchmark_version": "march-compact-rules-v1"
+}

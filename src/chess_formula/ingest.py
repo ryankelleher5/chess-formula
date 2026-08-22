@@ -142,5 +142,12 @@ def ingest_pgn(pgn_path: str | Path, database: str | Path, config: dict) -> dict
                 board.push(move)
 
     stats["unique_positions"] = connection.execute("SELECT count(*) FROM positions").fetchone()[0]
+    side_counts = dict(
+        connection.execute(
+            "SELECT side_to_move, count(*) FROM positions GROUP BY side_to_move"
+        ).fetchall()
+    )
+    stats["white_to_move_positions"] = side_counts.get("white", 0)
+    stats["black_to_move_positions"] = side_counts.get("black", 0)
     connection.close()
     return stats

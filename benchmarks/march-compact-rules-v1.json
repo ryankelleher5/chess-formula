@@ -1,0 +1,48 @@
+{
+  "name": "march-compact-rules-v1",
+  "question": "Do a passed-pawn term or bounded forcing search improve the compact evaluator on an untouched month?",
+  "source": {
+    "publisher": "Lichess open database",
+    "archive": "lichess_db_standard_rated_2013-03.pgn.zst",
+    "url": "https://database.lichess.org/standard/lichess_db_standard_rated_2013-03.pgn.zst",
+    "sha256": "89da64fc3c1fe3bfd571d7f626232189f3259aa728b46ea81e5cb8f3fdb34b9e",
+    "bytes": 23590691,
+    "reported_games": 158635,
+    "license": "CC0",
+    "license_url": "https://database.lichess.org/"
+  },
+  "selection": {
+    "method": "Seeded reservoir sample over the complete decompressed monthly stream.",
+    "seed": 20260825,
+    "games": 120,
+    "minimum_rating": 1800,
+    "minimum_plies": 40,
+    "maximum_plies": 160
+  },
+  "development_data": "Deduplicated union of human-transfer-v1 and transfer-confirmation-v1",
+  "duplicate_target_aggregation": "Arithmetic mean of repeated shallow-Stockfish labels for the same rule-state hash.",
+  "confirmation_overlap_policy": "Exclude every March rule-state hash present in the development union.",
+  "static_candidates": {
+    "material-only": ["material"],
+    "locked-3": ["material", "space", "tempo"],
+    "locked-4-passed": ["material", "space", "tempo", "passed_pawns"],
+    "full-16": "all"
+  },
+  "forcing_search": {
+    "depth_plies": 2,
+    "maximum_expanded_children": 128,
+    "moves_out_of_check": "all legal evasions",
+    "moves_otherwise": ["checks", "promotions", "non-pawn captures"],
+    "stand_pat_outside_check": true,
+    "terminal_win_loss_cp": 2000,
+    "terminal_draw_cp": 0,
+    "leaf_evaluator": "candidate static formula"
+  },
+  "bootstrap_repeats": 1000,
+  "primary_tests": [
+    "locked-4-passed minus locked-3 overall MAE",
+    "searched locked-3 minus static locked-3 forcing-stratum MAE"
+  ],
+  "advance_rule": "Paired mean improvement with a 95% source-game bootstrap interval excluding zero.",
+  "frozen": true
+}

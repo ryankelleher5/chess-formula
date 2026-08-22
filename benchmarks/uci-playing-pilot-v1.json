@@ -1,0 +1,41 @@
+{
+  "name": "uci-playing-pilot-v1",
+  "question": "What game strength does the frozen Searched Locked-3 policy exhibit under a reproducible UCI match protocol?",
+  "candidate": "Frozen May Searched Locked-3: all legal root moves, two forcing plies, 128 children per root candidate, lexical UCI ties",
+  "opponents": [
+    "Frozen static Locked-3 UCI policy",
+    "Frozen static Full-16 UCI policy",
+    "Stockfish 18 with Threads 1, Hash 16 MB, and 100 nodes per move"
+  ],
+  "openings": {
+    "suite": "uci-pilot-openings-v1",
+    "positions": 20,
+    "plies_each": 8,
+    "pairing": "Each opening is played twice per opponent with candidate colors reversed"
+  },
+  "games": {
+    "per_opponent": 40,
+    "total": 120,
+    "maximum_total_plies": 160,
+    "draw_claims": true,
+    "evaluation_adjudication": false
+  },
+  "resources": {
+    "candidate": "Fixed deterministic policy computation; UCI go arguments do not alter search",
+    "static_baselines": "One static evaluation per legal root move",
+    "stockfish": "100 nodes per move",
+    "wall_timeout_seconds_per_uci_operation": 5.0
+  },
+  "forfeits": "Engine exception, timeout, null move in a live position, or illegal move loses immediately.",
+  "metrics": [
+    "wins, draws, losses, score rate",
+    "opening-pair bootstrap 95% score interval",
+    "engine-pool logistic Elo difference and interval",
+    "candidate and opponent move time and reported nodes",
+    "termination reasons, illegal moves, crashes, and timeouts"
+  ],
+  "bootstrap_repeats": 10000,
+  "decision": "Protocol correctness requires zero candidate illegal moves, crashes, and timeouts. Strength has no pass threshold in this pilot.",
+  "guardrail": "Engine-pool Elo differences are not human FIDE ratings and apply only to this opening/resource/opponent pool.",
+  "frozen": true
+}

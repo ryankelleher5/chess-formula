@@ -1,0 +1,47 @@
+{
+  "seed": 20260823,
+  "database": "data/processed/transfer_confirmation.duckdb",
+  "sampling": {
+    "every_n_plies": 3,
+    "min_ply": 4,
+    "max_positions_per_game": 20
+  },
+  "labeling": {
+    "limit_type": "depth",
+    "limit_value": 8,
+    "multipv": 1,
+    "mate_score_cp": 100000,
+    "threads": 1,
+    "hash_mb": 16
+  },
+  "model": {
+    "ridge_alpha": 10.0,
+    "target_clip_cp": 2000
+  },
+  "human_corpus": {
+    "source_url": "https://database.lichess.org/standard/lichess_db_standard_rated_2013-02.pgn.zst",
+    "source_sha256": "c136acdf343293c45252906fee91e3b561fb26a936979f52dbe04bb649a2fd86",
+    "source_bytes": 18151480,
+    "source_games": 123961,
+    "license": "CC0",
+    "license_url": "https://database.lichess.org/",
+    "archive": "data/raw/lichess_db_standard_rated_2013-02.pgn.zst",
+    "sample": "data/raw/lichess_transfer_confirmation_60.pgn",
+    "provenance": "data/raw/lichess_transfer_confirmation_60.provenance.json",
+    "games": 60,
+    "minimum_rating": 1800,
+    "minimum_plies": 40,
+    "maximum_plies": 160
+  },
+  "confirmation": {
+    "experiment_name": "transfer-confirmation",
+    "training_database": "data/processed/human_transfer.duckdb",
+    "locked_features": [
+      "material",
+      "space",
+      "tempo"
+    ],
+    "bootstrap_repeats": 1000
+  },
+  "benchmark_version": "transfer-confirmation-v1"
+}

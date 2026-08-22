@@ -1,0 +1,51 @@
+{
+  "seed": 20260830,
+  "labeling": {
+    "limit_type": "depth",
+    "limit_value": 12,
+    "multipv": 1,
+    "mate_score_cp": 100000,
+    "threads": 1,
+    "hash_mb": 16
+  },
+  "search_frontier": {
+    "experiment_name": "search-frontier",
+    "audit_records": "results/2026-08-21_uci_loss_audit_001/all_candidate_turns.json",
+    "analysis_cache": "data/processed/search_frontier_oracle_cache.json",
+    "expected_positions": 957,
+    "terminal_cp": 2000,
+    "score_clip_cp": 2000,
+    "policies": {
+      "searched-3-baseline": {
+        "selector_schedule": ["forcing", "forcing"],
+        "maximum_expanded_children_per_root": 128
+      },
+      "all-captures-2": {
+        "selector_schedule": ["all-captures", "all-captures"],
+        "maximum_expanded_children_per_root": 128
+      },
+      "all-opponent-replies-2": {
+        "selector_schedule": ["all", "forcing"],
+        "maximum_expanded_children_per_root": 256
+      },
+      "all-candidate-continuations-2": {
+        "selector_schedule": ["forcing", "all"],
+        "maximum_expanded_children_per_root": 256
+      },
+      "forcing-3": {
+        "selector_schedule": ["forcing", "forcing", "forcing"],
+        "maximum_expanded_children_per_root": 256
+      }
+    },
+    "decision": {
+      "baseline": "searched-3-baseline",
+      "minimum_relative_mean_regret_improvement": 0.10,
+      "require_group_bootstrap_interval_below_zero": true,
+      "selection": "lowest mean total states among eligible extensions, then lowest mean regret, then lexical label",
+      "maximum_advancing_candidates": 1
+    },
+    "bootstrap_repeats": 5000,
+    "development_only": true
+  },
+  "benchmark_version": "search-frontier-v1"
+}

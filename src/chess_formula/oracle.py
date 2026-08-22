@@ -33,6 +33,36 @@ def _limit(limit_type: str, value: float) -> chess.engine.Limit:
     raise ValueError(f"Unsupported analysis limit: {limit_type}")
 
 
+def configure_engine(
+    engine: chess.engine.SimpleEngine, stockfish_path: str | Path, labeling: dict
+) -> tuple[str, str, dict]:
+    path = Path(stockfish_path)
+    engine_name = engine.id.get("name", path.name)
+    engine_author = engine.id.get("author", "unknown")
+    engine_version = f"{engine_name} ({engine_author})"
+    engine_parameters = {
+        "Threads": int(labeling["threads"]),
+        "Hash": int(labeling["hash_mb"]),
+    }
+    configurable = {
+        name: value for name, value in engine_parameters.items() if name in engine.options
+    }
+    if configurable:
+        engine.configure(configurable)
+    if "UCI_ShowWDL" in engine.options:
+        engine.configure({"UCI_ShowWDL": True})
+    key_data = {
+        "engine": engine_version,
+        "limit_type": labeling["limit_type"],
+        "limit_value": labeling["limit_value"],
+        "multipv": labeling["multipv"],
+        "mate_score_cp": labeling["mate_score_cp"],
+        "parameters": engine_parameters,
+    }
+    engine_key = hashlib.sha256(json.dumps(key_data, sort_keys=True).encode()).hexdigest()[:20]
+    return engine_key, engine_version, key_data
+
+
 def label_positions(
     stockfish_path: str | Path,
     database: str | Path,
@@ -46,29 +76,8 @@ def label_positions(
     labeling = config["labeling"]
     engine = chess.engine.SimpleEngine.popen_uci(str(path))
     try:
-        engine_name = engine.id.get("name", path.name)
-        engine_author = engine.id.get("author", "unknown")
-        engine_version = f"{engine_name} ({engine_author})"
-        engine_parameters = {
-            "Threads": int(labeling["threads"]),
-            "Hash": int(labeling["hash_mb"]),
-        }
-        configurable = {
-            name: value for name, value in engine_parameters.items() if name in engine.options
-        }
-        if configurable:
-            engine.configure(configurable)
-        if "UCI_ShowWDL" in engine.options:
-            engine.configure({"UCI_ShowWDL": True})
-        key_data = {
-            "engine": engine_version,
-            "limit_type": labeling["limit_type"],
-            "limit_value": labeling["limit_value"],
-            "multipv": labeling["multipv"],
-            "mate_score_cp": labeling["mate_score_cp"],
-            "parameters": engine_parameters,
-        }
-        engine_key = hashlib.sha256(json.dumps(key_data, sort_keys=True).encode()).hexdigest()[:20]
+        engine_key, engine_version, key_data = configure_engine(engine, path, labeling)
+        engine_parameters = key_data["parameters"]
         connection = connect_database(database)
         if force:
             connection.execute("DELETE FROM engine_analysis WHERE engine_key = ?", [engine_key])

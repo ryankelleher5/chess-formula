@@ -1,0 +1,50 @@
+{
+  "name": "branch-law-foundation-v1",
+  "question": "How little of an exact or reference game tree can be retained while preserving decision quality, and can compact branch information outperform the current forcing rule at equal budgets?",
+  "status": "frozen before tablebase outcome probing or learned-selector fitting",
+  "accepted_formula": "6.709046 + 75.698112 material + 13.073405 space + 70.024384 tempo",
+  "accepted_policy": "Forcing-3 remains accepted and is not modified by this development benchmark",
+  "programs": [
+    "Program B: Branch/Search Compression",
+    "Program C: Exact Chess Compression"
+  ],
+  "exact_domains": [
+    "KQvK with stronger side normalized to White",
+    "KRvK with stronger side normalized to White",
+    "KPvK with stronger side normalized to White"
+  ],
+  "exact_truth": "Locally probed Syzygy WDL50 and DTZ50 files verified by byte count and SHA-256 before use",
+  "state_census": "Complete legal fixed-material enumeration, deduplicated by the configured valid geometry symmetry while retaining side to move",
+  "outcome_free_census_audit": {
+    "KQvK": "368452 raw legal, 46137 canonical, 155 canonical terminal",
+    "KRvK": "399112 raw legal, 50015 canonical, 36 canonical terminal",
+    "KPvK": "331352 raw legal, 165676 canonical, 11 canonical terminal"
+  },
+  "partitions": "SHA-256 assignment of complete canonical symmetry classes to 60% development, 20% selection, and 20% confirmation",
+  "confirmation_guardrail": "The foundation command may label development only; selection and confirmation outcomes require a later committed candidate protocol",
+  "context": "Branch records preserve node role, root candidate, path, remaining depth, and budget even when an initial model omits some fields",
+  "branch_budgets": [1, 2, 3, 4, 5, 8, 16, "all legal"],
+  "baselines": [
+    "deterministic random ordering with 20 repeats",
+    "current forcing-category priority then lexical fill",
+    "check/capture/promotion/evasion priority then lexical fill",
+    "Locked-3 successor evaluation ordering",
+    "oracle WDL then DTZ ordering as a nondeployable upper reference",
+    "all legal branches as the endpoint"
+  ],
+  "primary_curve": "retained legal-branch fraction to decision quality preserved",
+  "ordinary_north_star": "rho_95: minimum nested retained fraction preserving at least 95% of root decisions within 25 cp of the same all-legal reference",
+  "exact_north_star": "rho_perfect: minimum retained fraction preserving exact WDL on every confirmation state",
+  "guardrails": [
+    "absolute and pruning-induced root regret",
+    "100 and 300 cp catastrophic branch omissions",
+    "candidate viability recall",
+    "opponent refutation recall",
+    "all-necessary-branches preservation",
+    "selector parameters, bytes, operations, memory, latency, and retained recursive states",
+    "oracle disagreement and instability"
+  ],
+  "first_candidate_gate": "At most one compact candidate may advance only after at least 25% rho_95 reduction, resolved rho_95 improvement, at least 10% resolved regret reduction at the forcing-equivalent budget, catastrophic omission noninferior within one percentage point, resolved refutation-recall improvement, and no total-compute increase.",
+  "anti_goal": "Do not add conventional engine machinery or expand handcrafted move categories merely for Elo",
+  "frozen": true
+}

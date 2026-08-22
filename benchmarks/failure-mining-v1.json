@@ -1,0 +1,18 @@
+{
+  "name": "failure-mining-v1",
+  "question": "Which recurring structures characterize frozen February Locked-3 failures?",
+  "source_benchmark": "transfer-confirmation-v1",
+  "candidate_rules": {
+    "locked_absolute_error_cp_at_least": 300,
+    "locked_full_absolute_disagreement_cp_at_least": 150,
+    "union": true
+  },
+  "clustering": {
+    "features": "All 13 handcrafted features omitted from transferable-subset-v1",
+    "standardization": "January training means and population standard deviations",
+    "method": "deterministic farthest-first k-means",
+    "clusters": 4
+  },
+  "use_policy": "Exploratory hypothesis generation only; no February refitting or validation claims.",
+  "frozen": true
+}

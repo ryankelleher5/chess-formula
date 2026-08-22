@@ -1,0 +1,37 @@
+{
+  "name": "temporal-allocation-adjudication-v1",
+  "question": "Does value trajectory across compute checkpoints identify branches that must receive further computation?",
+  "status": "frozen before any Experiment 020 oracle query",
+  "source": "All 24 root and 134 opponent-parent development contexts frozen before Experiment 016",
+  "legal_branches": 5259,
+  "candidate": "Union of moves within 25 cp at independent 10000, 40000, or 160000 nodes per move",
+  "candidate_branches": 594,
+  "parent_pooled_rho": 0.1165938864628821,
+  "parent_mean_context_retained_fraction": 0.14386487952132987,
+  "audit": "Stockfish 18, one thread, 16 MB hash, 2560000 nodes per legal move, one independently constrained root move and new-game boundary per call",
+  "primary_metrics": [
+    "25-cp decision preservation",
+    "maximum pruning loss",
+    "omissions over 100 and 300 cp",
+    "pooled and mean-context retained branch fraction"
+  ],
+  "diagnostics_not_vetoes": [
+    "exact top-reply recall",
+    "within-25-cp micro recall",
+    "complete within-25-cp set rate"
+  ],
+  "controls": [
+    "10k only",
+    "40k only",
+    "160k only",
+    "40k/160k late union",
+    "10k/40k/160k temporal union"
+  ],
+  "advancement": "For both root and parent contexts require 100% 25-cp decision preservation, maximum loss no greater than 25 cp, zero >100/>300-cp omissions, and both pooled and mean-context retained fractions below 35% at roots and 20% at parents",
+  "pass_action": "License separately frozen compact selector discovery, not deployment or recursive-tree claims",
+  "failure_action": "If material late-emerging misses remain, stop escalating Stockfish budgets and pivot to exact or alternative-oracle ground truth",
+  "model_training": false,
+  "selection_locked": true,
+  "confirmation_locked": true,
+  "frozen": true
+}

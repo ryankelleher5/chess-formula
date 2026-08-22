@@ -1,0 +1,59 @@
+{
+  "seed": 20260901,
+  "labeling": {
+    "limit_type": "depth",
+    "limit_value": 12,
+    "multipv": 1,
+    "mate_score_cp": 100000,
+    "threads": 1,
+    "hash_mb": 16
+  },
+  "budget_curve": {
+    "experiment_name": "fixed-budget-curve",
+    "development_games": "results/2026-08-21_forcing_3_uci_confirmation_001/games.json",
+    "opening_suite": "configs/forcing-3-confirmation-openings.json",
+    "expected_openings": 20,
+    "expected_games": 80,
+    "positions_per_game": 3,
+    "minimum_unique_positions": 230,
+    "analysis_cache": "data/processed/fixed_budget_curve_cache.json",
+    "terminal_cp": 2000,
+    "score_clip_cp": 2000,
+    "policies": {
+      "forcing-1-64": {"depth_plies": 1, "maximum_expanded_children_per_root": 64},
+      "searched-3": {"depth_plies": 2, "maximum_expanded_children_per_root": 128},
+      "forcing-3-128": {"depth_plies": 3, "maximum_expanded_children_per_root": 128},
+      "forcing-3": {"depth_plies": 3, "maximum_expanded_children_per_root": 256},
+      "forcing-4-256": {"depth_plies": 4, "maximum_expanded_children_per_root": 256}
+    },
+    "calibration_state_ranges": {
+      "forcing-1-64": [50, 160],
+      "searched-3": [150, 500],
+      "forcing-3-128": [600, 1600],
+      "forcing-3": [700, 1800],
+      "forcing-4-256": [1800, 4500]
+    },
+    "anchor": "forcing-3",
+    "low_budget_reference": "forcing-1-64",
+    "bootstrap_repeats": 5000,
+    "game_bootstrap_repeats": 10000,
+    "maximum_total_plies": 160,
+    "engine_timeout_seconds": 5.0,
+    "policy_go_nodes": 1,
+    "stockfish_threads": 1,
+    "stockfish_hash_mb": 16,
+    "draw_claims": true,
+    "event_name": "Chess Formula Development Budget Curve",
+    "decision": {
+      "minimum_regret_gain_retention": 0.80,
+      "maximum_mean_regret_increase_cp": 10,
+      "maximum_bootstrap_upper_regret_increase_cp": 15,
+      "minimum_head_to_head_score": 0.475,
+      "minimum_head_to_head_lower_bound": 0.40,
+      "selection": "lowest mean states among cheaper eligible policies, then lower regret, then lexical label",
+      "maximum_advancing_candidates": 1
+    },
+    "development_only": true
+  },
+  "benchmark_version": "fixed-budget-search-curve-v1"
+}

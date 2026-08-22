@@ -1,0 +1,21 @@
+{
+  "seed": 20260824,
+  "database": "data/processed/transfer_confirmation.duckdb",
+  "model": {
+    "ridge_alpha": 10.0,
+    "target_clip_cp": 2000
+  },
+  "failure_mining": {
+    "experiment_name": "failure-mining",
+    "training_database": "data/processed/human_transfer.duckdb",
+    "locked_features": [
+      "material",
+      "space",
+      "tempo"
+    ],
+    "error_threshold_cp": 300,
+    "disagreement_threshold_cp": 150,
+    "clusters": 4
+  },
+  "benchmark_version": "failure-mining-v1"
+}

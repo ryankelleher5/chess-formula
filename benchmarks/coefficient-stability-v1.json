@@ -1,0 +1,22 @@
+{
+  "name": "coefficient-stability-v1",
+  "description": "Repeated game-grouped resampling for material-only, compact-5, and full-16 ridge formulas.",
+  "dataset": "Deterministically generated legal corpus; generated PGN remains untracked.",
+  "sampling": "Every 3 plies after ply 4, capped at 20 positions/game; alternates side to move.",
+  "resampling": {
+    "repeats": 30,
+    "test_fraction": 0.25,
+    "group": "game_id",
+    "position_deduplication": "Each unique position is owned by one deterministic source game."
+  },
+  "metrics": [
+    "evaluation_mae_cp",
+    "evaluation_correlation",
+    "sign_accuracy",
+    "catastrophic_error_rate_500cp",
+    "coefficient_median",
+    "coefficient_95_percent_interval",
+    "dominant_sign_fraction"
+  ],
+  "frozen": true
+}

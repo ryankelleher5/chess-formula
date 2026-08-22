@@ -1,0 +1,53 @@
+{
+  "seed": 20260822,
+  "database": "data/processed/human_transfer.duckdb",
+  "sampling": {
+    "every_n_plies": 3,
+    "min_ply": 4,
+    "max_positions_per_game": 20
+  },
+  "labeling": {
+    "limit_type": "depth",
+    "limit_value": 8,
+    "multipv": 1,
+    "mate_score_cp": 100000,
+    "threads": 1,
+    "hash_mb": 16
+  },
+  "human_corpus": {
+    "source_url": "https://database.lichess.org/standard/lichess_db_standard_rated_2013-01.pgn.zst",
+    "source_sha256": "aa40b3671fa3cf1072eb182892cd90b0e1e003a4a5943492f64b77e7f3fd1635",
+    "source_bytes": 17761302,
+    "source_games": 121332,
+    "license": "CC0",
+    "license_url": "https://database.lichess.org/",
+    "archive": "data/raw/lichess_db_standard_rated_2013-01.pgn.zst",
+    "sample": "data/raw/lichess_human_transfer_60.pgn",
+    "provenance": "data/raw/lichess_human_transfer_60.provenance.json",
+    "games": 60,
+    "minimum_rating": 1800,
+    "minimum_plies": 40,
+    "maximum_plies": 160
+  },
+  "stability": {
+    "experiment_name": "human-transfer",
+    "report_title": "Human-Domain Transfer Experiment",
+    "research_question": "Does the synthetic-domain compact formula frontier transfer to independent human games?",
+    "dataset_domain": "Lichess standard rated human games, January 2013",
+    "dataset_source": "https://database.lichess.org/standard/lichess_db_standard_rated_2013-01.pgn.zst",
+    "repeats": 30,
+    "test_fraction": 0.25,
+    "feature_sets": {
+      "material-only": ["material"],
+      "compact-5": [
+        "material",
+        "mobility",
+        "king_safety",
+        "threat_pressure",
+        "game_phase"
+      ],
+      "full-16": "all"
+    }
+  },
+  "benchmark_version": "human-transfer-v1"
+}

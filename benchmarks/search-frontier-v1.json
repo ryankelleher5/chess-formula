@@ -1,0 +1,25 @@
+{
+  "name": "search-frontier-v1",
+  "question": "Which single audit-mapped search extension, if any, improves depth-12 move regret per unit computation?",
+  "domain": "All 957 candidate turns from the 31 Stockfish-100n losses; development-only",
+  "frozen_formula": "Locked-3: material + space + tempo with the accepted coefficients and intercept",
+  "policies": {
+    "searched-3-baseline": "Forcing/forcing, two internal plies, 128 expansions per legal root",
+    "all-captures-2": "Checks, promotions, and every capture at both internal plies, 128 expansions per legal root",
+    "all-opponent-replies-2": "Every opponent reply followed by forcing candidate continuations, 256 expansions per legal root",
+    "all-candidate-continuations-2": "Forcing opponent replies followed by every candidate continuation, 256 expansions per legal root",
+    "forcing-3": "Three forcing plies, 256 expansions per legal root"
+  },
+  "ordering": "Accepted forcing ordering first; added moves in UCI lexical order",
+  "stand_pat": "Allowed at forcing and all-captures nodes when not in check; disallowed at all-legal nodes",
+  "oracle": "Stockfish 18 depth 12, root-move constrained, one thread, 16 MB hash",
+  "metrics": [
+    "mean, median, p95, and thresholded mover-oriented regret",
+    "exact Stockfish best-move agreement",
+    "legal roots and internal expanded states",
+    "budget exhaustion and Python wall time"
+  ],
+  "decision": "An extension must reduce mean regret by at least 10% and have a 31-game grouped-bootstrap 95% regret-delta interval below zero. Select at most one: lowest mean total states, then lowest regret, then lexical label. Otherwise retain baseline.",
+  "guardrail": "Development selection only. Any advancing policy requires a frozen new opening-suite confirmation before a playing-strength claim.",
+  "frozen": true
+}

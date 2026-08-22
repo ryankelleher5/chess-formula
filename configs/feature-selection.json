@@ -1,0 +1,17 @@
+{
+  "seed": 20260822,
+  "database": "data/processed/human_transfer.duckdb",
+  "model": {
+    "ridge_alpha": 10.0,
+    "target_clip_cp": 2000
+  },
+  "feature_selection": {
+    "experiment_name": "nested-feature-selection",
+    "outer_repeats": 30,
+    "outer_test_fraction": 0.25,
+    "inner_repeats": 8,
+    "inner_validation_fraction": 0.25,
+    "retention_fraction": 0.9
+  },
+  "benchmark_version": "nested-feature-selection-v1"
+}

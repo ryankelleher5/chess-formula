@@ -1,0 +1,40 @@
+{
+  "name": "forcing-3-uci-confirmation-v1",
+  "question": "Does loss-derived Forcing-3 improve complete-game strength over the accepted two-ply policy on untouched openings?",
+  "candidate": "Unchanged Locked-3 formula; all legal roots; forcing/forcing/forcing; tactical-first ordering; stand-pat outside check; 256 internal children per legal root; UCI lexical root ties",
+  "opponents": [
+    "Accepted Searched-3 baseline: forcing/forcing and 128 children per legal root",
+    "Stockfish 18 with Threads 1, Hash 16 MB, and 100 nodes per move"
+  ],
+  "openings": {
+    "suite": "forcing-3-confirmation-openings-v1",
+    "positions": 20,
+    "plies_each": 8,
+    "pilot_final_state_overlap": 0,
+    "pilot_move_sequence_overlap": 0,
+    "pairing": "Each opening is played twice per opponent with candidate colors reversed"
+  },
+  "games": {
+    "per_opponent": 40,
+    "total": 80,
+    "maximum_total_plies": 160,
+    "draw_claims": true,
+    "evaluation_adjudication": false
+  },
+  "resources": {
+    "policy_go_nodes": 1,
+    "stockfish_nodes_per_move": 100,
+    "wall_timeout_seconds_per_uci_operation": 5.0,
+    "state_accounting": "Legal root moves plus every internally expanded child reported as UCI nodes"
+  },
+  "metrics": [
+    "wins, draws, losses, paired score and engine-pool Elo intervals",
+    "candidate and opponent move time and reported states/nodes",
+    "candidate-to-baseline state and latency ratios",
+    "termination reasons, illegal moves, crashes, null moves, and timeouts"
+  ],
+  "bootstrap_repeats": 10000,
+  "decision": "Confirm only if candidate and opponents have zero forfeits and the 95% opening-pair-bootstrap score lower bound against searched-3-baseline is above 50%. Stockfish is an external anchor without a threshold.",
+  "guardrail": "The loss-derived frontier selected this candidate. Only this new suite can confirm it; do not tune from these games. Engine-pool Elo is not human FIDE Elo.",
+  "frozen": true
+}

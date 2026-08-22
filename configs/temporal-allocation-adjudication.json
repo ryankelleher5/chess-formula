@@ -1,0 +1,78 @@
+{
+  "seed": 20260907,
+  "benchmark_version": "temporal-allocation-adjudication-v1",
+  "temporal_allocation_adjudication": {
+    "experiment_name": "temporal-allocation-adjudication",
+    "protocol_version": "temporal-allocation-adjudication-v1",
+    "source_protocol_config": "configs/branch-separable-oracle.json",
+    "source_protocol_config_bytes": 3332,
+    "source_protocol_config_sha256": "9e5fb61f27e41421473a12be69a8c97d19cf568fe97641b8ff33203395d455e7",
+    "prior_oracle_cache": "data/processed/branch_separable_oracle_cache.ndjson",
+    "prior_oracle_cache_bytes": 16678598,
+    "prior_oracle_cache_sha256": "b66e0a017b807408dcda9c40bbc5eba1083decd2a31bfcbdd29c990c96c32d26",
+    "prior_oracle_cache_metadata": "data/processed/branch_separable_oracle_cache_metadata.json",
+    "prior_oracle_cache_metadata_bytes": 688,
+    "prior_oracle_cache_metadata_sha256": "407b42e6b37c23a2c8970ffeae695dc2f402ba65e9b54fbe934a75bdba86999f",
+    "prior_oracle_key": "24623e0f8efa0dc769d8",
+    "checkpoint_nodes": [10000, 40000, 160000],
+    "frozen_temporal_union": {
+      "definition": "Retain a legal move if its mover-oriented regret is at most 25 cp at any independent 10000-, 40000-, or 160000-node checkpoint, after the frozen +/-2000 cp score clip and lexical tie-breaking",
+      "threshold_cp": 25,
+      "retained_branches": 594,
+      "branch_key_digest": "d57751d6646c8f4bb797fc7e4d6c512222f35546ad1aeb743f5fac241f04c728",
+      "root_legal_branches": 679,
+      "root_retained_branches": 60,
+      "root_micro_retained_fraction": 0.08836524300441827,
+      "root_mean_context_retained_fraction": 0.264164623910661,
+      "root_branch_key_digest": "d4f521be21edaa72608aaae602c8e903ed1fe69177d8373b9aba359f400fb2a7",
+      "parent_legal_branches": 4580,
+      "parent_retained_branches": 534,
+      "parent_micro_retained_fraction": 0.1165938864628821,
+      "parent_mean_context_retained_fraction": 0.14386487952132987,
+      "parent_branch_key_digest": "9106a47d3f80023f271b7c3a894a64b69e111333b2b667267511c1666cb40de2"
+    },
+    "audit_nodes_per_move": 2560000,
+    "expected_contexts": 158,
+    "expected_legal_branches": 5259,
+    "oracle_cache": "data/processed/temporal_allocation_adjudication_cache.ndjson",
+    "oracle_cache_metadata": "data/processed/temporal_allocation_adjudication_cache_metadata.json",
+    "oracle": {
+      "engine": "Stockfish 18",
+      "analysis": "one constrained root move per independent call",
+      "mate_score_cp": 100000,
+      "score_clip_cp": 2000,
+      "threads": 1,
+      "hash_mb": 16,
+      "new_game_per_branch": true
+    },
+    "advancement_gate": {
+      "minimum_decision_preservation_25cp": 1.0,
+      "maximum_pruning_loss_cp": 25,
+      "maximum_omissions_over_100cp": 0,
+      "maximum_omissions_over_300cp": 0,
+      "maximum_micro_retained_fraction": {
+        "root": 0.35,
+        "parent": 0.20
+      },
+      "maximum_mean_context_retained_fraction": {
+        "root": 0.35,
+        "parent": 0.20
+      }
+    },
+    "primary_question": "Does a branch's value trajectory across independent computation budgets identify a compact set of branches that must receive further computation?",
+    "primary_target": "Decision sufficiency: retain at least one move within 25 cp in every root and parent context",
+    "diagnostics_not_vetoes": [
+      "exact top-reply recall",
+      "complete within-25-cp-set recall"
+    ],
+    "controls": ["10k", "40k", "160k", "late_union", "temporal_union"],
+    "final_deeper_stockfish_calibration": true,
+    "pass_action": "License a separately preregistered compact selector-discovery experiment; do not call the temporal union deployable",
+    "material_failure_action": "Stop escalating Stockfish node budgets and pivot to exact-domain or alternative-oracle ground truth",
+    "development_only": true,
+    "train_models": false,
+    "selection_outcomes_probed": 0,
+    "confirmation_outcomes_probed": 0,
+    "results_directory": "results"
+  }
+}

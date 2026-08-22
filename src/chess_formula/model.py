@@ -76,6 +76,26 @@ def resolve_engine_key(connection: duckdb.DuckDBPyConnection, engine_key: str | 
     return row[0]
 
 
+def fit_ridge(matrix: np.ndarray, target: np.ndarray, alpha: float) -> tuple[np.ndarray, float]:
+    """Fit standardized ridge regression and return raw-unit coefficients."""
+    if matrix.ndim != 2 or target.ndim != 1 or len(matrix) != len(target):
+        raise ValueError("Ridge inputs must be aligned 2D features and a 1D target")
+    if len(matrix) < 2:
+        raise ValueError("At least two observations are required")
+    means = matrix.mean(axis=0)
+    scales = matrix.std(axis=0)
+    scales[scales < 1e-12] = 1.0
+    standardized = (matrix - means) / scales
+    centered_target = target - target.mean()
+    coefficients_standard = np.linalg.solve(
+        standardized.T @ standardized + alpha * np.eye(standardized.shape[1]),
+        standardized.T @ centered_target,
+    )
+    coefficients = coefficients_standard / scales
+    intercept = float(target.mean() - means @ coefficients)
+    return coefficients, intercept
+
+
 def train_linear(
     database: str | Path,
     config: dict,
@@ -99,18 +119,8 @@ def train_linear(
     matrix, names = feature_matrix([row[0] for row in rows])
     clip = int(config["model"]["target_clip_cp"])
     target = np.clip(np.asarray([row[1] for row in rows], dtype=float), -clip, clip)
-    means = matrix.mean(axis=0)
-    scales = matrix.std(axis=0)
-    scales[scales < 1e-12] = 1.0
-    standardized = (matrix - means) / scales
     alpha = float(config["model"]["ridge_alpha"])
-    centered_target = target - target.mean()
-    coefficients_standard = np.linalg.solve(
-        standardized.T @ standardized + alpha * np.eye(standardized.shape[1]),
-        standardized.T @ centered_target,
-    )
-    coefficients = coefficients_standard / scales
-    intercept = float(target.mean() - means @ coefficients)
+    coefficients, intercept = fit_ridge(matrix, target, alpha)
     experiment_id = _next_experiment_id(Path(results_dir), config["model"]["name"])
     model = LinearModel(
         name=config["model"]["name"],
@@ -151,7 +161,7 @@ def train_linear(
     )
     (artifact / "formula.txt").write_text(model.formula(), encoding="utf-8")
     connection.execute(
-        "INSERT INTO experiments VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        "INSERT OR REPLACE INTO experiments VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
         [
             experiment_id,
             "baseline-linear",

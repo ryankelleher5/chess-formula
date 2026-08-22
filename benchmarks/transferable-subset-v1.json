@@ -1,0 +1,17 @@
+{
+  "name": "transferable-subset-v1",
+  "source_experiment": "2026-08-21_nested_feature_selection_001",
+  "source_benchmark": "nested-feature-selection-v1",
+  "locked_before_confirmation": true,
+  "feature_count": 3,
+  "parameter_count": 4,
+  "features": [
+    "material",
+    "space",
+    "tempo"
+  ],
+  "lock_rule": "Upper-median selected feature count; rank features by selection frequency, then mean selected rank, then name.",
+  "confirmation_source": "Lichess standard rated human games, February 2013",
+  "confirmation_policy": "Do not change the features, ridge alpha, target clip, sampling policy, eligibility policy, or oracle settings after inspecting confirmation labels or metrics.",
+  "frozen": true
+}
