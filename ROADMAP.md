@@ -131,10 +131,12 @@ branch necessity, and exact play across different representations and oracles.
     one optimal branch rather than every redundant optimum, and keeps exact
     selection and confirmation outcomes technically sealed. The complete
     outcome-free census, bidirectional one-ply embargo, transferable feature
-    representation, fixed samples, connected folds, estimands, and compact
-    candidate specifications are implemented for review. No KPKP tablebase
-    download or outcome probe is authorized until review; dependency manifests
-    and file hashes remain a post-approval, pre-probe freeze step.
+    representation, fixed samples, connected outer/inner folds, strictly
+    cross-fitted compact pipelines, sample-bound sealed-partition estimands,
+    full-ensemble accounting, development-only probe guard, and checksum-pinned
+    dependency manifest are implemented for review. Behaviorally irrelevant EP
+    history markers are collapsed before every split decision. No KPKP
+    tablebase payload download or outcome probe is authorized until review.
 11. Train compact ordinary-position selectors only after an exact-domain or
     alternative-oracle experiment supplies a separately frozen training
     license.

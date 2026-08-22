@@ -6,6 +6,7 @@
     "domain": "KPKP",
     "reservoir_multiplier": 4,
     "development_folds": 5,
+    "inner_folds": 4,
     "samples": {
       "development": {
         "white_noep": 49000,
@@ -28,46 +29,47 @@
     },
     "expected_outcome_free_audit": {
       "raw_valid_states": 17029028,
-      "canonical_states": 4257257,
-      "canonical_terminal_states": 119,
-      "canonical_en_passant_states": 539213,
+      "behaviorally_irrelevant_ep_history_states": 2072120,
+      "canonical_states": 3739227,
+      "canonical_terminal_states": 105,
+      "canonical_en_passant_states": 21183,
       "partition_counts": {
-        "confirmation": 850407,
-        "development": 2555471,
-        "selection": 851379
+        "confirmation": 746615,
+        "development": 2244703,
+        "selection": 747909
       },
       "partition_stratum_counts": {
-        "confirmation:black:ep": 51911,
+        "confirmation:black:ep": 2060,
         "confirmation:black:noep": 368880,
-        "confirmation:white:ep": 56093,
+        "confirmation:white:ep": 2152,
         "confirmation:white:noep": 373523,
-        "development:black:ep": 154987,
+        "development:black:ep": 6301,
         "development:black:noep": 1109833,
-        "development:white:ep": 168555,
+        "development:white:ep": 6473,
         "development:white:noep": 1122096,
-        "selection:black:ep": 51646,
+        "selection:black:ep": 2070,
         "selection:black:noep": 369076,
-        "selection:white:ep": 56021,
+        "selection:white:ep": 2127,
         "selection:white:noep": 374636
       },
       "nonterminal_partition_stratum_counts": {
-        "confirmation:black:ep": 51909,
+        "confirmation:black:ep": 2060,
         "confirmation:black:noep": 368862,
-        "confirmation:white:ep": 56092,
+        "confirmation:white:ep": 2152,
         "confirmation:white:noep": 373520,
-        "development:black:ep": 154980,
+        "development:black:ep": 6301,
         "development:black:noep": 1109780,
-        "development:white:ep": 168555,
+        "development:white:ep": 6473,
         "development:white:noep": 1122090,
-        "selection:black:ep": 51642,
+        "selection:black:ep": 2070,
         "selection:black:noep": 369053,
-        "selection:white:ep": 56021,
+        "selection:white:ep": 2127,
         "selection:white:noep": 374634
       },
       "partition_digests": {
-        "confirmation": "7b9f21abfe7922dad73841387f6082a42d5833b74741733eadb3d59bd5cdb534",
-        "development": "524e804463a1acfca85bd425cbc3e50b55e3d7fe4cb16bbb540032975a54497b",
-        "selection": "5d33dd874164ad2598efdf7b9f17093222a126ca8b3796141bdc0b5d4fc9e725"
+        "confirmation": "778b6563cec04586870762abcbf848b7363b5df510c32ff51e5598a90d903fdf",
+        "development": "a52f81f67d70a05ae86ea02e9d9b0f9e683e7ff8aec9046767e638ed29f00c60",
+        "selection": "d1c615d280357f682a7791da9d6b1ef45933d22f3be903942f3449de230a708a"
       },
       "sample_counts": {
         "confirmation": 25000,
@@ -75,9 +77,9 @@
         "selection": 25000
       },
       "sample_digests": {
-        "confirmation": "0fc3bf54b26a9aca53dc414c470a4a0a868385d2dd5f63824a882cda490ce76a",
-        "development": "fb733c06f208e93786966e1a7d89544cd1ddef7eac4e41d25f8aa8fc77a84930",
-        "selection": "68246307f596e59dfa21a8638f1e36b5b97fad25591fe8d8836114fd637e5310"
+        "confirmation": "95509909d4e8837b436b9febb86a1820c8e97b7af0a10a4b2b53bcd4cc897b27",
+        "development": "3411da03f5d2eea5da5ed9c172eb901d1b9b7473c84e76ce8e5f3a19898d4402",
+        "selection": "c7fa8f612760a417d223599d0193ae261770b0bc7b12c0a413eb5f0ed29ba8a8"
       },
       "sample_stratum_counts": {
         "confirmation": {
@@ -100,13 +102,38 @@
         }
       },
       "development_fold_counts": {
-        "0": 19958,
-        "1": 19944,
-        "2": 20073,
-        "3": 19964,
-        "4": 20061
+        "0": 19970,
+        "1": 19899,
+        "2": 20086,
+        "3": 19953,
+        "4": 20092
       },
-      "development_fold_digest": "8cf269d3fa9e4250f2430f0fbd4b53389d4b2a5359ed33c5cfc3377f52c08e5a",
+      "development_fold_digest": "807ef615b19360096d6b249bcc8be2bd70e29c5474ce5f9b05f5b75335b51c2d",
+      "inner_fold_counts_by_outer": {
+        "0": {"0": 20003, "1": 20066, "2": 20090, "3": 19871},
+        "1": {"0": 20098, "1": 19957, "2": 19975, "3": 20071},
+        "2": {"0": 20100, "1": 19987, "2": 19919, "3": 19908},
+        "3": {"0": 19933, "1": 20248, "2": 19556, "3": 20310},
+        "4": {"0": 20099, "1": 20017, "2": 19902, "3": 19890}
+      },
+      "inner_fold_digests_by_outer": {
+        "0": "e9cabdedaf648670246ce984c3e4cdccc2c3d4ecbe90afd692293afe48ebf698",
+        "1": "53f366cb60a36b3a010f968987829e8b2fae8fef68bcd927180539eb86663d7c",
+        "2": "a6efa70c9901490bf9919f10ca9e733bfdeb1178201a9a9100bfb49b2c81629c",
+        "3": "b431e27e0fbff6c80d572cc2ec3ea89594420d0b85b2582c96002f2046af9c89",
+        "4": "f0afcc896a9cf9600245caf339538a0d2029a5f06cee2e37a5189264b171fb91"
+      },
+      "cross_fit_plan": {
+        "evaluation_fold_model_overlap": 0,
+        "passed": true,
+        "evaluations": {
+          "0": {"validation":19970,"outer_training":80030,"model_training_sizes":{"outer_training_full":80030,"inner_excluding_0":60027,"inner_excluding_1":59964,"inner_excluding_2":59940,"inner_excluding_3":60159}},
+          "1": {"validation":19899,"outer_training":80101,"model_training_sizes":{"outer_training_full":80101,"inner_excluding_0":60003,"inner_excluding_1":60144,"inner_excluding_2":60126,"inner_excluding_3":60030}},
+          "2": {"validation":20086,"outer_training":79914,"model_training_sizes":{"outer_training_full":79914,"inner_excluding_0":59814,"inner_excluding_1":59927,"inner_excluding_2":59995,"inner_excluding_3":60006}},
+          "3": {"validation":19953,"outer_training":80047,"model_training_sizes":{"outer_training_full":80047,"inner_excluding_0":60114,"inner_excluding_1":59799,"inner_excluding_2":60491,"inner_excluding_3":59737}},
+          "4": {"validation":20092,"outer_training":79908,"model_training_sizes":{"outer_training_full":79908,"inner_excluding_0":59809,"inner_excluding_1":59891,"inner_excluding_2":60006,"inner_excluding_3":60018}}
+        }
+      },
       "transition_isolation": {
         "exact_root_overlap": 0,
         "symmetry_class_root_overlap": 0,
@@ -121,8 +148,12 @@
       "population_pooled_rho": "sum_i w_i retained_i / sum_i w_i legal_i",
       "population_mean_context_rho": "sum_i w_i (retained_i/legal_i) / sum_i w_i",
       "stratum_balanced_mean_rho": "one quarter of the four stratum means",
-      "state_weight": "complete canonical nonterminal stratum count divided by sampled stratum count",
-      "safety_gate": "unweighted zero-error exact five-valued WDL preservation"
+      "development_state_weight": "complete development canonical nonterminal stratum count divided by development sampled stratum count",
+      "selection_confirmation_scope": "sample-bound because sequential transition embargo changes inclusion probabilities",
+      "safety_gate": "unweighted zero-error exact five-valued WDL preservation",
+      "dtz_retention": "development-population-weighted mean of the per-state indicator that the retained set intersects O_DTZ",
+      "rho_perfect": "development-population-weighted pooled fraction from the minimal per-state prefix that first intersects O_WDL; adaptive sets use their actual retained counts",
+      "best_deployable_baseline_tie_order": ["lower rho_perfect", "higher weighted DTZ retention", "smaller serialized bytes", "fewer operations", "lexical baseline id"]
     },
     "candidate_seed": 20260908,
     "feature_schema": {
@@ -141,7 +172,7 @@
       "sparse_logistic": {
         "objective": "binary wdl_optimal",
         "solver": "saga",
-        "penalty": "l1",
+        "l1_ratio": 1,
         "fit_intercept": true,
         "tolerance": 0.000001,
         "max_iterations": 20000,
@@ -156,18 +187,26 @@
         "maximum_internal_nodes": 31
       },
       "symbolic_score": {
-        "maximum_expressions": 100000,
-        "maximum_ast_nodes": 16,
-        "constants": [-2, -1, -0.5, 0, 0.5, 1, 2],
-        "binary_operators": ["+", "-", "*", "min", "max"],
+        "enumerated_expressions": 4096,
+        "screen_positions": 4096,
+        "full_training_finalists": 16,
+        "maximum_ast_nodes": 4,
+        "terminals": "feature indices 0 through 1823",
+        "binary_operators": ["add", "subtract", "multiply", "minimum", "maximum"],
         "unary_operators": ["abs", "negate"],
-        "enumeration_order": "AST node count, then SHA-256 tie order"
+        "enumeration": "symbolic-v1: expression i is decoded from SHA256('symbolic:20260908:i')",
+        "screen_order": "positions ordered by SHA256('symbolic-screen:20260908:' + canonical key)",
+        "objective": "fewer states whose highest-scoring move set omits O_WDL, then lower mean rank of first O_WDL move, smaller serialized expression, lexical serialization, lower expression index"
       }
     },
     "cross_validation": {
       "outer_folds": 5,
       "inner_folds": 4,
       "grouping": "complete sampled-root one-ply transition components",
+      "outer_evaluation_models": "one model fit on all four outer-training folds plus four inner models, each fit inside the outer-training portion; all five exclude the evaluated outer fold",
+      "delta_tuning": "cross-fitted predictions inside outer training only",
+      "deployment_setting": "modal outer-selected hyperparameters with canonical lexical JSON tie; maximum of five outer-selected deltas",
+      "no_zero_error_behavior": "family is ineligible for nomination; retain the setting with fewest errors, lower pooled rho, lower delta only for prespecified diagnostics",
       "hyperparameter_tie_order": [
         "zero WDL errors",
         "lower pooled retention",
@@ -179,11 +218,37 @@
     "uncertainty_set": {
       "delta_grid": [0, 0.01, 0.02, 0.05, 0.1, 0.2],
       "normalized_score": "within-position min-max; all tied scores map to 1",
-      "fold_vote_minimum": 2
+      "fold_vote_minimum": 2,
+      "outer_evaluation": "outer-training full-model margin union inner-model top-move votes",
+      "selection_deployment": "full-development margin union five outer-model top-move votes",
+      "deployed_models": 6
     },
     "serialization": {
       "decimal_places": 6,
-      "format": "canonical sorted-key UTF-8 JSON"
+      "format": "canonical sorted-key separator-free UTF-8 JSON",
+      "evaluation_rule": "all reported predictions and metrics are recomputed from the rounded serialized artifact",
+      "ensemble_accounting": "sum parameters and operations over every deployed fit; serialize the complete six-model ensemble for bytes and measure end-to-end latency",
+      "latency_repeats_per_position": 1000,
+      "latency_warmups": 0,
+      "latency_statistics": ["median nanoseconds", "mean nanoseconds"]
+    },
+    "random_baseline": {
+      "repeats": 20,
+      "move_hash_utf8": "random-v1:{seed}:{repeat}:{canonical_state_key}:{move_uci}",
+      "ordering": "ascending SHA-256 hex digest, then ascending UCI"
+    },
+    "primitive_geometry_strata": {
+      "legal_move_count": ["1-4", "5-8", "9-or-more"],
+      "king_chebyshev_distance": ["2", "3-4", "5-or-more"],
+      "pawn_file_distance": ["0", "1", "2-3", "4-or-more"],
+      "minimum_promotion_distance": ["1", "2", "3-4", "5-6"],
+      "legal_en_passant": [false, true],
+      "move_kind": ["quiet", "capture", "promotion", "check", "legal-en-passant"]
+    },
+    "software": {
+      "scikit_learn": "1.9.0",
+      "threadpoolctl": "3.6.0",
+      "single_threaded": true
     },
     "nomination_gate": {
       "wdl_preservation": 1,
@@ -194,6 +259,34 @@
       "dtz_requirement": "match or exceed the best deployable baseline under exact per-position retained counts",
       "distance_aware_designation_threshold": 0.95
     },
+    "tablebase_manifest": {
+      "identity": "ccb661116e218584ad97567e085ab9c2590942a5f0c30b28a475bf6dfff3f6a7",
+      "metadata_source": "https://github.com/niklasf/syzygy-tables.info/tree/9d79edb273faa1217760b53ed0df642ee8596896/checksums",
+      "payloads_downloaded_during_review": 0,
+      "files": [
+        {"file":"KPvKP.rtbw","bytes":245328,"sha256":"6d21860e47a91d00841ccf63a657dc09b78f602e0ec005f925470e2449e1ae05","url":"https://tablebase.lichess.ovh/tables/standard/3-4-5-wdl/KPvKP.rtbw"},
+        {"file":"KPvKP.rtbz","bytes":54480,"sha256":"2967707c971ec847c5ef3fe6f1934166aeb10c8cc151a1ae9d7c922c5aed1fc3","url":"https://tablebase.lichess.ovh/tables/standard/3-4-5-dtz/KPvKP.rtbz"},
+        {"file":"KQvKP.rtbw","bytes":58064,"sha256":"2f92788170e8a5c05608f44a47fd42f3f4fff372d0af64633c56bd081039d8f9","url":"https://tablebase.lichess.ovh/tables/standard/3-4-5-wdl/KQvKP.rtbw"},
+        {"file":"KQvKP.rtbz","bytes":205776,"sha256":"faedb2db23be6619a57cd21c1291582bba9ddae30c5a394f5d4a7ab834a3940f","url":"https://tablebase.lichess.ovh/tables/standard/3-4-5-dtz/KQvKP.rtbz"},
+        {"file":"KRvKP.rtbw","bytes":179408,"sha256":"3968c2bfced3a5ecfbb54166ec13d4e7b70f3b03c495af4ae87cad2ec75a0749","url":"https://tablebase.lichess.ovh/tables/standard/3-4-5-wdl/KRvKP.rtbw"},
+        {"file":"KRvKP.rtbz","bytes":193424,"sha256":"6d4b1389832854119df815ff89ed2cb0786e8887f000009f0db3484457f7f6ff","url":"https://tablebase.lichess.ovh/tables/standard/3-4-5-dtz/KRvKP.rtbz"},
+        {"file":"KBvKP.rtbw","bytes":107472,"sha256":"7ea5491c17771a47cb558bf3ac3d6fe6a85e2075daa34f8ec4fa91b4319c1fe5","url":"https://tablebase.lichess.ovh/tables/standard/3-4-5-wdl/KBvKP.rtbw"},
+        {"file":"KBvKP.rtbz","bytes":5968,"sha256":"929287a203a8f371f2418cfcbd4b05638a7dc7d2146b87df07a6259b653aebee","url":"https://tablebase.lichess.ovh/tables/standard/3-4-5-dtz/KBvKP.rtbz"},
+        {"file":"KNvKP.rtbw","bytes":148048,"sha256":"f21332cc4b380764847d6c32511dee16cbf56e65604596ca24e784f8e4c13bdb","url":"https://tablebase.lichess.ovh/tables/standard/3-4-5-wdl/KNvKP.rtbw"},
+        {"file":"KNvKP.rtbz","bytes":10640,"sha256":"f5540325bc8bb6b2a9c99b9e1f4672aa06291fd2d8a4d2fa1fbd9453c90774b4","url":"https://tablebase.lichess.ovh/tables/standard/3-4-5-dtz/KNvKP.rtbz"},
+        {"file":"KPvK.rtbw","bytes":7824,"sha256":"02fd2bdcd92821c869458f019f63524def1c9e7a2862ca8d2b16dc7712b16183","url":"https://tablebase.lichess.ovh/tables/standard/3-4-5-wdl/KPvK.rtbw"},
+        {"file":"KPvK.rtbz","bytes":4176,"sha256":"ad01af2076183c90ccee662ca6c5d74da3222ff1fee47c01b5d4e56ed01938de","url":"https://tablebase.lichess.ovh/tables/standard/3-4-5-dtz/KPvK.rtbz"},
+        {"file":"KQvK.rtbw","bytes":272,"sha256":"517667dff787162dbb1ed9d5d6484d30ee854e686ee0675c08d99ecf045d2d50","url":"https://tablebase.lichess.ovh/tables/standard/3-4-5-wdl/KQvK.rtbw"},
+        {"file":"KQvK.rtbz","bytes":5392,"sha256":"71ea9444fa5bd42897d781a0c356975ea6f23e0f65a4254e470897031c161c8c","url":"https://tablebase.lichess.ovh/tables/standard/3-4-5-dtz/KQvK.rtbz"},
+        {"file":"KRvK.rtbw","bytes":208,"sha256":"386fbde73308e49a4207836922c68b30b664e83c5a37f7fa37305a15cd16f2f1","url":"https://tablebase.lichess.ovh/tables/standard/3-4-5-wdl/KRvK.rtbw"},
+        {"file":"KRvK.rtbz","bytes":7632,"sha256":"cab59f42e75c2a25da3939231850a79fa838593fff5c28d7772da92062ed965a","url":"https://tablebase.lichess.ovh/tables/standard/3-4-5-dtz/KRvK.rtbz"},
+        {"file":"KBvK.rtbw","bytes":80,"sha256":"bc0d8ab3560de9038460f0e8f61e3b7efd3e3d0327d19ae0387c0da7ddeb244d","url":"https://tablebase.lichess.ovh/tables/standard/3-4-5-wdl/KBvK.rtbw"},
+        {"file":"KBvK.rtbz","bytes":80,"sha256":"6246c8a5c643eec9d4758d55ed843e31cc28a9b82a6f630c1c950d8b7755975b","url":"https://tablebase.lichess.ovh/tables/standard/3-4-5-dtz/KBvK.rtbz"},
+        {"file":"KNvK.rtbw","bytes":80,"sha256":"9d3518b12df3d2006441df758bce31e961346e70a11920aaad75c647003bb6e7","url":"https://tablebase.lichess.ovh/tables/standard/3-4-5-wdl/KNvK.rtbw"},
+        {"file":"KNvK.rtbz","bytes":80,"sha256":"0e49a0f2810a131c32fc14872e83044aa9810ce2c86df071851512077291fc25","url":"https://tablebase.lichess.ovh/tables/standard/3-4-5-dtz/KNvK.rtbz"}
+      ]
+    },
+    "development_outcomes_authorized": false,
     "tablebase_downloads_authorized": false,
     "tablebase_probes_authorized": false,
     "selection_outcomes_authorized": false,

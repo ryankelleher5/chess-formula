@@ -5,9 +5,13 @@ import heapq
 from collections import defaultdict
 from collections.abc import Iterator
 from dataclasses import dataclass
+from pathlib import Path
 
 import chess
+import chess.syzygy
 import numpy as np
+
+from .human_corpus import sha256_file
 
 KPKP_TRANSFORMS = (0, 1, 2, 3)
 PIECE_TYPES = (
@@ -38,6 +42,11 @@ def _swaps_colors(transform: int) -> bool:
     return transform in (2, 3)
 
 
+def _decision_ep_square(board: chess.Board) -> chess.Square | None:
+    """Returns an EP square only when it changes the legal move set."""
+    return board.ep_square if board.has_legal_en_passant() else None
+
+
 def transform_board(board: chess.Board, transform: int) -> chess.Board:
     transformed = chess.Board.empty()
     swap = _swaps_colors(transform)
@@ -48,10 +57,9 @@ def transform_board(board: chess.Board, transform: int) -> chess.Board:
         )
     transformed.turn = not board.turn if swap else board.turn
     transformed.castling_rights = 0
+    decision_ep_square = _decision_ep_square(board)
     transformed.ep_square = (
-        _square_transform(board.ep_square, transform)
-        if board.ep_square is not None
-        else None
+        _square_transform(decision_ep_square, transform) if decision_ep_square is not None else None
     )
     transformed.halfmove_clock = 0
     transformed.fullmove_number = 1
@@ -68,7 +76,7 @@ def transform_move(move: chess.Move, transform: int) -> chess.Move:
 
 
 def _rule_key(board: chess.Board) -> str:
-    fields = board.fen(en_passant="fen").split()
+    fields = board.fen(en_passant="legal").split()
     return " ".join(fields[:4])
 
 
@@ -86,9 +94,10 @@ def _kpkp_variant_tuple(board: chess.Board, transform: int) -> tuple[int, ...]:
         roles = (white_king, white_pawns[0], black_king, black_pawns[0])
         turn = board.turn
     squares = tuple(_square_transform(square, transform) for square in roles)
+    decision_ep_square = _decision_ep_square(board)
     ep_square = (
-        _square_transform(board.ep_square, transform) + 1
-        if board.ep_square is not None
+        _square_transform(decision_ep_square, transform) + 1
+        if decision_ep_square is not None
         else 0
     )
     return (*squares, int(turn), ep_square)
@@ -126,9 +135,7 @@ def canonical_transition(
                 transform,
             )
         )
-    _, canonical_board, canonical_move, transform = min(
-        candidates, key=lambda item: item[0]
-    )
+    _, canonical_board, canonical_move, transform = min(candidates, key=lambda item: item[0])
     return canonical_board, canonical_move, transform
 
 
@@ -192,9 +199,7 @@ def _ep_variant(board: chess.Board) -> chess.Board | None:
 
 
 def iter_legal_kpkp_states() -> Iterator[chess.Board]:
-    pawn_squares = tuple(
-        square for square in chess.SQUARES if 0 < chess.square_rank(square) < 7
-    )
+    pawn_squares = tuple(square for square in chess.SQUARES if 0 < chess.square_rank(square) < 7)
     for white_king in chess.SQUARES:
         for black_king in chess.SQUARES:
             if black_king == white_king or chess.square_distance(white_king, black_king) <= 1:
@@ -222,7 +227,7 @@ def iter_legal_kpkp_states() -> Iterator[chess.Board]:
 
 def outcome_free_stratum(board: chess.Board) -> str:
     side = "white" if board.turn else "black"
-    ep = "ep" if board.ep_square is not None else "noep"
+    ep = "ep" if board.has_legal_en_passant() else "noep"
     return f"{side}:{ep}"
 
 
@@ -245,12 +250,9 @@ def canonical_successors(board: chess.Board, domain: str = "KPKP") -> set[str]:
     return successors
 
 
-def transition_isolation_audit(
-    samples: dict[str, list[chess.Board]], domain: str = "KPKP"
-) -> dict:
+def transition_isolation_audit(samples: dict[str, list[chess.Board]], domain: str = "KPKP") -> dict:
     exact_roots = {
-        split: {_rule_key(board) for board in boards}
-        for split, boards in samples.items()
+        split: {_rule_key(board) for board in boards} for split, boards in samples.items()
     }
     roots = {
         split: {canonical_state_key(board, domain) for board in boards}
@@ -278,9 +280,7 @@ def transition_isolation_audit(
         "exact_root_overlap": exact_root_overlap,
         "symmetry_class_root_overlap": symmetry_overlap,
         "directed_predecessor_successor_overlap": directed_overlap,
-        "passed": exact_root_overlap == 0
-        and symmetry_overlap == 0
-        and directed_overlap == 0,
+        "passed": exact_root_overlap == 0 and symmetry_overlap == 0 and directed_overlap == 0,
         "details": details,
     }
 
@@ -304,20 +304,86 @@ class _UnionFind:
 def connected_fold_assignments(
     boards: list[chess.Board], *, seed: int, folds: int, domain: str = "KPKP"
 ) -> dict[str, int]:
-    by_key = {canonical_state_key(board, domain): board for board in boards}
-    union_find = _UnionFind(set(by_key))
-    for key, board in by_key.items():
-        for successor in canonical_successors(board, domain) & set(by_key):
-            union_find.union(key, successor)
-    components: dict[str, list[str]] = defaultdict(list)
-    for key in by_key:
-        components[union_find.find(key)].append(key)
+    components = transition_components(boards, domain=domain)
     assignments = {}
-    for members in components.values():
+    for members in components:
         identity = min(members)
         fold = int(hashlib.sha256(f"{seed}:{identity}".encode()).hexdigest(), 16) % folds
         assignments.update({member: fold for member in members})
     return assignments
+
+
+def transition_components(boards: list[chess.Board], *, domain: str = "KPKP") -> list[list[str]]:
+    by_key = {canonical_state_key(board, domain): board for board in boards}
+    union_find = _UnionFind(set(by_key))
+    sampled_keys = set(by_key)
+    for key, board in by_key.items():
+        for successor in canonical_successors(board, domain) & sampled_keys:
+            union_find.union(key, successor)
+    components: dict[str, list[str]] = defaultdict(list)
+    for key in by_key:
+        components[union_find.find(key)].append(key)
+    return [sorted(members) for _, members in sorted(components.items())]
+
+
+def nested_fold_assignments(
+    boards: list[chess.Board], *, seed: int, outer_folds: int, inner_folds: int
+) -> tuple[dict[str, int], dict[int, dict[str, int]]]:
+    components = transition_components(boards)
+    outer = {}
+    component_identity = {}
+    for members in components:
+        identity = min(members)
+        fold = int(hashlib.sha256(f"{seed}:{identity}".encode()).hexdigest(), 16) % outer_folds
+        for member in members:
+            outer[member] = fold
+            component_identity[member] = identity
+    inner_by_outer = {}
+    for held_out in range(outer_folds):
+        inner = {}
+        for key, outer_fold in outer.items():
+            if outer_fold == held_out:
+                continue
+            identity = component_identity[key]
+            fold = (
+                int(
+                    hashlib.sha256(f"inner:{seed}:{held_out}:{identity}".encode()).hexdigest(),
+                    16,
+                )
+                % inner_folds
+            )
+            inner[key] = fold
+        inner_by_outer[held_out] = inner
+    return outer, inner_by_outer
+
+
+def cross_fit_plan_audit(
+    outer: dict[str, int], inner_by_outer: dict[int, dict[str, int]], *, inner_folds: int
+) -> dict:
+    leakage = 0
+    evaluations = {}
+    all_keys = set(outer)
+    for held_out, inner in sorted(inner_by_outer.items()):
+        validation = {key for key, fold in outer.items() if fold == held_out}
+        outer_training = all_keys - validation
+        if set(inner) != outer_training:
+            raise RuntimeError(f"Inner assignment coverage changed for outer fold {held_out}")
+        model_training_sizes = {"outer_training_full": len(outer_training)}
+        for inner_fold in range(inner_folds):
+            model_training = {key for key in outer_training if inner[key] != inner_fold}
+            leakage += len(model_training & validation)
+            model_training_sizes[f"inner_excluding_{inner_fold}"] = len(model_training)
+        leakage += len(outer_training & validation)
+        evaluations[str(held_out)] = {
+            "validation": len(validation),
+            "outer_training": len(outer_training),
+            "model_training_sizes": model_training_sizes,
+        }
+    return {
+        "evaluation_fold_model_overlap": leakage,
+        "passed": leakage == 0,
+        "evaluations": evaluations,
+    }
 
 
 def weighted_estimands(rows: list[dict], population_counts: dict[str, int]) -> dict:
@@ -432,7 +498,7 @@ def transition_features(board: chess.Board, move: chess.Move) -> np.ndarray:
         captured_piece = canonical_board.piece_type_at(canonical_move.to_square)
     gives_check = canonical_board.gives_check(canonical_move)
     zeroing = canonical_board.is_zeroing(canonical_move)
-    ep_available = canonical_board.ep_square is not None
+    ep_available = canonical_board.has_legal_en_passant()
     legal_before = canonical_board.legal_moves.count()
     canonical_board.push(canonical_move)
     after_occupancy = _occupancy(canonical_board, not canonical_board.turn)
@@ -464,14 +530,81 @@ def transition_features(board: chess.Board, move: chess.Move) -> np.ndarray:
         _promotion_distance(canonical_board, not perspective),
     ]
     return np.asarray(
-        before_occupancy
-        + after_occupancy
-        + before_attacks
-        + after_attacks
-        + categorical
-        + scalars,
+        before_occupancy + after_occupancy + before_attacks + after_attacks + categorical + scalars,
         dtype=np.float32,
     )
+
+
+def random_move_ordering(board: chess.Board, *, seed: int, repeat: int) -> list[chess.Move]:
+    state_key = canonical_state_key(board)
+    ranked = []
+    for move in board.legal_moves:
+        _, canonical_move, _ = canonical_transition(board, move)
+        payload = f"random-v1:{seed}:{repeat}:{state_key}:{canonical_move.uci()}"
+        ranked.append((hashlib.sha256(payload.encode()).hexdigest(), canonical_move.uci(), move))
+    return [move for _, _, move in sorted(ranked)]
+
+
+def primitive_geometry_strata(board: chess.Board, move: chess.Move) -> dict[str, str | list[str]]:
+    legal_moves = board.legal_moves.count()
+    legal_move_bin = "1-4" if legal_moves <= 4 else "5-8" if legal_moves <= 8 else "9-or-more"
+    white_king = board.king(chess.WHITE)
+    black_king = board.king(chess.BLACK)
+    if white_king is None or black_king is None:
+        raise ValueError("Primitive geometry requires both kings")
+    king_distance = chess.square_distance(white_king, black_king)
+    king_bin = "2" if king_distance == 2 else "3-4" if king_distance <= 4 else "5-or-more"
+    white_pawns = board.pieces(chess.PAWN, chess.WHITE)
+    black_pawns = board.pieces(chess.PAWN, chess.BLACK)
+    file_distances = [
+        abs(chess.square_file(white) - chess.square_file(black))
+        for white in white_pawns
+        for black in black_pawns
+    ]
+    pawn_file_distance = min(file_distances) if file_distances else 8
+    pawn_file_bin = (
+        "0"
+        if pawn_file_distance == 0
+        else "1"
+        if pawn_file_distance == 1
+        else "2-3"
+        if pawn_file_distance <= 3
+        else "4-or-more"
+    )
+    promotion_distances = []
+    for square in white_pawns:
+        promotion_distances.append(7 - chess.square_rank(square))
+    for square in black_pawns:
+        promotion_distances.append(chess.square_rank(square))
+    minimum_promotion = min(promotion_distances) if promotion_distances else 6
+    promotion_bin = (
+        "1"
+        if minimum_promotion == 1
+        else "2"
+        if minimum_promotion == 2
+        else "3-4"
+        if minimum_promotion <= 4
+        else "5-6"
+    )
+    move_kinds = []
+    if board.is_capture(move):
+        move_kinds.append("capture")
+    if move.promotion is not None:
+        move_kinds.append("promotion")
+    if board.gives_check(move):
+        move_kinds.append("check")
+    if board.is_en_passant(move):
+        move_kinds.append("legal-en-passant")
+    if not move_kinds:
+        move_kinds.append("quiet")
+    return {
+        "legal_move_count": legal_move_bin,
+        "king_chebyshev_distance": king_bin,
+        "pawn_file_distance": pawn_file_bin,
+        "minimum_promotion_distance": promotion_bin,
+        "legal_en_passant": str(board.has_legal_en_passant()).lower(),
+        "move_kind": move_kinds,
+    }
 
 
 @dataclass(frozen=True)
@@ -547,6 +680,8 @@ def audit_kpkp_outcome_free_source(
     confirmation_quota: SampleQuota,
     reservoir_multiplier: int = 4,
     folds: int = 5,
+    inner_folds: int = 4,
+    _include_samples: bool = False,
 ) -> dict:
     quotas = {
         "development": development_quota.as_dict(),
@@ -556,6 +691,7 @@ def audit_kpkp_outcome_free_source(
     heaps: dict[tuple[str, str], list[tuple[int, str, str]]] = defaultdict(list)
     counts = {
         "raw_valid_states": 0,
+        "behaviorally_irrelevant_ep_history_states": 0,
         "canonical_states": 0,
         "canonical_terminal_states": 0,
         "canonical_en_passant_states": 0,
@@ -568,6 +704,9 @@ def audit_kpkp_outcome_free_source(
     }
     for board in iter_legal_kpkp_states():
         counts["raw_valid_states"] += 1
+        if board.ep_square is not None and not board.has_legal_en_passant():
+            counts["behaviorally_irrelevant_ep_history_states"] += 1
+            continue
         key = canonical_state_key(board)
         if key != raw_kpkp_state_key(board):
             continue
@@ -592,18 +731,11 @@ def audit_kpkp_outcome_free_source(
             fen=board.fen(en_passant="fen"),
         )
     reservoirs = {
-        split: {
-            stratum: _boards_from_reservoir(heaps[(split, stratum)])
-            for stratum in quota
-        }
+        split: {stratum: _boards_from_reservoir(heaps[(split, stratum)]) for stratum in quota}
         for split, quota in quotas.items()
     }
-    development = _select_with_embargo(
-        reservoirs["development"], quotas["development"], []
-    )
-    selection = _select_with_embargo(
-        reservoirs["selection"], quotas["selection"], development
-    )
+    development = _select_with_embargo(reservoirs["development"], quotas["development"], [])
+    selection = _select_with_embargo(reservoirs["selection"], quotas["selection"], development)
     confirmation = _select_with_embargo(
         reservoirs["confirmation"],
         quotas["confirmation"],
@@ -617,19 +749,34 @@ def audit_kpkp_outcome_free_source(
     isolation = transition_isolation_audit(samples)
     if not isolation["passed"]:
         raise RuntimeError(f"Outcome-free split isolation failed: {isolation}")
-    fold_assignments = connected_fold_assignments(
-        development, seed=seed, folds=folds
+    fold_assignments, inner_assignments = nested_fold_assignments(
+        development, seed=seed, outer_folds=folds, inner_folds=inner_folds
     )
     fold_counts: dict[int, int] = defaultdict(int)
     for fold in fold_assignments.values():
         fold_counts[fold] += 1
-    return {
+    inner_fold_counts = {}
+    inner_fold_digests = {}
+    for held_out, assignments in sorted(inner_assignments.items()):
+        counts_by_fold: dict[int, int] = defaultdict(int)
+        for fold in assignments.values():
+            counts_by_fold[fold] += 1
+        inner_fold_counts[str(held_out)] = {
+            str(fold): count for fold, count in sorted(counts_by_fold.items())
+        }
+        inner_fold_digests[str(held_out)] = hashlib.sha256(
+            "\n".join(f"{key}:{fold}" for key, fold in sorted(assignments.items())).encode()
+        ).hexdigest()
+    cross_fit_audit = cross_fit_plan_audit(
+        fold_assignments, inner_assignments, inner_folds=inner_folds
+    )
+    if not cross_fit_audit["passed"]:
+        raise RuntimeError(f"Cross-fit source audit failed: {cross_fit_audit}")
+    result = {
         **counts,
         "partition_counts": dict(sorted(partition_counts.items())),
         "partition_stratum_counts": dict(sorted(stratum_counts.items())),
-        "nonterminal_partition_stratum_counts": dict(
-            sorted(nonterminal_stratum_counts.items())
-        ),
+        "nonterminal_partition_stratum_counts": dict(sorted(nonterminal_stratum_counts.items())),
         "partition_digests": {
             split: digest.hexdigest() for split, digest in partition_hashes.items()
         },
@@ -651,14 +798,141 @@ def audit_kpkp_outcome_free_source(
             str(fold): count for fold, count in sorted(fold_counts.items())
         },
         "development_fold_digest": hashlib.sha256(
-            "\n".join(
-                f"{key}:{fold}" for key, fold in sorted(fold_assignments.items())
-            ).encode()
+            "\n".join(f"{key}:{fold}" for key, fold in sorted(fold_assignments.items())).encode()
         ).hexdigest(),
+        "inner_fold_counts_by_outer": inner_fold_counts,
+        "inner_fold_digests_by_outer": inner_fold_digests,
+        "cross_fit_plan": cross_fit_audit,
         "transition_isolation": isolation,
         "outcomes_probed": 0,
         "tablebase_files_opened": 0,
     }
+    if _include_samples:
+        result["_samples"] = samples
+    return result
+
+
+def tablebase_manifest_identity(entries: list[dict]) -> str:
+    encoded = "\n".join(
+        f"{entry['file']}:{entry['bytes']}:{entry['sha256']}:{entry['url']}"
+        for entry in sorted(entries, key=lambda item: item["file"])
+    )
+    return hashlib.sha256(encoded.encode()).hexdigest()
+
+
+def audit_kpkp_tablebase_manifest(config: dict) -> dict:
+    settings = config["experiment_021_kpkp_review"]
+    manifest = settings["tablebase_manifest"]
+    entries = manifest["files"]
+    required = {
+        f"{material}.{suffix}"
+        for material in (
+            "KPvKP",
+            "KQvKP",
+            "KRvKP",
+            "KBvKP",
+            "KNvKP",
+            "KPvK",
+            "KQvK",
+            "KRvK",
+            "KBvK",
+            "KNvK",
+        )
+        for suffix in ("rtbw", "rtbz")
+    }
+    actual = {entry["file"] for entry in entries}
+    if actual != required:
+        raise RuntimeError(
+            f"KPKP tablebase closure mismatch: missing={sorted(required - actual)}, "
+            f"extra={sorted(actual - required)}"
+        )
+    for entry in entries:
+        if int(entry["bytes"]) <= 0:
+            raise RuntimeError(f"Invalid byte count for {entry['file']}")
+        digest = str(entry["sha256"])
+        if len(digest) != 64 or any(character not in "0123456789abcdef" for character in digest):
+            raise RuntimeError(f"Invalid SHA-256 for {entry['file']}")
+    identity = tablebase_manifest_identity(entries)
+    if identity != manifest["identity"]:
+        raise RuntimeError(
+            f"KPKP manifest identity changed: expected {manifest['identity']}, got {identity}"
+        )
+    return {
+        "files": len(entries),
+        "bytes": sum(int(entry["bytes"]) for entry in entries),
+        "identity": identity,
+        "metadata_source": manifest["metadata_source"],
+        "tablebase_files_opened": 0,
+        "outcomes_probed": 0,
+    }
+
+
+def verify_kpkp_tablebase_files(config: dict, directory: str | Path) -> dict:
+    manifest = config["experiment_021_kpkp_review"]["tablebase_manifest"]
+    source = Path(directory)
+    verified = []
+    for entry in manifest["files"]:
+        path = source / entry["file"]
+        if not path.is_file():
+            raise FileNotFoundError(path)
+        if path.stat().st_size != int(entry["bytes"]):
+            raise RuntimeError(f"Tablebase byte count mismatch for {path}")
+        if sha256_file(path) != entry["sha256"]:
+            raise RuntimeError(f"Tablebase checksum mismatch for {path}")
+        verified.append(str(path))
+    return {"verified_files": verified, "manifest_identity": manifest["identity"]}
+
+
+def enforce_kpkp_probe_partition(config: dict, partition: str) -> None:
+    settings = config["experiment_021_kpkp_review"]
+    if partition != "development":
+        raise PermissionError(
+            "Experiment 021 probe path permanently denies selection and confirmation"
+        )
+    if not settings["development_outcomes_authorized"]:
+        raise PermissionError("Experiment 021 development outcomes are not authorized")
+    if not settings["tablebase_probes_authorized"]:
+        raise PermissionError("Experiment 021 tablebase probes are not authorized")
+
+
+def probe_kpkp_development_labels(
+    config: dict, *, directory: str | Path, partition: str
+) -> list[dict]:
+    """The only Experiment 021 label path; inaccessible in the review config."""
+    enforce_kpkp_probe_partition(config, partition)
+    manifest_audit = audit_kpkp_tablebase_manifest(config)
+    verify_kpkp_tablebase_files(config, directory)
+    settings = config["experiment_021_kpkp_review"]
+    samples = settings["samples"]
+    source = audit_kpkp_outcome_free_source(
+        seed=int(config["seed"]),
+        development_quota=SampleQuota(**samples["development"]),
+        selection_quota=SampleQuota(**samples["selection"]),
+        confirmation_quota=SampleQuota(**samples["confirmation"]),
+        reservoir_multiplier=int(settings["reservoir_multiplier"]),
+        folds=int(settings["development_folds"]),
+        inner_folds=int(settings["inner_folds"]),
+        _include_samples=True,
+    )
+    expected = settings["expected_outcome_free_audit"]
+    actual = {key: source[key] for key in expected}
+    if actual != expected:
+        raise RuntimeError("KPKP source identities changed before development probe")
+    from .branch_law import label_exact_state
+
+    records = []
+    with chess.syzygy.open_tablebase(str(directory)) as tablebase:
+        for board in source["_samples"]["development"]:
+            key = canonical_state_key(board)
+            state, moves, recurrence = label_exact_state(
+                board,
+                "KPKP",
+                key,
+                tablebase,
+                manifest_audit["identity"],
+            )
+            records.append({"state": state, "moves": moves, "recurrence": recurrence})
+    return records
 
 
 def audit_kpkp_review_config(config: dict) -> dict:
@@ -671,9 +945,10 @@ def audit_kpkp_review_config(config: dict) -> dict:
         confirmation_quota=SampleQuota(**samples["confirmation"]),
         reservoir_multiplier=int(settings["reservoir_multiplier"]),
         folds=int(settings["development_folds"]),
+        inner_folds=int(settings["inner_folds"]),
     )
     expected = settings["expected_outcome_free_audit"]
     actual = {key: result[key] for key in expected}
     if actual != expected:
         raise RuntimeError(f"KPKP outcome-free audit changed: {actual}")
-    return result
+    return {**result, "tablebase_manifest": audit_kpkp_tablebase_manifest(config)}
